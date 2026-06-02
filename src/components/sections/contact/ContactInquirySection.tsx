@@ -7,46 +7,85 @@ import SimpleIcon from "../SimpleIcon";
 
 type ContactInquiryContent = z.infer<typeof contactInquiryDataSchema>;
 
-const DEFAULT_EYEBROW = "CONTACT CHANNELS";
-const DEFAULT_TITLE = "Connect with our Partners";
-const DEFAULT_SIDE =
-  "Connect with our specialists for procurement, support, and regulatory-safe medical supply operations.";
+const DEFAULT_EYEBROW = "REACH OUT TO OUR EXPERTS";
+const DEFAULT_TITLE = "Clinical Precision at Your Service.";
 
 const DEFAULT_HQ = {
   heading: "Direct Contact",
   contacts: [
     {
-      icon: "phone" as const,
+      icon: "spark",
+      label: "EMERGENCY LINE",
       value: "+971 4 000 0000",
     },
-    { icon: "mail" as const, value: "inquiry@theamedical.ae" },
-    { icon: "check" as const, value: "Mon - Fri: 08:00 - 18:00" },
+    {
+      icon: "mail",
+      label: "EMAIL CORRESPONDENCE",
+      value: "inquiry@theamedical.ae",
+    },
+    {
+      icon: "clock",
+      label: "CLINICAL SUPPORT HOURS",
+      value: "Mon - Fri: 08:00 - 18:00",
+      note: "24/7 Support for Priority Clients",
+    },
   ],
 };
 
-const DEFAULT_HOURS = {
+const DEFAULT_COMPLIANCE = {
   heading: "Regulatory Compliance Guaranteed",
-  rows: [
-    { days: "All inquiries are processed according to strict", hours: "" },
-    { days: "medical data privacy standards and ISO 13485 protocols.", hours: "" },
-  ],
+  text: "All inquiries are processed according to strict medical data privacy standards and ISO 13485 protocols.",
 };
 
 const DEFAULT_MATRIX = {
   label: "Dubai Headquarters",
   title: "Business Bay, Prism Tower",
-  subtitle: "Level 24, Suite 2405, Dubai, UAE",
+  subtitle: "Level 24, Suite 2405, Dubai, UAE.",
   mapImage: "/contact/uae-map.jpg",
-  linkLabel: "GET DIRECTIONS >",
-  linkHref: "https://maps.google.com",
+  linkLabel: "GET DIRECTIONS →",
+  linkHref: "https://maps.google.com/?q=Business+Bay+Prism+Tower+Dubai",
 };
 
-function resolveHeroTitle(content: ContactInquiryContent) {
-  if (content.heroTitle?.trim()) return content.heroTitle.trim();
-  if (content.heroTitleLines && content.heroTitleLines.length > 0) {
-    return content.heroTitleLines.join(" ");
+const DEFAULT_INQUIRY_OPTIONS = [
+  "General Inquiry",
+  "Procurement Support",
+  "Equipment Supply",
+  "Clinical Support",
+];
+
+function SendIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path
+        d="m4 12 16-7-2.5 7H22l-16 7 2.5-7H4z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+function resolveHeroTitleParts(content: ContactInquiryContent) {
+  if (content.heroTitleLines && content.heroTitleLines.length >= 2) {
+    const lines = content.heroTitleLines.map((line) => line.trim()).filter(Boolean);
+    return {
+      lead: lines[0] ?? "Clinical Precision",
+      accent: lines.slice(1).join(" "),
+    };
   }
-  return DEFAULT_TITLE;
+
+  const full = content.heroTitle?.trim() || DEFAULT_TITLE;
+  const atMatch = full.match(/^(.+?)\s+(at\s+.+)$/i);
+  if (atMatch) {
+    return { lead: atMatch[1].trim(), accent: atMatch[2].trim() };
+  }
+
+  return { lead: full, accent: "" };
 }
 
 function resolveHqContacts(content: ContactInquiryContent) {
@@ -57,12 +96,23 @@ function resolveHqContacts(content: ContactInquiryContent) {
     return content.officeItems.flatMap((item) =>
       item.lines.map((line) => ({
         icon:
-          item.icon === "mail" || item.icon === "phone" ? item.icon : (item.icon || "location"),
+          item.icon === "mail" || item.icon === "phone" ? item.icon : item.icon || "location",
+        label: item.title,
         value: line,
       })),
     );
   }
   return DEFAULT_HQ.contacts;
+}
+
+function resolveComplianceText(content: ContactInquiryContent) {
+  if (content.complianceText?.trim()) return content.complianceText.trim();
+  if (content.hoursRows && content.hoursRows.length > 0) {
+    return content.hoursRows
+      .map((row) => [row.days, row.hours].filter(Boolean).join(" "))
+      .join(" ");
+  }
+  return DEFAULT_COMPLIANCE.text;
 }
 
 export default function ContactInquirySection({ content }: { content: ContactInquiryContent }) {
@@ -71,39 +121,35 @@ export default function ContactInquirySection({ content }: { content: ContactInq
 
   const formFields = content.formFields ?? {};
   const heroEyebrow = content.heroEyebrow?.trim() || DEFAULT_EYEBROW;
-  const heroTitle = resolveHeroTitle(content);
-  const heroSideCopy = content.heroSideCopy?.trim() || DEFAULT_SIDE;
-  const submitLabel = content.submitLabel?.trim() || "SUBMIT INQUIRY";
+  const heroTitleParts = resolveHeroTitleParts(content);
+  const submitLabel = content.submitLabel?.trim() || "Submit Request";
   const inquiryOptions =
-    content.inquiryOptions?.filter((option) => option.trim().length > 0) ?? [];
+    content.inquiryOptions?.filter((option) => option.trim().length > 0) ??
+    DEFAULT_INQUIRY_OPTIONS;
   const hasInquiryOptions = inquiryOptions.length > 0;
 
-  const nameLabel = formFields.fullNameLabel?.trim() || "NAME";
-  const emailLabel = formFields.workEmailLabel?.trim() || "INSTITUTIONAL EMAIL";
-  const subjectLabel = formFields.interestLabel?.trim() || "SUBJECT";
-  const messageLabel = formFields.messageLabel?.trim() || "PROJECT SUMMARY";
+  const nameLabel = formFields.fullNameLabel?.trim() || "FULL NAME";
+  const emailLabel = formFields.workEmailLabel?.trim() || "EMAIL";
+  const subjectLabel = formFields.interestLabel?.trim() || "REQUEST TYPE";
+  const messageLabel = formFields.messageLabel?.trim() || "MESSAGE";
 
-  const namePlaceholder = formFields.fullNamePlaceholder?.trim() || "Johnathan Doe";
-  const emailPlaceholder =
-    formFields.workEmailPlaceholder?.trim() || "j.doe@institution.com";
+  const namePlaceholder = formFields.fullNamePlaceholder?.trim() || "Dr. Sarah Al-Maktoum";
+  const emailPlaceholder = formFields.workEmailPlaceholder?.trim() || "sarah.a@facility.ae";
   const subjectPlaceholder =
-    formFields.interestPlaceholder?.trim() || "Inquiry: Asset Management Protocol";
+    formFields.interestPlaceholder?.trim() || "Select a service category";
   const companyLabel = formFields.companyLabel?.trim() || "FACILITY NAME";
   const companyPlaceholder = formFields.companyPlaceholder?.trim() || "Dubai Medical Center";
   const phoneLabel = formFields.phoneLabel?.trim() || "DEPARTMENT";
   const phonePlaceholder = formFields.phonePlaceholder?.trim() || "Radiology / Procurement";
   const messagePlaceholder =
-    formFields.messagePlaceholder?.trim() ||
-    "Briefly describe your institutional requirements...";
+    formFields.messagePlaceholder?.trim() || "Detail your clinical requirements here...";
 
   const hqHeading = content.hqHeading?.trim() || content.officeHeading?.trim() || DEFAULT_HQ.heading;
   const hqContacts = resolveHqContacts(content);
 
-  const hoursHeading = content.hoursHeading?.trim() || DEFAULT_HOURS.heading;
-  const hoursRows =
-    content.hoursRows && content.hoursRows.length > 0
-      ? content.hoursRows
-      : DEFAULT_HOURS.rows;
+  const complianceHeading =
+    content.hoursHeading?.trim() || DEFAULT_COMPLIANCE.heading;
+  const complianceText = resolveComplianceText(content);
 
   const matrix = {
     ...DEFAULT_MATRIX,
@@ -147,7 +193,7 @@ export default function ContactInquirySection({ content }: { content: ContactInq
       setStatus("ok");
       setFeedback(
         formFields.successMessage ||
-          "Thank you — our institutional relations team will be in touch shortly.",
+          "Thank you. Our team will contact you shortly.",
       );
       form.reset();
     } catch {
@@ -161,19 +207,63 @@ export default function ContactInquirySection({ content }: { content: ContactInq
       <section className="cx-contact__main" aria-labelledby="cx-contact-title">
         <div className="section-shell cx-contact__shell">
           <header className="cx-contact__hero">
-            <div className="cx-contact__hero-left">
-              <p className="cx-contact__eyebrow">{heroEyebrow}</p>
-              <h1 id="cx-contact-title" className="cx-contact__title">
-                {heroTitle}
-              </h1>
-            </div>
-            <div className="cx-contact__hero-right">
-              <span className="cx-contact__hero-divider" aria-hidden="true" />
-              <p className="cx-contact__hero-side">{heroSideCopy}</p>
-            </div>
+            <p className="cx-contact__eyebrow">{heroEyebrow}</p>
+            <h1 id="cx-contact-title" className="cx-contact__title">
+              <span className="cx-contact__title-lead">{heroTitleParts.lead}</span>
+              {heroTitleParts.accent ? (
+                <span className="cx-contact__title-accent">{heroTitleParts.accent}</span>
+              ) : null}
+            </h1>
           </header>
 
           <div className="cx-contact__body">
+            <aside className="cx-contact__aside" aria-label="Contact details">
+              <div className="cx-contact__info-card cx-contact__hq">
+                <h2 className="cx-contact__aside-title">{hqHeading}</h2>
+                <ul className="cx-contact__hq-list">
+                  {hqContacts.map((item, index) => (
+                    <li key={`${item.label ?? item.icon}-${index}`} className="cx-contact__hq-item">
+                      <span className="cx-contact__hq-icon" aria-hidden="true">
+                        <SimpleIcon name={item.icon} className="cx-contact__hq-icon-svg" />
+                      </span>
+                      <div className="cx-contact__hq-body">
+                        {item.label ? (
+                          <span className="cx-contact__hq-label">{item.label}</span>
+                        ) : null}
+                        {item.icon === "mail" ? (
+                          <a className="cx-contact__hq-value" href={`mailto:${item.value}`}>
+                            {item.value}
+                          </a>
+                        ) : item.icon === "phone" || item.icon === "spark" ? (
+                          <a
+                            className="cx-contact__hq-value"
+                            href={`tel:${item.value.replace(/\s/g, "")}`}
+                          >
+                            {item.value}
+                          </a>
+                        ) : (
+                          <span className="cx-contact__hq-value">{item.value}</span>
+                        )}
+                        {item.note ? (
+                          <span className="cx-contact__hq-note">{item.note}</span>
+                        ) : null}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="cx-contact__info-card cx-contact__compliance">
+                <span className="cx-contact__compliance-icon" aria-hidden="true">
+                  <SimpleIcon name="check" className="cx-contact__compliance-icon-svg" />
+                </span>
+                <div className="cx-contact__compliance-body">
+                  <h2 className="cx-contact__compliance-title">{complianceHeading}</h2>
+                  <p className="cx-contact__compliance-text">{complianceText}</p>
+                </div>
+              </div>
+            </aside>
+
             <div className="cx-contact__form-panel">
               <form
                 className="cx-contact__form"
@@ -234,22 +324,24 @@ export default function ContactInquirySection({ content }: { content: ContactInq
                 <label className="cx-contact__field">
                   <span className="cx-contact__label">{subjectLabel}</span>
                   {hasInquiryOptions ? (
-                    <select
-                      suppressHydrationWarning
-                      name="requestType"
-                      required
-                      className="cx-contact__input cx-contact__select"
-                      defaultValue=""
-                    >
-                      <option value="" disabled>
-                        {subjectPlaceholder}
-                      </option>
-                      {inquiryOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
+                    <span className="cx-contact__select-wrap">
+                      <select
+                        suppressHydrationWarning
+                        name="requestType"
+                        required
+                        className="cx-contact__input cx-contact__select"
+                        defaultValue=""
+                      >
+                        <option value="" disabled>
+                          {subjectPlaceholder}
                         </option>
-                      ))}
-                    </select>
+                        {inquiryOptions.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    </span>
                   ) : (
                     <input
                       suppressHydrationWarning
@@ -280,7 +372,8 @@ export default function ContactInquirySection({ content }: { content: ContactInq
                   className="cx-contact__submit"
                   disabled={status === "loading"}
                 >
-                  {status === "loading" ? "SUBMITTING..." : submitLabel}
+                  <span>{status === "loading" ? "Submitting..." : submitLabel}</span>
+                  <SendIcon className="cx-contact__submit-icon" />
                 </button>
 
                 {feedback ? (
@@ -297,47 +390,6 @@ export default function ContactInquirySection({ content }: { content: ContactInq
                 ) : null}
               </form>
             </div>
-
-            <aside className="cx-contact__aside" aria-label="Contact details">
-              <div className="cx-contact__info-card cx-contact__hq">
-                <h2 className="cx-contact__aside-title">{hqHeading}</h2>
-                <ul className="cx-contact__hq-list">
-                  {hqContacts.map((item, index) => (
-                    <li key={`${item.icon}-${index}`} className="cx-contact__hq-item">
-                      <span className="cx-contact__hq-icon" aria-hidden="true">
-                        <SimpleIcon
-                          name={item.icon}
-                          className="cx-contact__hq-icon-svg"
-                        />
-                      </span>
-                      {item.icon === "mail" ? (
-                        <a className="cx-contact__hq-value" href={`mailto:${item.value}`}>
-                          {item.value}
-                        </a>
-                      ) : item.icon === "phone" ? (
-                        <a className="cx-contact__hq-value" href={`tel:${item.value.replace(/\s/g, "")}`}>
-                          {item.value}
-                        </a>
-                      ) : (
-                        <span className="cx-contact__hq-value">{item.value}</span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="cx-contact__info-card cx-contact__hours">
-                <h2 className="cx-contact__aside-title">{hoursHeading}</h2>
-                <dl className="cx-contact__hours-list">
-                  {hoursRows.map((row) => (
-                    <div key={row.days} className="cx-contact__hours-row">
-                      <dt>{row.days}</dt>
-                      <dd>{row.hours}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-            </aside>
           </div>
         </div>
       </section>
@@ -354,11 +406,18 @@ export default function ContactInquirySection({ content }: { content: ContactInq
               loading="lazy"
             />
             <article className="cx-contact__matrix-card">
-              <p className="cx-contact__matrix-label">{matrix.label}</p>
               <h2 id="cx-contact-matrix-title" className="cx-contact__matrix-title">
-                {matrix.title}
+                {matrix.label}
               </h2>
-              <p className="cx-contact__matrix-subtitle">{matrix.subtitle}</p>
+              <p className="cx-contact__matrix-address">
+                {matrix.title}
+                {matrix.subtitle ? (
+                  <>
+                    <br />
+                    {matrix.subtitle}
+                  </>
+                ) : null}
+              </p>
               <a className="cx-contact__matrix-link" href={matrix.linkHref}>
                 {matrix.linkLabel}
               </a>

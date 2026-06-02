@@ -233,9 +233,9 @@ export async function GET(_request: Request, context: RouteContext) {
     status: "draft",
     sections: buildHomeSections(),
     publishedSections: [],
-    seoTitle: "Adam Technology L.L.C.",
+    seoTitle: "THEA Medical Store | Medical Supplies & Equipment",
     seoDescription:
-      "Adam Technology L.L.C. delivers enterprise-grade cybersecurity, cloud & data infrastructure, and custom software engineering from Dubai, UAE.",
+      "THEA Medical Store delivers premium pharmaceutical products and cutting-edge medical equipment solutions for healthcare providers across the UAE.",
   });
 
   return jsonData(created.toObject());

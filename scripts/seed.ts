@@ -19,6 +19,8 @@ import {
   defaultFooterColumns,
   defaultFooterMeta,
   defaultHeaderActions,
+  defaultPageSeoBySlug,
+  defaultSeoDefaults,
 } from "../src/data/site-defaults";
 import {
   theaAboutHeroDefaults,
@@ -660,45 +662,60 @@ const aboutRegulatoryData = { ...theaAboutRegulatoryDefaults };
 const aboutInquiryData = { ...theaAboutInquiryDefaults };
 const aboutFooterData = { ...theaAboutFooterDefaults };
 const contactInquiryData = {
-  heroEyebrow: "CONTACT CHANNELS",
-  heroTitle: "Connect with our Partners",
-  heroSideCopy:
-    "Facilitating digital asset mobility for institutional ecosystems with architectural precision and regulatory rigor.",
-  submitLabel: "SUBMIT INQUIRY",
+  heroEyebrow: "REACH OUT TO OUR EXPERTS",
+  heroTitle: "Clinical Precision at Your Service.",
+  submitLabel: "Submit Request",
   formFields: {
-    fullNameLabel: "NAME",
-    fullNamePlaceholder: "Johnathan Doe",
-    workEmailLabel: "INSTITUTIONAL EMAIL",
-    workEmailPlaceholder: "j.doe@institution.com",
-    interestLabel: "SUBJECT",
-    interestPlaceholder: "Inquiry: Asset Management Protocol",
-    messageLabel: "PROJECT SUMMARY",
-    messagePlaceholder: "Briefly describe your institutional requirements...",
-    successMessage:
-      "Thank you — our institutional relations team will be in touch shortly.",
+    fullNameLabel: "FULL NAME",
+    fullNamePlaceholder: "Dr. Sarah Al-Maktoum",
+    workEmailLabel: "EMAIL",
+    workEmailPlaceholder: "sarah.a@facility.ae",
+    companyLabel: "FACILITY NAME",
+    companyPlaceholder: "Dubai Medical Center",
+    phoneLabel: "DEPARTMENT",
+    phonePlaceholder: "Radiology / Procurement",
+    interestLabel: "REQUEST TYPE",
+    interestPlaceholder: "Select a service category",
+    messageLabel: "MESSAGE",
+    messagePlaceholder: "Detail your clinical requirements here...",
+    successMessage: "Thank you. Our team will contact you shortly.",
     errorMessage: "Something went wrong. Please try again.",
   },
-  hqHeading: "Global Headquarters",
+  inquiryOptions: [
+    "General Inquiry",
+    "Procurement Support",
+    "Equipment Supply",
+    "Clinical Support",
+  ],
+  hqHeading: "Direct Contact",
   hqContacts: [
     {
-      icon: "location",
-      value: "RAK Economic Zone, Building 4, Ras Al Khaimah, United Arab Emirates",
+      icon: "spark",
+      label: "EMERGENCY LINE",
+      value: "+971 4 000 0000",
     },
-    { icon: "mail", value: "partners@cryptonexis.com" },
-    { icon: "phone", value: "+971 (0) 7 204 1111" },
+    {
+      icon: "mail",
+      label: "EMAIL CORRESPONDENCE",
+      value: "inquiry@theamedical.ae",
+    },
+    {
+      icon: "clock",
+      label: "CLINICAL SUPPORT HOURS",
+      value: "Mon - Fri: 08:00 - 18:00",
+      note: "24/7 Support for Priority Clients",
+    },
   ],
-  hoursHeading: "Institutional Hours",
-  hoursRows: [
-    { days: "MONDAY — FRIDAY", hours: "09:00 — 18:00 GST" },
-    { days: "SATURDAY — SUNDAY", hours: "CLOSED" },
-  ],
+  hoursHeading: "Regulatory Compliance Guaranteed",
+  complianceText:
+    "All inquiries are processed according to strict medical data privacy standards and ISO 13485 protocols.",
   locationMatrix: {
-    label: "LOCATION MATRIX",
-    title: "Ras Al Khaimah",
-    subtitle: "RAKEZ ECONOMIC ZONE HUB",
+    label: "Dubai Headquarters",
+    title: "Business Bay, Prism Tower",
+    subtitle: "Level 24, Suite 2405, Dubai, UAE.",
     mapImage: "/contact/uae-map.jpg",
-    linkLabel: "OPEN REGIONAL GRID →",
-    linkHref: "https://maps.google.com/?q=RAK+Economical+Zone",
+    linkLabel: "GET DIRECTIONS →",
+    linkHref: "https://maps.google.com/?q=Business+Bay+Prism+Tower+Dubai",
   },
 };
 
@@ -810,11 +827,7 @@ async function main() {
         featureFlags: { clientLogos: true },
         applyNowModal: defaultApplyNowModal,
         headerActions: defaultHeaderActions,
-        seoDefaults: {
-          defaultTitle: "THEA Medical Store",
-          defaultDescription:
-            "THEA Medical Store delivers premium pharmaceutical products and cutting-edge medical equipment solutions for healthcare providers across the UAE.",
-        },
+        seoDefaults: defaultSeoDefaults,
       },
     },
     { upsert: true },
@@ -826,57 +839,43 @@ const pages = [
       slug: "home",
       title: "Home",
       sections: homeSections,
-      seoTitle: "THEA Medical Store | Medical Supplies & Equipment",
-      seoDescription:
-        "THEA Medical Store delivers premium pharmaceutical products and cutting-edge medical equipment solutions for healthcare providers across the UAE.",
+      ...defaultPageSeoBySlug.home,
     },
     {
       slug: "about",
       title: "About Us",
       sections: aboutSections,
-      seoTitle: "About Us | Adam Technology L.L.C.",
-      seoDescription:
-        "Learn about Cryptonexis Limited — institutional integrity, executive leadership, and regulated digital asset issuance in the UAE.",
+      ...defaultPageSeoBySlug.about,
     },
     {
       slug: "services",
       title: "Services",
       sections: servicesPageSections,
-      seoTitle: "Services | THEA Medical Store",
-      seoDescription:
-        "Medical services and solutions — pharmaceutical distribution, equipment trading, rental, and specialized healthcare logistics across the UAE.",
+      ...defaultPageSeoBySlug.services,
     },
     {
       slug: "clients",
       title: "Clients",
       sections: clientsPageSections,
-      seoTitle: "Clients | THEA Medical Store",
-      seoDescription:
-        "Strategic healthcare alliances and sector expertise — hospitals, clinics, laboratories, rehabilitation, and home healthcare across the UAE.",
+      ...defaultPageSeoBySlug.clients,
     },
     {
       slug: "products",
       title: "Products",
       sections: productsPageSections,
-      seoTitle: "Products | THEA Medical Store",
-      seoDescription:
-        "Clinical-grade pharmaceutical products, medical equipment, surgical supplies, and consumables curated for healthcare providers.",
+      ...defaultPageSeoBySlug.products,
     },
     {
       slug: "projects",
       title: "Projects",
       sections: projectsPageSections,
-      seoTitle: "Projects | Cryptonexis Limited",
-      seoDescription:
-        "Institutional digital asset and NFT infrastructure portfolio — tokenization and distributed ledger deployments across the MENA region.",
+      ...defaultPageSeoBySlug.projects,
     },
     {
       slug: "contact",
       title: "Contact",
       sections: contactPageSections,
-      seoTitle: "Contact | Adam Technology L.L.C.",
-      seoDescription:
-        "Contact Cryptonexis Limited for institutional digital asset inquiries, RAK Economic Zone headquarters, and partnership channels.",
+      ...defaultPageSeoBySlug.contact,
     },
   ];
 

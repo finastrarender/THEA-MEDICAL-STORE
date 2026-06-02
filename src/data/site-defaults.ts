@@ -85,3 +85,51 @@ export const defaultApplyNowModal = {
   submitLabel: "ENROLL NOW",
 };
 
+/** Site-wide SEO fallbacks (admin Site Global + metadata). */
+export const defaultSeoDefaults = {
+  defaultTitle: "THEA Medical Store",
+  defaultDescription:
+    "THEA Medical Store delivers premium pharmaceutical products and cutting-edge medical equipment solutions for healthcare providers across the UAE.",
+};
+
+/** Per-page SEO suggestions for admin Page edit and seed/fallback. */
+export const defaultPageSeoBySlug: Record<
+  string,
+  { seoTitle: string; seoDescription: string }
+> = {
+  home: {
+    seoTitle: "THEA Medical Store | Medical Supplies & Equipment",
+    seoDescription: defaultSeoDefaults.defaultDescription,
+  },
+  about: {
+    seoTitle: "About Us | THEA Medical Store",
+    seoDescription:
+      "Learn about THEA Medical Store — our mission, leadership, regulatory compliance, and commitment to clinical-grade medical supply across the UAE.",
+  },
+  services: {
+    seoTitle: "Services | THEA Medical Store",
+    seoDescription:
+      "Medical services and solutions — pharmaceutical distribution, equipment trading, rental, and specialized healthcare logistics across the UAE.",
+  },
+  products: {
+    seoTitle: "Products | THEA Medical Store",
+    seoDescription:
+      "Clinical-grade pharmaceutical products, medical equipment, surgical supplies, and consumables curated for healthcare providers.",
+  },
+  clients: {
+    seoTitle: "Clients | THEA Medical Store",
+    seoDescription:
+      "Strategic healthcare alliances and sector expertise — hospitals, clinics, laboratories, rehabilitation, and home healthcare across the UAE.",
+  },
+  contact: {
+    seoTitle: "Contact Us | THEA Medical Store",
+    seoDescription:
+      "Contact THEA Medical Store for procurement support, clinical inquiries, and medical supply solutions in Dubai and across the UAE.",
+  },
+  projects: {
+    seoTitle: "Projects | THEA Medical Store",
+    seoDescription:
+      "Explore THEA Medical Store partnerships and healthcare supply deployments serving providers across the UAE.",
+  },
+};
+

@@ -721,7 +721,9 @@ const contactFormFieldsSchema = z.object({
 
 const contactHqItemSchema = z.object({
   icon: z.string(),
+  label: z.string().optional(),
   value: z.string(),
+  note: z.string().optional(),
 });
 
 const contactHoursRowSchema = z.object({
@@ -748,6 +750,7 @@ export const contactInquiryDataSchema = z.object({
   hqContacts: z.array(contactHqItemSchema).optional(),
   hoursHeading: z.string().optional(),
   hoursRows: z.array(contactHoursRowSchema).optional(),
+  complianceText: z.string().optional(),
   locationMatrix: contactLocationMatrixSchema.optional(),
   formFields: contactFormFieldsSchema.optional(),
   formTitle: z.string().optional(),

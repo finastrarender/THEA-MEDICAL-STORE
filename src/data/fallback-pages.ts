@@ -171,14 +171,12 @@ const servicesLicensingData = {
 const contactInquiryData = {
   heroEyebrow: "REACH OUT TO OUR EXPERTS",
   heroTitle: "Clinical Precision at Your Service.",
-  heroSideCopy:
-    "Our team supports hospitals, clinics, and procurement departments with compliant and dependable supply operations.",
-  submitLabel: "Submit Request >",
+  submitLabel: "Submit Request",
   formFields: {
     fullNameLabel: "FULL NAME",
     fullNamePlaceholder: "Dr. Sarah Al-Maktoum",
     workEmailLabel: "EMAIL",
-    workEmailPlaceholder: "sarah@facility.ae",
+    workEmailPlaceholder: "sarah.a@facility.ae",
     companyLabel: "FACILITY NAME",
     companyPlaceholder: "Dubai Medical Center",
     phoneLabel: "DEPARTMENT",
@@ -187,31 +185,43 @@ const contactInquiryData = {
     interestPlaceholder: "Select a service category",
     messageLabel: "MESSAGE",
     messagePlaceholder: "Detail your clinical requirements here...",
-    successMessage:
-      "Thank you. Our team will contact you shortly.",
+    successMessage: "Thank you. Our team will contact you shortly.",
     errorMessage: "Something went wrong. Please try again.",
   },
-  inquiryOptions: ["General Inquiry", "Procurement Support", "Clinical Support Hours"],
+  inquiryOptions: [
+    "General Inquiry",
+    "Procurement Support",
+    "Equipment Supply",
+    "Clinical Support",
+  ],
   hqHeading: "Direct Contact",
   hqContacts: [
     {
-      icon: "phone",
+      icon: "spark",
+      label: "EMERGENCY LINE",
       value: "+971 4 000 0000",
     },
-    { icon: "mail", value: "inquiry@theamedical.ae" },
-    { icon: "check", value: "Mon - Fri: 08:00 - 18:00" },
+    {
+      icon: "mail",
+      label: "EMAIL CORRESPONDENCE",
+      value: "inquiry@theamedical.ae",
+    },
+    {
+      icon: "clock",
+      label: "CLINICAL SUPPORT HOURS",
+      value: "Mon - Fri: 08:00 - 18:00",
+      note: "24/7 Support for Priority Clients",
+    },
   ],
   hoursHeading: "Regulatory Compliance Guaranteed",
-  hoursRows: [
-    { days: "All inquiries are processed according to strict", hours: "" },
-    { days: "medical data privacy standards and ISO 13485 protocols.", hours: "" },
-  ],
+  complianceText:
+    "All inquiries are processed according to strict medical data privacy standards and ISO 13485 protocols.",
   locationMatrix: {
     label: "Dubai Headquarters",
     title: "Business Bay, Prism Tower",
     subtitle: "Level 24, Suite 2405, Dubai, UAE.",
     mapImage: "/contact/uae-map.jpg",
-    linkLabel: "GET DIRECTIONS >",
+    linkLabel: "GET DIRECTIONS →",
     linkHref: "https://maps.google.com/?q=Business+Bay+Prism+Tower+Dubai",
   },
 };
@@ -330,9 +340,9 @@ const FALLBACK_BY_SLUG: Record<string, PublicPageView> = {
     slug: "about",
     title: "About Us",
     status: "published",
-    seoTitle: "About Us | Cryptonexis Limited",
+    seoTitle: "About Us | THEA Medical Store",
     seoDescription:
-      "Learn about Cryptonexis Limited and our institutional approach to compliant digital asset creation and issuance in the UAE.",
+      "Learn about THEA Medical Store — our mission, leadership, regulatory compliance, and commitment to clinical-grade medical supply across the UAE.",
     effectiveSections: sections("about", [
       { type: "aboutHero", order: 0, data: aboutHeroData },
       { type: "aboutMission", order: 1, data: aboutMissionData },
@@ -377,9 +387,9 @@ const FALLBACK_BY_SLUG: Record<string, PublicPageView> = {
     slug: "projects",
     title: "Projects",
     status: "published",
-    seoTitle: "Projects | Cryptonexis Limited",
+    seoTitle: "Projects | THEA Medical Store",
     seoDescription:
-      "Institutional digital asset and NFT infrastructure portfolio — tokenization and distributed ledger deployments across the MENA region.",
+      "Explore THEA Medical Store partnerships and healthcare supply deployments serving providers across the UAE.",
     effectiveSections: sections("projects", [
       { type: "projectsHero", order: 0, data: projectsHeroData },
       { type: "projectsGrid", order: 1, data: projectsGridData },
@@ -392,9 +402,9 @@ const FALLBACK_BY_SLUG: Record<string, PublicPageView> = {
     slug: "contact",
     title: "Contact Us",
     status: "published",
-    seoTitle: "Contact | Cryptonexis Limited",
+    seoTitle: "Contact Us | THEA Medical Store",
     seoDescription:
-      "Contact Cryptonexis Limited for institutional digital asset inquiries, RAK Economic Zone headquarters, and partnership channels.",
+      "Contact THEA Medical Store for procurement support, clinical inquiries, and medical supply solutions in Dubai and across the UAE.",
     effectiveSections: sections("contact", [
       { type: "contactInquiry", order: 0, data: contactInquiryData },
     ]),

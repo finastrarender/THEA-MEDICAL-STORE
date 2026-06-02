@@ -8,11 +8,11 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "CRYPTONEXIS LIMITED",
-    template: "%s | Cryptonexis Limited",
+    default: "THEA Medical Store",
+    template: "%s | THEA Medical Store",
   },
   description:
-    "Cryptonexis Limited — RAK Economic Zone licensed NFT creator and issuer for institutional digital asset creation, issuance, and compliance-first advisory.",
+    "THEA Medical Store delivers premium pharmaceutical products and cutting-edge medical equipment solutions for healthcare providers across the UAE.",
   metadataBase: new URL(process.env.AUTH_URL ?? "http://localhost:3000"),
 };
 

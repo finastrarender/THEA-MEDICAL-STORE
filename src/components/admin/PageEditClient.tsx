@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import HeroSectionForm from "@/components/admin/HeroSectionForm";
 import ImageUploadField from "@/components/admin/ImageUploadField";
+import { defaultPageSeoBySlug, defaultSeoDefaults } from "@/data/site-defaults";
 import {
   AboutAdvantageSectionForm,
   AboutCtaSectionForm,
@@ -511,14 +512,12 @@ function defaultSectionData(type: SectionType): Record<string, unknown> {
       return {
         heroEyebrow: "REACH OUT TO OUR EXPERTS",
         heroTitle: "Clinical Precision at Your Service.",
-        heroSideCopy:
-          "Our team supports hospitals, clinics, and procurement departments with compliant and dependable supply operations.",
-        submitLabel: "Submit Request >",
+        submitLabel: "Submit Request",
         formFields: {
           fullNameLabel: "FULL NAME",
           fullNamePlaceholder: "Dr. Sarah Al-Maktoum",
           workEmailLabel: "EMAIL",
-          workEmailPlaceholder: "sarah@facility.ae",
+          workEmailPlaceholder: "sarah.a@facility.ae",
           companyLabel: "FACILITY NAME",
           companyPlaceholder: "Dubai Medical Center",
           phoneLabel: "DEPARTMENT",
@@ -527,31 +526,43 @@ function defaultSectionData(type: SectionType): Record<string, unknown> {
           interestPlaceholder: "Select a service category",
           messageLabel: "MESSAGE",
           messagePlaceholder: "Detail your clinical requirements here...",
-          successMessage:
-            "Thank you. Our team will contact you shortly.",
+          successMessage: "Thank you. Our team will contact you shortly.",
           errorMessage: "Something went wrong. Please try again.",
         },
-        inquiryOptions: ["General Inquiry", "Procurement Support", "Clinical Support Hours"],
+        inquiryOptions: [
+          "General Inquiry",
+          "Procurement Support",
+          "Equipment Supply",
+          "Clinical Support",
+        ],
         hqHeading: "Direct Contact",
         hqContacts: [
           {
-            icon: "phone",
+            icon: "spark",
+            label: "EMERGENCY LINE",
             value: "+971 4 000 0000",
           },
-          { icon: "mail", value: "inquiry@theamedical.ae" },
-          { icon: "check", value: "Mon - Fri: 08:00 - 18:00" },
+          {
+            icon: "mail",
+            label: "EMAIL CORRESPONDENCE",
+            value: "inquiry@theamedical.ae",
+          },
+          {
+            icon: "clock",
+            label: "CLINICAL SUPPORT HOURS",
+            value: "Mon - Fri: 08:00 - 18:00",
+            note: "24/7 Support for Priority Clients",
+          },
         ],
         hoursHeading: "Regulatory Compliance Guaranteed",
-        hoursRows: [
-          { days: "All inquiries are processed according to strict", hours: "" },
-          { days: "medical data privacy standards and ISO 13485 protocols.", hours: "" },
-        ],
+        complianceText:
+          "All inquiries are processed according to strict medical data privacy standards and ISO 13485 protocols.",
         locationMatrix: {
           label: "Dubai Headquarters",
           title: "Business Bay, Prism Tower",
           subtitle: "Level 24, Suite 2405, Dubai, UAE.",
           mapImage: "/contact/uae-map.jpg",
-          linkLabel: "GET DIRECTIONS >",
+          linkLabel: "GET DIRECTIONS →",
           linkHref: "https://maps.google.com/?q=Business+Bay+Prism+Tower+Dubai",
         },
       };
@@ -763,6 +774,11 @@ export default function PageEditClient({ slug }: { slug: string }) {
   if (!page) return <p className="contact-form__err">Page not found</p>;
 
   const currentSlug = page.slug;
+  const pageSeoHints =
+    defaultPageSeoBySlug[currentSlug] ?? {
+      seoTitle: defaultSeoDefaults.defaultTitle,
+      seoDescription: defaultSeoDefaults.defaultDescription,
+    };
   const currentSlugSegment = slugPathSegment(currentSlug);
   const sorted = [...page.sections].sort((a, b) => a.order - b.order);
   const allowedSectionTypes = PAGE_SECTION_TYPES[currentSlug] ?? [];
@@ -866,13 +882,21 @@ export default function PageEditClient({ slug }: { slug: string }) {
 
         <form className="admin-form" onSubmit={saveMeta}>
           <h2>Page & SEO</h2>
+          <p className="admin-muted" style={{ marginTop: 0 }}>
+            Use THEA Medical Store branding in titles and descriptions for search results.
+          </p>
           <label>
             Title
             <input name="title" key={page.title} defaultValue={page.title} required />
           </label>
           <label>
             SEO title
-            <input name="seoTitle" key={page.seoTitle} defaultValue={page.seoTitle ?? ""} />
+            <input
+              name="seoTitle"
+              key={page.seoTitle}
+              defaultValue={page.seoTitle ?? ""}
+              placeholder={pageSeoHints.seoTitle}
+            />
           </label>
           <label>
             SEO description
@@ -880,6 +904,7 @@ export default function PageEditClient({ slug }: { slug: string }) {
               name="seoDescription"
               key={page.seoDescription}
               defaultValue={page.seoDescription ?? ""}
+              placeholder={pageSeoHints.seoDescription}
               rows={3}
             />
           </label>

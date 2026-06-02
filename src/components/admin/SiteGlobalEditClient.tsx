@@ -8,6 +8,7 @@ import {
   defaultFooterColumns,
   defaultFooterMeta,
   defaultNavItems,
+  defaultSeoDefaults,
 } from "@/data/site-defaults";
 import { normalizeSitePath } from "@/lib/site-path";
 import type { FooterColumn } from "@/components/layout/SiteFooter";
@@ -80,9 +81,9 @@ export default function SiteGlobalEditClient() {
   const [headerInquireLabel, setHeaderInquireLabel] = useState(defaultHeaderActions.inquireLabel);
   const [headerInquireHref, setHeaderInquireHref] = useState(defaultHeaderActions.inquireHref);
 
-  const [seoDefaultTitle, setSeoDefaultTitle] = useState("CRYPTONEXIS LIMITED");
+  const [seoDefaultTitle, setSeoDefaultTitle] = useState(defaultSeoDefaults.defaultTitle);
   const [seoDefaultDescription, setSeoDefaultDescription] = useState(
-    "Cryptonexis Limited — RAK Economic Zone licensed NFT creator and issuer for institutional digital assets in the UAE.",
+    defaultSeoDefaults.defaultDescription,
   );
   const [clientLogosFlag, setClientLogosFlag] = useState(true);
   const [preservedLegal, setPreservedLegal] = useState(defaultFooterMeta.legal);
@@ -139,11 +140,10 @@ export default function SiteGlobalEditClient() {
 
         setClientLogosFlag(d.featureFlags?.clientLogos !== false);
         setSeoDefaultTitle(
-          d.seoDefaults?.defaultTitle ?? "CRYPTONEXIS LIMITED",
+          d.seoDefaults?.defaultTitle ?? defaultSeoDefaults.defaultTitle,
         );
         setSeoDefaultDescription(
-          d.seoDefaults?.defaultDescription ??
-            "Cryptonexis Limited — RAK Economic Zone licensed NFT creator and issuer for institutional digital assets in the UAE.",
+          d.seoDefaults?.defaultDescription ?? defaultSeoDefaults.defaultDescription,
         );
       } catch (e) {
         if (!cancelled) setMessage(e instanceof Error ? e.message : "Load error");
@@ -637,7 +637,11 @@ export default function SiteGlobalEditClient() {
             </p>
             <label>
               Default SEO title
-              <input value={seoDefaultTitle} onChange={(e) => setSeoDefaultTitle(e.target.value)} />
+              <input
+                value={seoDefaultTitle}
+                onChange={(e) => setSeoDefaultTitle(e.target.value)}
+                placeholder={defaultSeoDefaults.defaultTitle}
+              />
             </label>
             <label>
               Default SEO description
@@ -645,6 +649,7 @@ export default function SiteGlobalEditClient() {
                 rows={3}
                 value={seoDefaultDescription}
                 onChange={(e) => setSeoDefaultDescription(e.target.value)}
+                placeholder={defaultSeoDefaults.defaultDescription}
               />
             </label>
             <label style={{ display: "flex", alignItems: "center", gap: 8 }}>

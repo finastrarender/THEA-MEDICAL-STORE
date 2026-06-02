@@ -3624,7 +3624,9 @@ export function IndustriesCtaSectionForm({
 
 type ContactHqFormValue = {
   icon: string;
+  label: string;
   value: string;
+  note: string;
 };
 
 type ContactHoursFormValue = {
@@ -3635,7 +3637,6 @@ type ContactHoursFormValue = {
 type ContactInquiryFormValues = {
   heroEyebrow: string;
   heroTitle: string;
-  heroSideCopy: string;
   submitLabel: string;
   fullNameLabel: string;
   fullNamePlaceholder: string;
@@ -3655,6 +3656,7 @@ type ContactInquiryFormValues = {
   hqHeading: string;
   hqContacts: ContactHqFormValue[];
   hoursHeading: string;
+  complianceText: string;
   hoursRows: ContactHoursFormValue[];
   matrixLabel: string;
   matrixTitle: string;
@@ -3679,63 +3681,74 @@ function toContactInquiryDefaultValues(
     ? (data.inquiryOptions as string[])
     : [];
 
+  const hqFromDb = hqContacts.map((item) => ({
+    icon: item.icon ?? "location",
+    label: (item as ContactHqFormValue).label ?? "",
+    value: item.value ?? "",
+    note: (item as ContactHqFormValue).note ?? "",
+  }));
+
   return {
-    heroEyebrow: (data.heroEyebrow as string) ?? "CONTACT CHANNELS",
+    heroEyebrow: (data.heroEyebrow as string) ?? "REACH OUT TO OUR EXPERTS",
     heroTitle:
       (data.heroTitle as string) ??
       (Array.isArray(data.heroTitleLines)
         ? (data.heroTitleLines as string[]).join(" ")
-        : "Connect with our Partners"),
-    heroSideCopy:
-      (data.heroSideCopy as string) ??
-      "Facilitating digital asset mobility for institutional ecosystems with architectural precision and regulatory rigor.",
-    submitLabel: (data.submitLabel as string) ?? "SUBMIT INQUIRY",
-    fullNameLabel: (formFields.fullNameLabel as string) ?? "NAME",
-    fullNamePlaceholder: (formFields.fullNamePlaceholder as string) ?? "Johnathan Doe",
-    workEmailLabel: (formFields.workEmailLabel as string) ?? "INSTITUTIONAL EMAIL",
-    workEmailPlaceholder:
-      (formFields.workEmailPlaceholder as string) ?? "j.doe@institution.com",
+        : "Clinical Precision at Your Service."),
+    submitLabel: (data.submitLabel as string) ?? "Submit Request",
+    fullNameLabel: (formFields.fullNameLabel as string) ?? "FULL NAME",
+    fullNamePlaceholder: (formFields.fullNamePlaceholder as string) ?? "Dr. Sarah Al-Maktoum",
+    workEmailLabel: (formFields.workEmailLabel as string) ?? "EMAIL",
+    workEmailPlaceholder: (formFields.workEmailPlaceholder as string) ?? "sarah.a@facility.ae",
     companyLabel: (formFields.companyLabel as string) ?? "FACILITY NAME",
     companyPlaceholder: (formFields.companyPlaceholder as string) ?? "Dubai Medical Center",
     phoneLabel: (formFields.phoneLabel as string) ?? "DEPARTMENT",
     phonePlaceholder: (formFields.phonePlaceholder as string) ?? "Radiology / Procurement",
-    interestLabel: (formFields.interestLabel as string) ?? "SUBJECT",
+    interestLabel: (formFields.interestLabel as string) ?? "REQUEST TYPE",
     interestPlaceholder:
-      (formFields.interestPlaceholder as string) ?? "Inquiry: Asset Management Protocol",
+      (formFields.interestPlaceholder as string) ?? "Select a service category",
     inquiryOptionsText: inquiryOptions.join("\n"),
-    messageLabel: (formFields.messageLabel as string) ?? "PROJECT SUMMARY",
+    messageLabel: (formFields.messageLabel as string) ?? "MESSAGE",
     messagePlaceholder:
       (formFields.messagePlaceholder as string) ??
-      "Briefly describe your institutional requirements...",
+      "Detail your clinical requirements here...",
     successMessage:
       (formFields.successMessage as string) ??
       "Thank you — our institutional relations team will be in touch shortly.",
     errorMessage: (formFields.errorMessage as string) ?? "Network error",
-    hqHeading: (data.hqHeading as string) ?? "Global Headquarters",
+    hqHeading: (data.hqHeading as string) ?? "Direct Contact",
     hqContacts:
-      hqContacts.length > 0
-        ? hqContacts
+      hqFromDb.length > 0
+        ? hqFromDb
         : [
-            { icon: "location", value: "" },
-            { icon: "mail", value: "" },
-            { icon: "phone", value: "" },
+            { icon: "spark", label: "EMERGENCY LINE", value: "+971 4 000 0000", note: "" },
+            { icon: "mail", label: "EMAIL CORRESPONDENCE", value: "inquiry@theamedical.ae", note: "" },
+            {
+              icon: "clock",
+              label: "CLINICAL SUPPORT HOURS",
+              value: "Mon - Fri: 08:00 - 18:00",
+              note: "24/7 Support for Priority Clients",
+            },
           ],
-    hoursHeading: (data.hoursHeading as string) ?? "Institutional Hours",
+    hoursHeading: (data.hoursHeading as string) ?? "Regulatory Compliance Guaranteed",
+    complianceText:
+      (data.complianceText as string) ??
+      (hoursRows.length > 0
+        ? hoursRows.map((row) => [row.days, row.hours].filter(Boolean).join(" ")).join(" ")
+        : "All inquiries are processed according to strict medical data privacy standards and ISO 13485 protocols."),
     hoursRows:
       hoursRows.length > 0
         ? hoursRows
-        : [
-            { days: "MONDAY — FRIDAY", hours: "09:00 — 18:00 GST" },
-            { days: "SATURDAY — SUNDAY", hours: "CLOSED" },
-          ],
-    matrixLabel: (matrix.label as string) ?? "LOCATION MATRIX",
-    matrixTitle: (matrix.title as string) ?? "Ras Al Khaimah",
-    matrixSubtitle: (matrix.subtitle as string) ?? "RAKEZ ECONOMIC ZONE HUB",
+        : [{ days: "", hours: "" }],
+    matrixLabel: (matrix.label as string) ?? "Dubai Headquarters",
+    matrixTitle: (matrix.title as string) ?? "Business Bay, Prism Tower",
+    matrixSubtitle: (matrix.subtitle as string) ?? "Level 24, Suite 2405, Dubai, UAE.",
     matrixMapImage:
       (matrix.mapImage as string) ?? (data.mapImage as string) ?? "/contact/uae-map.jpg",
-    matrixLinkLabel: (matrix.linkLabel as string) ?? "OPEN REGIONAL GRID →",
+    matrixLinkLabel: (matrix.linkLabel as string) ?? "GET DIRECTIONS →",
     matrixLinkHref:
-      (matrix.linkHref as string) ?? "https://maps.google.com/?q=RAK+Economical+Zone",
+      (matrix.linkHref as string) ??
+      "https://maps.google.com/?q=Business+Bay+Prism+Tower+Dubai",
   };
 }
 
@@ -3767,17 +3780,12 @@ export function ContactInquirySectionForm({
   useEffect(() => {
     reset(defaultValues);
   }, [defaultValues, reset]);
-  const { fields: hoursFields, append: appendHours, remove: removeHours } = useFieldArray({
-    control,
-    name: "hoursRows",
-  });
   const matrixMapImage = watch("matrixMapImage");
 
   function handleValid(values: ContactInquiryFormValues) {
     onSave({
       heroEyebrow: values.heroEyebrow.trim(),
       heroTitle: values.heroTitle.trim(),
-      heroSideCopy: values.heroSideCopy.trim(),
       submitLabel: values.submitLabel.trim(),
       formFields: {
         fullNameLabel: values.fullNameLabel.trim(),
@@ -3802,9 +3810,12 @@ export function ContactInquirySectionForm({
       hqHeading: values.hqHeading.trim(),
       hqContacts: values.hqContacts.map((item) => ({
         icon: item.icon,
+        label: item.label.trim(),
         value: item.value.trim(),
+        note: item.note.trim(),
       })),
       hoursHeading: values.hoursHeading.trim(),
+      complianceText: values.complianceText.trim(),
       hoursRows: values.hoursRows.map((row) => ({
         days: row.days.trim(),
         hours: row.hours.trim(),
@@ -3841,10 +3852,6 @@ export function ContactInquirySectionForm({
         <label>
           Title
           <input {...register("heroTitle", { required: true })} />
-        </label>
-        <label>
-          Side copy
-          <textarea rows={3} {...register("heroSideCopy", { required: true })} />
         </label>
       </div>
 
@@ -3899,11 +3906,11 @@ export function ContactInquirySectionForm({
           <textarea rows={4} {...register("inquiryOptionsText")} />
         </label>
         <label>
-          Summary label
+          Message label
           <input {...register("messageLabel", { required: true })} />
         </label>
         <label>
-          Summary placeholder
+          Message placeholder
           <textarea rows={2} {...register("messagePlaceholder", { required: true })} />
         </label>
         <label>
@@ -3917,9 +3924,9 @@ export function ContactInquirySectionForm({
       </div>
 
       <div className="admin-section-group">
-        <h4>Global Headquarters</h4>
+        <h4>Direct contact (left column)</h4>
         <label>
-          Section heading
+          Card heading
           <input {...register("hqHeading", { required: true })} />
         </label>
         {hqFields.map((field, index) => (
@@ -3944,8 +3951,16 @@ export function ContactInquirySectionForm({
               />
             </div>
             <label>
+              Label (e.g. EMERGENCY LINE)
+              <input {...register(`hqContacts.${index}.label`)} />
+            </label>
+            <label>
               Value
               <textarea rows={2} {...register(`hqContacts.${index}.value`, { required: true })} />
+            </label>
+            <label>
+              Note (optional, e.g. 24/7 support line)
+              <input {...register(`hqContacts.${index}.note`)} />
             </label>
             <button type="button" onClick={() => removeHq(index)} disabled={hqFields.length === 1}>
               Remove
@@ -3955,66 +3970,36 @@ export function ContactInquirySectionForm({
         <button
           type="button"
           className="admin-button-secondary"
-          onClick={() => appendHq({ icon: "location", value: "" })}
+          onClick={() => appendHq({ icon: "phone", label: "", value: "", note: "" })}
         >
           Add contact line
         </button>
       </div>
 
       <div className="admin-section-group">
-        <h4>Institutional Hours</h4>
+        <h4>Regulatory compliance card</h4>
         <label>
-          Section heading
+          Card heading
           <input {...register("hoursHeading", { required: true })} />
         </label>
-        {hoursFields.map((field, index) => (
-          <div
-            key={field.id}
-            style={{
-              marginBottom: 16,
-              padding: 16,
-              border: "1px solid #e2e8f0",
-              borderRadius: 12,
-            }}
-          >
-            <label>
-              Days
-              <input {...register(`hoursRows.${index}.days`, { required: true })} />
-            </label>
-            <label>
-              Hours
-              <input {...register(`hoursRows.${index}.hours`, { required: true })} />
-            </label>
-            <button
-              type="button"
-              onClick={() => removeHours(index)}
-              disabled={hoursFields.length === 1}
-            >
-              Remove
-            </button>
-          </div>
-        ))}
-        <button
-          type="button"
-          className="admin-button-secondary"
-          onClick={() => appendHours({ days: "", hours: "" })}
-        >
-          Add hours row
-        </button>
+        <label>
+          Body text
+          <textarea rows={4} {...register("complianceText", { required: true })} />
+        </label>
       </div>
 
       <div className="admin-section-group">
-        <h4>Location Matrix</h4>
+        <h4>Map &amp; headquarters</h4>
         <label>
-          Label
+          Card title (e.g. Dubai Headquarters)
           <input {...register("matrixLabel", { required: true })} />
         </label>
         <label>
-          Title
+          Address line 1
           <input {...register("matrixTitle", { required: true })} />
         </label>
         <label>
-          Subtitle
+          Address line 2
           <input {...register("matrixSubtitle", { required: true })} />
         </label>
         <input type="hidden" {...register("matrixMapImage", { required: true })} />

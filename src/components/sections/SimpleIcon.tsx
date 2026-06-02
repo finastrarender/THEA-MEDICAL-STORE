@@ -25,14 +25,16 @@ export type SimpleIconName =
   | "tokenize"
   | "architecture"
   | "compass"
-  | "right-arrow";
+  | "right-arrow"
+  | "clock";
 
 /** Icons available for contact HQ lines and other SimpleIcon consumers. */
 export const SIMPLE_ICON_OPTIONS: ReadonlyArray<{ key: SimpleIconName; label: string }> = [
   { key: "location", label: "Location" },
   { key: "mail", label: "Email" },
   { key: "phone", label: "Phone" },
-  { key: "spark", label: "Spark" },
+  { key: "clock", label: "Clock / hours" },
+  { key: "spark", label: "Spark / emergency" },
   { key: "check", label: "Check" },
   { key: "shield", label: "Shield" },
   { key: "security", label: "Security" },
@@ -319,6 +321,27 @@ export default function SimpleIcon({
             fill="none"
             stroke="currentColor"
             strokeWidth="1.5"
+            strokeLinejoin="round"
+          />
+        </svg>
+      );
+    case "clock":
+      return (
+        <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
+          <circle
+            cx="12"
+            cy="12"
+            r="9"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.75"
+          />
+          <path
+            d="M12 7v5l3 2"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinecap="round"
             strokeLinejoin="round"
           />
         </svg>
