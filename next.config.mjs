@@ -1,0 +1,24 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  serverExternalPackages: ["mongoose"],
+  turbopack: {
+    root: __dirname,
+  },
+  /**
+   * next-auth/react still reads NEXTAUTH_URL in the client bundle. Mirror AUTH_URL so
+   * session/csrf requests stay aligned and avoid ClientFetchError from wrong origins.
+   */
+  env: {
+    NEXTAUTH_URL:
+      process.env.AUTH_URL || process.env.NEXTAUTH_URL || "http://localhost:3000",
+  },
+};
+
+export default nextConfig;
+
