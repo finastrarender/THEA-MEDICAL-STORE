@@ -244,7 +244,7 @@ export default function ContactInquirySection({ content }: { content: ContactInq
                         ) : (
                           <span className="cx-contact__hq-value">{item.value}</span>
                         )}
-                        {item.note ? (
+                        {"note" in item && item.note ? (
                           <span className="cx-contact__hq-note">{item.note}</span>
                         ) : null}
                       </div>

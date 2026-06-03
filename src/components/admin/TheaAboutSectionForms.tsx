@@ -491,6 +491,22 @@ type InquiryContact = {
   note?: string;
 };
 
+type AboutInquiryFormValues = {
+  title: string;
+  description: string;
+  submitLabel: string;
+  contactCardTitle: string;
+  requestOptions: string[];
+  contacts: InquiryContact[];
+  map: {
+    title: string;
+    subtitle: string;
+    mapImage?: string;
+    linkHref?: string;
+  };
+  formFields: Record<string, string>;
+};
+
 export function AboutInquirySectionForm({
   section,
   onSave,
@@ -498,8 +514,10 @@ export function AboutInquirySectionForm({
   saveMessage,
   saveMessageTone,
 }: SectionFormProps) {
-  const defaultValues = useMemo(
-    () => ({
+  const defaultValues = useMemo((): AboutInquiryFormValues => {
+    const mapData = section.data.map as AboutInquiryFormValues["map"] | undefined;
+    const formFieldsData = section.data.formFields as Record<string, string> | undefined;
+    return {
       title: (section.data.title as string) ?? theaAboutInquiryDefaults.title,
       description: (section.data.description as string) ?? theaAboutInquiryDefaults.description,
       submitLabel: (section.data.submitLabel as string) ?? theaAboutInquiryDefaults.submitLabel,
@@ -508,33 +526,32 @@ export function AboutInquirySectionForm({
       requestOptions:
         ((section.data.requestOptions as string[]) ?? []).length > 0
           ? (section.data.requestOptions as string[])
-          : theaAboutInquiryDefaults.requestOptions,
+          : [...theaAboutInquiryDefaults.requestOptions],
       contacts:
         ((section.data.contacts as InquiryContact[]) ?? []).length > 0
           ? (section.data.contacts as InquiryContact[])
-          : theaAboutInquiryDefaults.contacts,
+          : theaAboutInquiryDefaults.contacts.map((c) => ({ ...c })),
       map: {
         ...theaAboutInquiryDefaults.map,
-        ...(section.data.map as Record<string, string> | undefined),
+        ...mapData,
       },
       formFields: {
         ...theaAboutInquiryDefaults.formFields,
-        ...(section.data.formFields as Record<string, string> | undefined),
+        ...formFieldsData,
       },
-    }),
-    [section.data],
-  );
+    };
+  }, [section.data]);
 
   const { register, setValue, watch, control, handleSubmit, formState: { isSubmitting } } =
-    useForm({ defaultValues });
-  const { fields: contactFields } = useFieldArray({ control, name: "contacts" });
-  const { fields: optionFields, append: appendOption, remove: removeOption } = useFieldArray({
+    useForm<AboutInquiryFormValues>({ defaultValues });
+  const { fields: contactFields } = useFieldArray<AboutInquiryFormValues, "contacts">({
     control,
-    name: "requestOptions",
+    name: "contacts",
   });
+  const requestOptions = watch("requestOptions");
   const mapImage = watch("map.mapImage");
 
-  function handleValid(values: typeof defaultValues) {
+  function handleValid(values: AboutInquiryFormValues) {
     onSave({
       title: values.title,
       description: values.description,
@@ -623,15 +640,31 @@ export function AboutInquirySectionForm({
       </label>
 
       <h4>Request type options</h4>
-      {optionFields.map((field, index) => (
-        <div key={field.id} style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+      {requestOptions.map((_, index) => (
+        <div key={`request-option-${index}`} style={{ display: "flex", gap: 8, marginBottom: 8 }}>
           <input {...register(`requestOptions.${index}`, { required: true })} style={{ flex: 1 }} />
-          <button type="button" onClick={() => removeOption(index)}>
+          <button
+            type="button"
+            onClick={() =>
+              setValue(
+                "requestOptions",
+                requestOptions.filter((_, i) => i !== index),
+                { shouldDirty: true },
+              )
+            }
+            disabled={requestOptions.length <= 1}
+          >
             Remove
           </button>
         </div>
       ))}
-      <button type="button" onClick={() => appendOption("New option")} style={{ marginBottom: 16 }}>
+      <button
+        type="button"
+        onClick={() =>
+          setValue("requestOptions", [...requestOptions, "New option"], { shouldDirty: true })
+        }
+        style={{ marginBottom: 16 }}
+      >
         Add request type
       </button>
 
