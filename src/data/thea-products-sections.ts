@@ -9,6 +9,7 @@ export const theaProductsCatalogShowcaseDefaults = {
     description:
       "Comprehensive range of life-saving medications and specialized clinical treatments under stringent quality controls.",
     linkLabel: "Explore",
+    linkHref: "/pharmaceutical-medicines",
     image: "",
   },
   equipment: {
@@ -28,6 +29,7 @@ export const theaProductsCatalogShowcaseDefaults = {
     description:
       "High-volume essential supplies supporting day-to-day patient care and clinical hygiene.",
     linkLabel: "Stock Availability",
+    linkHref: "/pharmaceutical-medicines",
     image: "",
   },
   secondaryBanner: {
@@ -43,6 +45,51 @@ export const theaProductsCatalogShowcaseDefaults = {
       "Every product in our catalog adheres to MOH regulatory frameworks and international safety standards.",
     certifications: ["ISO 9001:2015", "GMP CERTIFIED", "MOH LICENSED"],
   },
+};
+
+export const PHARMACEUTICAL_MEDICINES_LISTING_PATH = "/pharmaceutical-medicines";
+
+/** Product grid for the pharmaceutical medicines listing page. */
+export const theaPharmaceuticalMedicinesCatalogDefaults = {
+  title: "Pharmaceutical Medicines",
+  description:
+    "Browse our MOHAP-licensed catalog of essential pharmaceuticals, specialty treatments, and clinical formulations for healthcare providers across the UAE.",
+  filters: [
+    { id: "all", label: "All Medicines" },
+    { id: "general", label: "General Medicine" },
+    { id: "specialty", label: "Specialty Care" },
+    { id: "critical", label: "Critical Care" },
+  ],
+  products: [
+    {
+      title: "Antibiotic Formulations",
+      category: "General Medicine",
+      filterId: "general",
+      image: "",
+      href: "",
+    },
+    {
+      title: "Cardiovascular Agents",
+      category: "Specialty Care",
+      filterId: "specialty",
+      image: "",
+      href: "",
+    },
+    {
+      title: "Analgesics & Anti-inflammatories",
+      category: "General Medicine",
+      filterId: "general",
+      image: "",
+      href: "",
+    },
+    {
+      title: "Critical Care Infusions",
+      category: "Critical Care",
+      filterId: "critical",
+      image: "",
+      href: "",
+    },
+  ],
 };
 
 export const theaProductsFooterDefaults = {

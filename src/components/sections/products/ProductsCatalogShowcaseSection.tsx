@@ -1,6 +1,10 @@
+import Link from "next/link";
 import type { z } from "zod";
 import type { productsCatalogShowcaseDataSchema } from "@/schemas/sections";
-import { theaProductsCatalogShowcaseDefaults } from "@/data/thea-products-sections";
+import {
+  PHARMACEUTICAL_MEDICINES_LISTING_PATH,
+  theaProductsCatalogShowcaseDefaults,
+} from "@/data/thea-products-sections";
 
 type Content = z.infer<typeof productsCatalogShowcaseDataSchema>;
 
@@ -36,6 +40,14 @@ export default function ProductsCatalogShowcaseSection({ content }: { content: C
   const consumables = content.consumables ?? fallback.consumables;
   const secondaryBanner = content.secondaryBanner ?? fallback.secondaryBanner;
   const quality = content.quality ?? fallback.quality;
+  const featuredHref =
+    featured.linkHref?.trim() ||
+    fallback.featured.linkHref ||
+    PHARMACEUTICAL_MEDICINES_LISTING_PATH;
+  const consumablesHref =
+    consumables.linkHref?.trim() ||
+    fallback.consumables.linkHref ||
+    PHARMACEUTICAL_MEDICINES_LISTING_PATH;
 
   return (
     <section className="thea-products-showcase">
@@ -60,9 +72,9 @@ export default function ProductsCatalogShowcaseSection({ content }: { content: C
             <div className="thea-products-showcase__body">
               <h3>{featured.title}</h3>
               <p>{featured.description}</p>
-              <span className="thea-products-showcase__link">
+              <Link href={featuredHref} className="thea-products-showcase__link">
                 {featured.linkLabel} <ArrowIcon className="thea-products-showcase__link-icon" />
-              </span>
+              </Link>
             </div>
           </article>
 
@@ -106,9 +118,9 @@ export default function ProductsCatalogShowcaseSection({ content }: { content: C
             <div className="thea-products-showcase__body">
               <h3>{consumables.title}</h3>
               <p>{consumables.description}</p>
-              <span className="thea-products-showcase__link">
+              <Link href={consumablesHref} className="thea-products-showcase__link">
                 {consumables.linkLabel} <ArrowIcon className="thea-products-showcase__link-icon" />
-              </span>
+              </Link>
             </div>
           </article>
         </div>

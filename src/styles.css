@@ -19026,6 +19026,13 @@ a.cx-contact__hq-value:focus-visible {
   font-size: 11px;
   font-weight: 700;
   color: var(--thea-prod-blue);
+  text-decoration: none;
+}
+
+.cx-site .thea-products-showcase__link:hover,
+.cx-site .thea-products-showcase__link:focus-visible {
+  text-decoration: none;
+  opacity: 0.85;
 }
 
 .cx-site .thea-products-showcase__link-icon {

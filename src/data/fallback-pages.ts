@@ -36,6 +36,7 @@ import {
   theaClientsTrustedByDefaults,
 } from "@/data/thea-clients-sections";
 import {
+  theaPharmaceuticalMedicinesCatalogDefaults,
   theaProductsCatalogShowcaseDefaults,
   theaProductsFooterDefaults,
 } from "@/data/thea-products-sections";
@@ -379,6 +380,23 @@ const FALLBACK_BY_SLUG: Record<string, PublicPageView> = {
       "Clinical-grade pharmaceutical products, medical equipment, surgical supplies, and consumables curated for healthcare providers.",
     effectiveSections: sections("products", [
       { type: "productsCatalogShowcase", order: 0, data: theaProductsCatalogShowcaseDefaults },
+      { type: "productsFooter", order: 1, data: theaProductsFooterDefaults },
+    ]),
+    isPreview: false,
+  },
+  "pharmaceutical-medicines": {
+    slug: "pharmaceutical-medicines",
+    title: "Pharmaceutical Medicines",
+    status: "published",
+    seoTitle: "Pharmaceutical Medicines | THEA Medical Store",
+    seoDescription:
+      "Browse THEA Medical Store’s licensed pharmaceutical medicines catalog — essential generics, specialty treatments, and critical care formulations.",
+    effectiveSections: sections("pharmaceutical-medicines", [
+      {
+        type: "servicesProductCatalog",
+        order: 0,
+        data: theaPharmaceuticalMedicinesCatalogDefaults,
+      },
       { type: "productsFooter", order: 1, data: theaProductsFooterDefaults },
     ]),
     isPreview: false,

@@ -116,6 +116,11 @@ export const defaultPageSeoBySlug: Record<
     seoDescription:
       "Clinical-grade pharmaceutical products, medical equipment, surgical supplies, and consumables curated for healthcare providers.",
   },
+  "pharmaceutical-medicines": {
+    seoTitle: "Pharmaceutical Medicines | THEA Medical Store",
+    seoDescription:
+      "Browse THEA Medical Store’s licensed pharmaceutical medicines catalog — essential generics, specialty treatments, and critical care formulations.",
+  },
   clients: {
     seoTitle: "Clients | THEA Medical Store",
     seoDescription:

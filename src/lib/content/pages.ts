@@ -74,6 +74,10 @@ function pageToPublicView(
             ? {
                 productsCatalogShowcase: 0,
               }
+            : page.slug === "pharmaceutical-medicines"
+              ? {
+                  servicesProductCatalog: 0,
+                }
           : page.slug === "clients"
             ? {
                 clientsPageHero: 0,

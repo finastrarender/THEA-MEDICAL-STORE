@@ -54,6 +54,7 @@ import {
   theaClientsTrustedByDefaults,
 } from "../src/data/thea-clients-sections";
 import {
+  theaPharmaceuticalMedicinesCatalogDefaults,
   theaProductsCatalogShowcaseDefaults,
   theaProductsFooterDefaults,
 } from "../src/data/thea-products-sections";
@@ -760,6 +761,11 @@ const productsPageSections = [
   section("productsFooter", 1, theaProductsFooterDefaults),
 ];
 
+const pharmaceuticalMedicinesPageSections = [
+  section("servicesProductCatalog", 0, theaPharmaceuticalMedicinesCatalogDefaults),
+  section("productsFooter", 1, theaProductsFooterDefaults),
+];
+
 const projectsPartnersData = {
   formTitle: "Connect with our Partners",
   submitLabel: "SEND INQUIRY",
@@ -864,6 +870,12 @@ const pages = [
       title: "Products",
       sections: productsPageSections,
       ...defaultPageSeoBySlug.products,
+    },
+    {
+      slug: "pharmaceutical-medicines",
+      title: "Pharmaceutical Medicines",
+      sections: pharmaceuticalMedicinesPageSections,
+      ...defaultPageSeoBySlug["pharmaceutical-medicines"],
     },
     {
       slug: "projects",

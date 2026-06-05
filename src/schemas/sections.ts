@@ -584,6 +584,7 @@ export const productsCatalogShowcaseDataSchema = z.object({
   description: z.string(),
   featured: productsCardSchema.extend({
     linkLabel: z.string(),
+    linkHref: z.string().optional(),
   }),
   equipment: productsCardSchema.extend({
     buttonLabel: z.string(),
@@ -591,6 +592,7 @@ export const productsCatalogShowcaseDataSchema = z.object({
   surgical: productsCardSchema,
   consumables: productsCardSchema.extend({
     linkLabel: z.string(),
+    linkHref: z.string().optional(),
   }),
   secondaryBanner: z.object({
     title: z.string(),
