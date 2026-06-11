@@ -154,6 +154,7 @@ const PAGE_SECTION_TYPES: Record<string, SectionType[]> = {
     "clientsPartnerCta",
   ],
   products: ["productsCatalogShowcase"],
+  "product-detail": ["servicesProductCatalog", "productsFooter"],
   contact: ["contactInquiry"],
   projects: ["projectsHero", "projectsGrid", "projectsIntegrity", "projectsPartners"],
 };

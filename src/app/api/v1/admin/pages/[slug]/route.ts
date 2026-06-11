@@ -187,7 +187,8 @@ export async function GET(_request: Request, context: RouteContext) {
   if (!session?.user?.id) {
     return jsonError("unauthorized", "Sign in required", 401);
   }
-  const { slug } = await context.params;
+  const { slug: rawSlug } = await context.params;
+  const slug = rawSlug.toLowerCase();
   await connectMongo();
 
   if (slug === "home") {
@@ -246,7 +247,8 @@ export async function PATCH(request: Request, context: RouteContext) {
   if (!session?.user?.id) {
     return jsonError("unauthorized", "Sign in required", 401);
   }
-  const { slug } = await context.params;
+  const { slug: rawSlug } = await context.params;
+  const slug = rawSlug.toLowerCase();
   let body: unknown;
   try {
     body = await request.json();

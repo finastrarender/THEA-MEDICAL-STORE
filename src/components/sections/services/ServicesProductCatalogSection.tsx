@@ -1,6 +1,7 @@
 import type { z } from "zod";
 import type { servicesProductCatalogDataSchema } from "@/schemas/sections";
 import { theaServicesProductCatalogDefaults } from "@/data/thea-services-sections";
+import { theaPharmaceuticalMedicinesCatalogDefaults } from "@/data/thea-products-sections";
 
 type Content = z.infer<typeof servicesProductCatalogDataSchema>;
 
@@ -35,7 +36,9 @@ export default function ServicesProductCatalogSection({ content }: { content: Co
   const products =
     content.products?.length > 0
       ? content.products
-      : theaServicesProductCatalogDefaults.products;
+      : theaPharmaceuticalMedicinesCatalogDefaults.products.some(p => filters.some(f => f.id === p.filterId))
+        ? theaPharmaceuticalMedicinesCatalogDefaults.products 
+        : theaServicesProductCatalogDefaults.products;
 
   const defaultFilterId =
     filters.find((f) => f.id === "all")?.id ?? filters[0]?.id ?? "all";
@@ -101,9 +104,9 @@ export default function ServicesProductCatalogSection({ content }: { content: Co
 
         <div className="thea-services-catalog__grid">
           {products.map((product) => {
-            const defaultProduct = theaServicesProductCatalogDefaults.products.find(
-              (p) => p.title === product.title,
-            );
+            const defaultProduct =
+              theaServicesProductCatalogDefaults.products.find((p) => p.title === product.title) ||
+              theaPharmaceuticalMedicinesCatalogDefaults.products.find((p) => p.title === product.title);
             const image = product.image?.trim() || defaultProduct?.image || "";
             const href = product.href?.trim();
             const filterId = product.filterId || "all";

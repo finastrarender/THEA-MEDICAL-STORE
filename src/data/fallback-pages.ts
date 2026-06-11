@@ -384,14 +384,14 @@ const FALLBACK_BY_SLUG: Record<string, PublicPageView> = {
     ]),
     isPreview: false,
   },
-  "pharmaceutical-medicines": {
-    slug: "pharmaceutical-medicines",
-    title: "Pharmaceutical Medicines",
+  "product-detail": {
+    slug: "product-detail",
+    title: "Product Detail",
     status: "published",
-    seoTitle: "Pharmaceutical Medicines | THEA Medical Store",
+    seoTitle: "Product Detail | THEA Medical Store",
     seoDescription:
       "Browse THEA Medical Store’s licensed pharmaceutical medicines catalog — essential generics, specialty treatments, and critical care formulations.",
-    effectiveSections: sections("pharmaceutical-medicines", [
+    effectiveSections: sections("product-detail", [
       {
         type: "servicesProductCatalog",
         order: 0,

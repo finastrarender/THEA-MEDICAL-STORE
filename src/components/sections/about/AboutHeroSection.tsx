@@ -27,8 +27,8 @@ export default function AboutHeroSection({ content }: { content: AboutHeroConten
           <div className="thea-about-hero__copy">
             <p className="thea-about-hero__eyebrow">{eyebrow}</p>
             <h1 className="thea-about-hero__title">
-              {titleLead}
-              <span className="thea-about-hero__title-highlight">{titleHighlight}</span>
+              {titleLead}{' '}
+              <span className="thea-about-hero__title-highlight">{titleHighlight}</span>{' '}
               {titleAfter}
             </h1>
             <p className="thea-about-hero__description">{description}</p>

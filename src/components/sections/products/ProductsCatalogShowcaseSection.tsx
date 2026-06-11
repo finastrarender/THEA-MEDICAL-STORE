@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { z } from "zod";
 import type { productsCatalogShowcaseDataSchema } from "@/schemas/sections";
 import {
-  PHARMACEUTICAL_MEDICINES_LISTING_PATH,
+  PRODUCT_DETAIL_PATH,
   theaProductsCatalogShowcaseDefaults,
 } from "@/data/thea-products-sections";
 
@@ -43,11 +43,12 @@ export default function ProductsCatalogShowcaseSection({ content }: { content: C
   const featuredHref =
     featured.linkHref?.trim() ||
     fallback.featured.linkHref ||
-    PHARMACEUTICAL_MEDICINES_LISTING_PATH;
+    PRODUCT_DETAIL_PATH;
   const consumablesHref =
     consumables.linkHref?.trim() ||
     fallback.consumables.linkHref ||
-    PHARMACEUTICAL_MEDICINES_LISTING_PATH;
+    PRODUCT_DETAIL_PATH;
+  const equipmentHref = PRODUCT_DETAIL_PATH;
 
   return (
     <section className="thea-products-showcase">
@@ -89,7 +90,9 @@ export default function ProductsCatalogShowcaseSection({ content }: { content: C
             <div className="thea-products-showcase__body">
               <h3>{equipment.title}</h3>
               <p>{equipment.description}</p>
-              <button type="button">{equipment.buttonLabel}</button>
+              <Link href={equipmentHref} className="thea-products-showcase__button-link">
+                {equipment.buttonLabel}
+              </Link>
             </div>
           </article>
 

@@ -12,7 +12,8 @@ export async function POST(_request: Request, context: RouteContext) {
   if (!session?.user?.id) {
     return jsonError("unauthorized", "Sign in required", 401);
   }
-  const { slug } = await context.params;
+  const { slug: rawSlug } = await context.params;
+  const slug = rawSlug.toLowerCase();
   await connectMongo();
   const page = await Page.findOne({ slug });
   if (!page) {

@@ -9,7 +9,7 @@ export const theaProductsCatalogShowcaseDefaults = {
     description:
       "Comprehensive range of life-saving medications and specialized clinical treatments under stringent quality controls.",
     linkLabel: "Explore",
-    linkHref: "/pharmaceutical-medicines",
+    linkHref: "/product-detail",
     image: "",
   },
   equipment: {
@@ -29,7 +29,7 @@ export const theaProductsCatalogShowcaseDefaults = {
     description:
       "High-volume essential supplies supporting day-to-day patient care and clinical hygiene.",
     linkLabel: "Stock Availability",
-    linkHref: "/pharmaceutical-medicines",
+    linkHref: "/product-detail",
     image: "",
   },
   secondaryBanner: {
@@ -47,11 +47,11 @@ export const theaProductsCatalogShowcaseDefaults = {
   },
 };
 
-export const PHARMACEUTICAL_MEDICINES_LISTING_PATH = "/pharmaceutical-medicines";
+export const PRODUCT_DETAIL_PATH = "/product-detail";
 
 /** Product grid for the pharmaceutical medicines listing page. */
 export const theaPharmaceuticalMedicinesCatalogDefaults = {
-  title: "Pharmaceutical Medicines",
+  title: "Product Detail",
   description:
     "Browse our MOHAP-licensed catalog of essential pharmaceuticals, specialty treatments, and clinical formulations for healthcare providers across the UAE.",
   filters: [
@@ -65,28 +65,28 @@ export const theaPharmaceuticalMedicinesCatalogDefaults = {
       title: "Antibiotic Formulations",
       category: "General Medicine",
       filterId: "general",
-      image: "",
+      image: "/products/antibiotics.png",
       href: "",
     },
     {
       title: "Cardiovascular Agents",
       category: "Specialty Care",
       filterId: "specialty",
-      image: "",
+      image: "/products/cardiovascular.png",
       href: "",
     },
     {
       title: "Analgesics & Anti-inflammatories",
       category: "General Medicine",
       filterId: "general",
-      image: "",
+      image: "/products/analgesics.png",
       href: "",
     },
     {
       title: "Critical Care Infusions",
       category: "Critical Care",
       filterId: "critical",
-      image: "",
+      image: "/products/critical-care.png",
       href: "",
     },
   ],

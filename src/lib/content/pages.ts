@@ -6,6 +6,23 @@ import { connectMongo } from "@/lib/mongoose";
 import Page from "@/models/Page";
 import type { PageSection } from "@/types/section";
 
+function normalizeSectionType(value: string) {
+  const trimmed = String(value).trim();
+  if (trimmed === "aboutIntro") return "aboutOverview";
+  if (trimmed === "industrieshero") return "industriesHero";
+  if (trimmed === "industriesgrid") return "industriesGrid";
+  if (trimmed === "industriescta") return "industriesCta";
+  if (trimmed === "servicesgrid") return "servicesGrid";
+  if (trimmed === "servicesaccordion") return "servicesAccordion";
+  if (trimmed === "servicescta") return "servicesCTA";
+  if (trimmed === "serviceslicensing") return "servicesLicensing";
+  if (trimmed === "projectshero") return "projectsHero";
+  if (trimmed === "projectsgrid") return "projectsGrid";
+  if (trimmed === "projectsintegrity") return "projectsIntegrity";
+  if (trimmed === "projectspartners") return "projectsPartners";
+  return trimmed;
+}
+
 export type PublicPageView = {
   slug: string;
   title: string;
@@ -74,9 +91,10 @@ function pageToPublicView(
             ? {
                 productsCatalogShowcase: 0,
               }
-            : page.slug === "pharmaceutical-medicines"
+            : page.slug === "product-detail"
               ? {
                   servicesProductCatalog: 0,
+                  productsFooter: 1,
                 }
           : page.slug === "clients"
             ? {
@@ -91,12 +109,12 @@ function pageToPublicView(
   if (slugOrder) {
     const orderMap = slugOrder as unknown as Record<string, number>;
     effectiveSections = effectiveSections
-      .filter((s) => orderMap[String(s.type)] !== undefined)
       .map((s) => {
-        const t = String(s.type);
-        if (s.order === orderMap[t]) return s;
-        return { ...s, order: orderMap[t] };
+        const t = normalizeSectionType(String(s.type));
+        if (orderMap[t] === undefined) return null;
+        return { ...s, type: t, order: orderMap[t] };
       })
+      .filter((s): s is PageSection => s !== null)
       .sort((a, b) => a.order - b.order);
   }
   return {
@@ -148,7 +166,8 @@ export async function getPageDraftView(slug: string): Promise<PublicPageView | n
   return pageToPublicView(page, { published: false, isPreview: true });
 }
 
-export async function resolvePageForRequest(slug: string): Promise<PublicPageView | null> {
+export async function resolvePageForRequest(slugIn: string): Promise<PublicPageView | null> {
+  const slug = slugIn.toLowerCase();
   const { isEnabled } = await draftMode();
   if (isEnabled) {
     const d = await getPageDraftView(slug);

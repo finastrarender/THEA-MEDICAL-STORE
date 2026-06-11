@@ -80,18 +80,19 @@ body {
 .cx-site .site-header--institutional {
   --cx-header-navy: #1E3A8A;
   --cx-header-nav: #5c6778;
-  position: relative;
-  top: auto;
-  left: auto;
-  right: auto;
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
   width: 100%;
-  z-index: 30;
+  z-index: 100;
   flex-shrink: 0;
   padding: 0;
-  background: #ffffff;
-  border-top: none;
-  border-bottom: none;
-  box-shadow: none;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
 }
 
 .cx-site .site-header__shell {
@@ -19040,7 +19041,11 @@ a.cx-contact__hq-value:focus-visible {
   height: 14px;
 }
 
-.cx-site .thea-products-showcase__card--equipment button {
+.cx-site .thea-products-showcase__card--equipment .thea-products-showcase__button-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
   margin-top: 14px;
   width: 100%;
   border: none;
@@ -19053,6 +19058,7 @@ a.cx-contact__hq-value:focus-visible {
   text-transform: uppercase;
   color: #0f4b86;
   background: #ffffff;
+  box-sizing: border-box;
 }
 
 .cx-site .thea-products-showcase__banner {

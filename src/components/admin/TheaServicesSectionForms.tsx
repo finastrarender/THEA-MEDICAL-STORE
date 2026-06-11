@@ -18,6 +18,7 @@ import {
   theaServicesSpecializedDefaults,
   theaServicesFooterDefaults,
 } from "@/data/thea-services-sections";
+import { theaPharmaceuticalMedicinesCatalogDefaults } from "@/data/thea-products-sections";
 
 type SectionFormProps = {
   section: { id: string; type: string; order: number; data: Record<string, unknown> };
@@ -365,21 +366,39 @@ export function ServicesProductCatalogSectionForm({
   saveMessageTone,
 }: SectionFormProps) {
   const defaultValues = useMemo(
-    () => ({
-      title: (section.data.title as string) ?? theaServicesProductCatalogDefaults.title,
-      description:
-        (section.data.description as string) ?? theaServicesProductCatalogDefaults.description,
-      filters:
-        ((section.data.filters as typeof theaServicesProductCatalogDefaults.filters) ?? [])
-          .length > 0
-          ? (section.data.filters as typeof theaServicesProductCatalogDefaults.filters)
-          : theaServicesProductCatalogDefaults.filters,
-      products:
-        ((section.data.products as typeof theaServicesProductCatalogDefaults.products) ?? [])
-          .length > 0
-          ? (section.data.products as typeof theaServicesProductCatalogDefaults.products)
-          : theaServicesProductCatalogDefaults.products,
-    }),
+    () => {
+      const dataProducts = (section.data.products as any[]) ?? [];
+      const isPharma = dataProducts.some((p) =>
+        theaPharmaceuticalMedicinesCatalogDefaults.products.some((dp) => dp.title === p.title)
+      );
+
+      const productsDefault = isPharma
+        ? theaPharmaceuticalMedicinesCatalogDefaults.products
+        : theaServicesProductCatalogDefaults.products;
+
+      const filtersDefault = isPharma
+        ? theaPharmaceuticalMedicinesCatalogDefaults.filters
+        : theaServicesProductCatalogDefaults.filters;
+
+      const titleDefault = isPharma
+        ? theaPharmaceuticalMedicinesCatalogDefaults.title
+        : theaServicesProductCatalogDefaults.title;
+
+      const descDefault = isPharma
+        ? theaPharmaceuticalMedicinesCatalogDefaults.description
+        : theaServicesProductCatalogDefaults.description;
+
+      return {
+        title: (section.data.title as string) ?? titleDefault,
+        description: (section.data.description as string) ?? descDefault,
+        filters:
+          ((section.data.filters as typeof theaServicesProductCatalogDefaults.filters) ?? [])
+            .length > 0
+            ? (section.data.filters as typeof theaServicesProductCatalogDefaults.filters)
+            : filtersDefault,
+        products: dataProducts.length > 0 ? dataProducts : productsDefault,
+      };
+    },
     [section.data],
   );
 

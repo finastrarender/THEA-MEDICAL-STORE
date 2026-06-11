@@ -52,10 +52,10 @@ export default function ClientsPageHeroSection({ content }: { content: Content }
         <div className="thea-clients-hero__copy">
           <p className="thea-clients-hero__badge">{badge}</p>
           <h1 className="thea-clients-hero__title">
-            <span className="thea-clients-hero__title-line">{titleLead}</span>
+            <span className="thea-clients-hero__title-line">{titleLead}</span>{' '}
             <span className="thea-clients-hero__title-line thea-clients-hero__title-line--accent">
               {titleHighlight}
-            </span>
+            </span>{' '}
             <span className="thea-clients-hero__title-line">{titleAfter}</span>
           </h1>
           <p className="thea-clients-hero__description">{description}</p>

@@ -872,10 +872,10 @@ const pages = [
       ...defaultPageSeoBySlug.products,
     },
     {
-      slug: "pharmaceutical-medicines",
-      title: "Pharmaceutical Medicines",
+      slug: "product-detail",
+      title: "Product Detail",
       sections: pharmaceuticalMedicinesPageSections,
-      ...defaultPageSeoBySlug["pharmaceutical-medicines"],
+      ...defaultPageSeoBySlug["product-detail"],
     },
     {
       slug: "projects",
@@ -892,7 +892,7 @@ const pages = [
   ];
 
   await Page.deleteMany({
-    slug: { $nin: ["home", "about", "services", "products", "clients", "projects", "contact"] },
+    slug: { $nin: ["home", "about", "services", "products", "clients", "projects", "contact", "product-detail"] },
   });
   console.log("Removed non-core pages from DB");
 
