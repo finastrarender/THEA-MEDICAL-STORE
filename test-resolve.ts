@@ -4,7 +4,7 @@ dotenv.config({ path: ".env.local", override: true });
 import { resolvePageForRequest } from "./src/lib/content/pages";
 
 async function testResolve() {
-  process.env.NODE_ENV = "production"; // Force production check
+  Object.assign(process.env, { NODE_ENV: "production" }); // Force production check
   console.log("Testing resolvePageForRequest('product-detail')...");
   try {
     const page = await resolvePageForRequest("product-detail");

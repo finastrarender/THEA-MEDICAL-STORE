@@ -3,6 +3,13 @@ dotenv.config({ path: ".env" });
 dotenv.config({ path: ".env.local", override: true });
 import mongoose from "mongoose";
 
+type DiagnosticSection = {
+  type?: string;
+  data?: {
+    products?: unknown[];
+  };
+};
+
 // Minimal Page model for diagnosis
 const sectionSchema = new mongoose.Schema({
   id: String,
@@ -34,15 +41,18 @@ async function diagnose() {
   } else {
     console.log("product-detail FOUND");
     console.log("Status:", page.status);
-    
-    const catalog = page.sections.find(s => s.type === "servicesProductCatalog" || s.type === "servicesproductcatalog");
-    const pubCatalog = page.publishedSections.find(s => s.type === "servicesProductCatalog" || s.type === "servicesproductcatalog");
+
+    const isCatalogSection = (s: DiagnosticSection) =>
+      s.type === "servicesProductCatalog" || s.type === "servicesproductcatalog";
+
+    const catalog = (page.sections as DiagnosticSection[]).find(isCatalogSection);
+    const pubCatalog = (page.publishedSections as DiagnosticSection[]).find(isCatalogSection);
     
     if (catalog) {
-       console.log("Draft Products (first 1):", JSON.stringify(catalog.data.products?.slice(0, 1), null, 2));
+       console.log("Draft Products (first 1):", JSON.stringify(catalog.data?.products?.slice(0, 1), null, 2));
     }
     if (pubCatalog) {
-       console.log("Published Products (first 1):", JSON.stringify(pubCatalog.data.products?.slice(0, 1), null, 2));
+       console.log("Published Products (first 1):", JSON.stringify(pubCatalog.data?.products?.slice(0, 1), null, 2));
     }
   }
   
