@@ -113,6 +113,17 @@ import {
 import { SECTION_TYPES, type SectionType } from "@/types/section";
 
 type SectionRow = { id: string; type: string; order: number; data: Record<string, unknown> };
+type InquiryRow = {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  company?: string;
+  inquiryType?: string;
+  sourcePage?: string;
+  message: string;
+  createdAt?: string;
+};
 type SectionSaveState = {
   sectionId: string;
   message: string;
@@ -627,6 +638,9 @@ export default function PageEditClient({ slug }: { slug: string }) {
   const [sectionSaveState, setSectionSaveState] = useState<SectionSaveState>(null);
   const [publishing, setPublishing] = useState(false);
   const [newSectionType, setNewSectionType] = useState<SectionType>("hero");
+  const [inquiries, setInquiries] = useState<InquiryRow[]>([]);
+  const [inquiriesLoading, setInquiriesLoading] = useState(false);
+  const [inquiriesError, setInquiriesError] = useState<string | null>(null);
 
   async function parseJsonResponse(res: Response) {
     const contentType = res.headers.get("content-type") ?? "";
@@ -671,6 +685,28 @@ export default function PageEditClient({ slug }: { slug: string }) {
       setNewSectionType((prev) => (allowed.includes(prev) ? prev : allowed[0]));
     }
   }, [page?.slug, slug]);
+
+  useEffect(() => {
+    if (!page || !["home", "about", "contact"].includes(page.slug)) return;
+    let cancelled = false;
+    setInquiriesLoading(true);
+    setInquiriesError(null);
+    (async () => {
+      try {
+        const res = await fetch(`/api/v1/admin/inquiries?sourcePage=${page.slug}`);
+        const json = await parseJsonResponse(res);
+        if (!res.ok) throw new Error(json?.error?.message ?? "Inquiry load failed");
+        if (!cancelled) setInquiries((json.data ?? []) as InquiryRow[]);
+      } catch (e) {
+        if (!cancelled) setInquiriesError(e instanceof Error ? e.message : "Inquiry load failed");
+      } finally {
+        if (!cancelled) setInquiriesLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [page?.slug]);
 
   async function saveMeta(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -948,6 +984,45 @@ export default function PageEditClient({ slug }: { slug: string }) {
           </label>
           <button type="submit">Save meta</button>
         </form>
+
+        {["home", "about", "contact"].includes(page.slug) ? (
+          <section className="admin-section-form" style={{ marginTop: 24 }}>
+            <h3>
+              {page.slug === "home"
+                ? "Thea Inquiries"
+                : `${page.title || page.slug} Requests`}
+            </h3>
+            <p className="admin-muted" style={{ marginTop: 0 }}>
+              Latest messages sent from the {page.slug} page request form.
+            </p>
+            {inquiriesLoading ? <p className="admin-muted">Loading inquiries...</p> : null}
+            {inquiriesError ? <p className="contact-form__err">{inquiriesError}</p> : null}
+            {!inquiriesLoading && !inquiriesError && inquiries.length === 0 ? (
+              <p className="admin-muted">No inquiries found.</p>
+            ) : null}
+            <div className="admin-dashboard__grid">
+              {inquiries.map((inquiry) => (
+                <article key={inquiry.id} className="admin-dashboard__page-card">
+                  <span className="admin-dashboard__page-title">{inquiry.name}</span>
+                  <span className="admin-dashboard__page-meta">{inquiry.email}</span>
+                  {inquiry.phone ? (
+                    <span className="admin-dashboard__page-meta">Phone: {inquiry.phone}</span>
+                  ) : null}
+                  {inquiry.company ? (
+                    <span className="admin-dashboard__page-meta">Facility: {inquiry.company}</span>
+                  ) : null}
+                  {inquiry.inquiryType ? (
+                    <span className="admin-dashboard__page-meta">Service: {inquiry.inquiryType}</span>
+                  ) : null}
+                  <span className="admin-dashboard__page-meta">{inquiry.message}</span>
+                  <span className="admin-dashboard__page-link">
+                    {inquiry.createdAt ? new Date(inquiry.createdAt).toLocaleString() : "New inquiry"}
+                  </span>
+                </article>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         <h2>Sections (draft)</h2>
         {allowedSectionTypes.length > 0 ? (

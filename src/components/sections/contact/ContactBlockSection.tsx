@@ -18,6 +18,7 @@ export default function ContactBlockSection({ content }: { content: ContactData 
     const body = {
       name: String(fd.get("name") ?? ""),
       email: String(fd.get("email") ?? ""),
+      sourcePage: "contact",
       message: String(fd.get("message") ?? ""),
     };
     try {

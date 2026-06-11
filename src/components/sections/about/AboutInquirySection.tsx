@@ -50,6 +50,7 @@ export default function AboutInquirySection({ content }: { content: AboutInquiry
       phone: "",
       company: String(fd.get("facility") ?? ""),
       inquiryType: String(fd.get("requestType") ?? ""),
+      sourcePage: "about",
       message: department
         ? `Department: ${department}\n\n${messageBody}`
         : messageBody,

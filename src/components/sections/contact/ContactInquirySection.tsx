@@ -171,6 +171,7 @@ export default function ContactInquirySection({ content }: { content: ContactInq
       phone: String(fd.get("department") ?? ""),
       company: String(fd.get("facility") ?? ""),
       inquiryType: String(fd.get("requestType") ?? ""),
+      sourcePage: "contact",
       message: String(fd.get("message") ?? ""),
     };
 
@@ -231,16 +232,13 @@ export default function ContactInquirySection({ content }: { content: ContactInq
                           <span className="cx-contact__hq-label">{item.label}</span>
                         ) : null}
                         {item.icon === "mail" ? (
-                          <a className="cx-contact__hq-value" href={`mailto:${item.value}`}>
+                          <span className="cx-contact__hq-value">
                             {item.value}
-                          </a>
+                          </span>
                         ) : item.icon === "phone" || item.icon === "spark" ? (
-                          <a
-                            className="cx-contact__hq-value"
-                            href={`tel:${item.value.replace(/\s/g, "")}`}
-                          >
+                          <span className="cx-contact__hq-value">
                             {item.value}
-                          </a>
+                          </span>
                         ) : (
                           <span className="cx-contact__hq-value">{item.value}</span>
                         )}

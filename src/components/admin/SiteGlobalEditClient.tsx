@@ -28,8 +28,13 @@ function isContactColumn(column: FooterColumn): column is FooterContactColumn {
   return "contact" in column;
 }
 
+function isBodyColumn(column: FooterColumn): column is { title: string; body: string } {
+  return "body" in column;
+}
+
 const DEFAULT_LINK_COLUMN = defaultFooterColumns.find(isLinkColumn) as FooterLinkColumn;
 const DEFAULT_CONTACT_COLUMN = defaultFooterColumns.find(isContactColumn) as FooterContactColumn;
+const DEFAULT_BODY_COLUMN = defaultFooterColumns.find(isBodyColumn) as { title: string; body: string };
 
 function getPageHref(page: PageSummary) {
   return page.slug === "home" ? "/" : `/${page.slug}`;
@@ -38,6 +43,7 @@ function getPageHref(page: PageSummary) {
 function parseFooterColumns(columns: FooterColumn[]) {
   const linkColumn = columns.find(isLinkColumn);
   const contactColumn = columns.find(isContactColumn);
+  const bodyColumn = columns.find(isBodyColumn);
 
   const storedLinks = linkColumn?.links ?? [];
   const validLinks = storedLinks.filter((link) => link.label?.trim() || link.href?.trim());
@@ -53,6 +59,10 @@ function parseFooterColumns(columns: FooterColumn[]) {
       contactColumn?.title?.trim() || DEFAULT_CONTACT_COLUMN.title,
     contactRows:
       validContacts.length > 0 ? storedContacts : [...DEFAULT_CONTACT_COLUMN.contact],
+    bodyColumnTitle:
+      bodyColumn?.title?.trim() || DEFAULT_BODY_COLUMN.title,
+    bodyColumnBody:
+      bodyColumn?.body?.trim() || DEFAULT_BODY_COLUMN.body,
   };
 }
 
@@ -74,6 +84,8 @@ export default function SiteGlobalEditClient() {
   const [contactRows, setContactRows] = useState<ContactRow[]>([
     ...DEFAULT_CONTACT_COLUMN.contact,
   ]);
+  const [complianceColumnTitle, setComplianceColumnTitle] = useState(DEFAULT_BODY_COLUMN.title);
+  const [complianceColumnBody, setComplianceColumnBody] = useState(DEFAULT_BODY_COLUMN.body);
   const [footerCopyright, setFooterCopyright] = useState(defaultFooterMeta.copyright);
   const [footerCtaLabel, setFooterCtaLabel] = useState("REQUEST CREDENTIALS");
   const [footerCtaHref, setFooterCtaHref] = useState("/contact");
@@ -120,6 +132,8 @@ export default function SiteGlobalEditClient() {
         setLinkColumnLinks(footer.linkColumnLinks);
         setContactColumnTitle(footer.contactColumnTitle);
         setContactRows(footer.contactRows);
+        setComplianceColumnTitle(footer.bodyColumnTitle);
+        setComplianceColumnBody(footer.bodyColumnBody);
         setFooterCopyright(
           (d.footerMeta?.copyright as string) ?? defaultFooterMeta.copyright,
         );
@@ -244,6 +258,10 @@ export default function SiteGlobalEditClient() {
               value: row.value.trim(),
             }))
             .filter((row) => row.value),
+        },
+        {
+          title: complianceColumnTitle.trim() || "Compliance",
+          body: complianceColumnBody.trim(),
         },
       ],
       footerMeta: {
@@ -618,6 +636,41 @@ export default function SiteGlobalEditClient() {
                   />
                 </label>
               </div>
+            </div>
+
+            <div className="admin-section-card">
+              <h3 style={{ margin: "0 0 12px" }}>Compliance column</h3>
+              <p className="admin-muted" style={{ margin: "0 0 12px" }}>
+                Right-most footer column — regulatory compliance and licensing text.
+              </p>
+              <label>
+                Column heading
+                <input
+                  value={complianceColumnTitle}
+                  onChange={(e) => setComplianceColumnTitle(e.target.value)}
+                  placeholder="Compliance"
+                />
+              </label>
+              <label>
+                Compliance body text
+                <textarea
+                  rows={4}
+                  value={complianceColumnBody}
+                  onChange={(e) => setComplianceColumnBody(e.target.value)}
+                  placeholder="Regulatory Compliance: MOHAP Certified..."
+                />
+              </label>
+              <button
+                type="button"
+                className="admin-button-secondary"
+                style={{ marginTop: 8 }}
+                onClick={() => {
+                  setComplianceColumnTitle(DEFAULT_BODY_COLUMN.title);
+                  setComplianceColumnBody(DEFAULT_BODY_COLUMN.body);
+                }}
+              >
+                Reset compliance to defaults
+              </button>
             </div>
 
             <label>

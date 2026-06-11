@@ -7,6 +7,7 @@ const contactLeadSchema = new Schema(
     phone: { type: String, trim: true },
     company: { type: String, trim: true },
     inquiryType: { type: String, trim: true },
+    sourcePage: { type: String, trim: true, default: "contact" },
     message: { type: String, required: true, trim: true },
   },
   { timestamps: true },

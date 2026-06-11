@@ -11,6 +11,7 @@ const bodySchema = z.object({
   phone: z.string().max(120).optional().default(""),
   company: z.string().max(200).optional().default(""),
   inquiryType: z.string().max(200).optional().default(""),
+  sourcePage: z.enum(["home", "about", "contact"]).optional().default("contact"),
   message: z.string().min(1).max(8000),
 });
 
@@ -33,6 +34,7 @@ export async function POST(request: Request) {
     phone: parsed.data.phone,
     company: parsed.data.company,
     inquiryType: parsed.data.inquiryType,
+    sourcePage: parsed.data.sourcePage,
     message: parsed.data.message,
   });
 

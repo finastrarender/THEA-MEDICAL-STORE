@@ -55,6 +55,7 @@ export default function HomeQuickInquirySection({
       phone: "",
       company: String(fd.get("facility") ?? ""),
       inquiryType: String(fd.get("serviceType") ?? ""),
+      sourcePage: "home",
       message: String(fd.get("message") ?? ""),
     };
 
