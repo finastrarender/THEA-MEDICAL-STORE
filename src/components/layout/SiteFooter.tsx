@@ -159,13 +159,13 @@ export default function SiteFooter({
           {legalLinks.length > 0 ? (
             <nav className="site-footer__legal" aria-label="Legal">
               {legalLinks.map((item) => (
-                <Link
-                  key={`${item.label}-${item.href}`}
-                  href={normalizeSitePath(item.href, "/")}
-                  className="site-footer__legal-link"
-                >
-                  {item.label}
-                </Link>
+                // 
+                <span
+                      key={`${item.label}-${item.href}`}
+                      className="site-footer__legal-link"
+                    >
+                      {item.label}
+                </span>
               ))}
             </nav>
           ) : null}

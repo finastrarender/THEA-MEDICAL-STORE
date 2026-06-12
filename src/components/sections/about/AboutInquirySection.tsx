@@ -6,6 +6,7 @@ import type { ComponentType } from "react";
 import type { z } from "zod";
 import type { aboutInquiryDataSchema } from "@/schemas/sections";
 import { theaAboutInquiryDefaults } from "@/data/thea-about-sections";
+import { validateInquiryForm, type InquiryFormErrors } from "@/lib/validation";
 
 type AboutInquiryContent = z.infer<typeof aboutInquiryDataSchema>;
 
@@ -18,6 +19,7 @@ const CONTACT_ICONS: Record<string, ComponentType<LucideProps>> = {
 export default function AboutInquirySection({ content }: { content: AboutInquiryContent }) {
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "err">("idle");
   const [feedback, setFeedback] = useState("");
+  const [errors, setErrors] = useState<InquiryFormErrors>({});
 
   const defaults = theaAboutInquiryDefaults;
   const formFields = { ...defaults.formFields, ...content.formFields };
@@ -39,22 +41,33 @@ export default function AboutInquirySection({ content }: { content: AboutInquiry
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setStatus("loading");
     const form = e.currentTarget;
     const fd = new FormData(form);
-    const department = String(fd.get("department") ?? "").trim();
-    const messageBody = String(fd.get("message") ?? "").trim();
     const body = {
-      name: String(fd.get("name") ?? ""),
-      email: String(fd.get("email") ?? ""),
-      phone: "",
-      company: String(fd.get("facility") ?? ""),
-      inquiryType: String(fd.get("requestType") ?? ""),
+      name: String(fd.get("name") ?? "").trim(),
+      email: String(fd.get("email") ?? "").trim(),
+      phone: String(fd.get("phone") ?? "").trim(),
+      company: String(fd.get("facility") ?? "").trim(),
+      inquiryType: String(fd.get("requestType") ?? "").trim(),
       sourcePage: "about",
-      message: department
-        ? `Department: ${department}\n\n${messageBody}`
-        : messageBody,
+      message: String(fd.get("message") ?? "").trim(),
     };
+    const nextErrors = validateInquiryForm({
+      name: body.name,
+      email: body.email,
+      phone: body.phone,
+      facility: body.company,
+      requestType: body.inquiryType,
+      message: body.message,
+    });
+    setErrors(nextErrors);
+    setFeedback("");
+    if (Object.keys(nextErrors).length > 0) {
+      setStatus("err");
+      return;
+    }
+
+    setStatus("loading");
 
     try {
       const res = await fetch("/api/v1/contact", {
@@ -73,6 +86,7 @@ export default function AboutInquirySection({ content }: { content: AboutInquiry
         return;
       }
       setStatus("ok");
+      setErrors({});
       setFeedback(formFields.successMessage || defaults.formFields.successMessage);
       form.reset();
     } catch {
@@ -107,10 +121,20 @@ export default function AboutInquirySection({ content }: { content: AboutInquiry
                     name="name"
                     type="text"
                     required
+                    minLength={2}
+                    maxLength={50}
+                    pattern="[A-Za-z\s]+"
                     autoComplete="name"
                     className="thea-about-inquiry__input"
                     placeholder={formFields.fullNamePlaceholder}
+                    aria-invalid={errors.name ? "true" : undefined}
+                    aria-describedby={errors.name ? "about-inquiry-name-error" : undefined}
                   />
+                  {errors.name ? (
+                    <p className="thea-about-inquiry__field-error" id="about-inquiry-name-error">
+                      {errors.name}
+                    </p>
+                  ) : null}
                 </label>
                 <label className="thea-about-inquiry__field">
                   <span className="thea-about-inquiry__label">{formFields.emailLabel}</span>
@@ -119,10 +143,18 @@ export default function AboutInquirySection({ content }: { content: AboutInquiry
                     name="email"
                     type="email"
                     required
+                    maxLength={255}
                     autoComplete="email"
                     className="thea-about-inquiry__input"
                     placeholder={formFields.emailPlaceholder}
+                    aria-invalid={errors.email ? "true" : undefined}
+                    aria-describedby={errors.email ? "about-inquiry-email-error" : undefined}
                   />
+                  {errors.email ? (
+                    <p className="thea-about-inquiry__field-error" id="about-inquiry-email-error">
+                      {errors.email}
+                    </p>
+                  ) : null}
                 </label>
               </div>
 
@@ -133,19 +165,46 @@ export default function AboutInquirySection({ content }: { content: AboutInquiry
                     suppressHydrationWarning
                     name="facility"
                     type="text"
+                    required
+                    minLength={2}
+                    maxLength={150}
                     className="thea-about-inquiry__input"
                     placeholder={formFields.facilityPlaceholder}
+                    aria-invalid={errors.facility ? "true" : undefined}
+                    aria-describedby={
+                      errors.facility ? "about-inquiry-facility-error" : undefined
+                    }
                   />
+                  {errors.facility ? (
+                    <p
+                      className="thea-about-inquiry__field-error"
+                      id="about-inquiry-facility-error"
+                    >
+                      {errors.facility}
+                    </p>
+                  ) : null}
                 </label>
                 <label className="thea-about-inquiry__field">
-                  <span className="thea-about-inquiry__label">{formFields.departmentLabel}</span>
+                  <span className="thea-about-inquiry__label">PHONE NUMBER</span>
                   <input
                     suppressHydrationWarning
-                    name="department"
-                    type="text"
+                    name="phone"
+                    type="tel"
+                    required
+                    minLength={9}
+                    maxLength={16}
+                    inputMode="tel"
+                    autoComplete="tel"
                     className="thea-about-inquiry__input"
-                    placeholder={formFields.departmentPlaceholder}
+                    placeholder="+971501234567"
+                    aria-invalid={errors.phone ? "true" : undefined}
+                    aria-describedby={errors.phone ? "about-inquiry-phone-error" : undefined}
                   />
+                  {errors.phone ? (
+                    <p className="thea-about-inquiry__field-error" id="about-inquiry-phone-error">
+                      {errors.phone}
+                    </p>
+                  ) : null}
                 </label>
               </div>
 
@@ -155,9 +214,17 @@ export default function AboutInquirySection({ content }: { content: AboutInquiry
                   <select
                     suppressHydrationWarning
                     name="requestType"
+                    required
                     className="thea-about-inquiry__select"
-                    defaultValue={requestOptions[0]}
+                    defaultValue=""
+                    aria-invalid={errors.requestType ? "true" : undefined}
+                    aria-describedby={
+                      errors.requestType ? "about-inquiry-service-error" : undefined
+                    }
                   >
+                    <option value="" disabled>
+                      Select a service type
+                    </option>
                     {requestOptions.map((option) => (
                       <option key={option} value={option}>
                         {option}
@@ -165,6 +232,11 @@ export default function AboutInquirySection({ content }: { content: AboutInquiry
                     ))}
                   </select>
                 </span>
+                {errors.requestType ? (
+                  <p className="thea-about-inquiry__field-error" id="about-inquiry-service-error">
+                    {errors.requestType}
+                  </p>
+                ) : null}
               </label>
 
               <label className="thea-about-inquiry__field thea-about-inquiry__field--area">
@@ -173,10 +245,19 @@ export default function AboutInquirySection({ content }: { content: AboutInquiry
                   suppressHydrationWarning
                   name="message"
                   required
+                  minLength={10}
+                  maxLength={1000}
                   rows={5}
                   className="thea-about-inquiry__input thea-about-inquiry__textarea"
                   placeholder={formFields.messagePlaceholder}
+                  aria-invalid={errors.message ? "true" : undefined}
+                  aria-describedby={errors.message ? "about-inquiry-message-error" : undefined}
                 />
+                {errors.message ? (
+                  <p className="thea-about-inquiry__field-error" id="about-inquiry-message-error">
+                    {errors.message}
+                  </p>
+                ) : null}
               </label>
 
               <button

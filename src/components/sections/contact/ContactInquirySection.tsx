@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { z } from "zod";
 import type { contactInquiryDataSchema } from "@/schemas/sections";
+import { validateInquiryForm, type InquiryFormErrors } from "@/lib/validation";
 import SimpleIcon from "../SimpleIcon";
 
 type ContactInquiryContent = z.infer<typeof contactInquiryDataSchema>;
@@ -118,6 +119,7 @@ function resolveComplianceText(content: ContactInquiryContent) {
 export default function ContactInquirySection({ content }: { content: ContactInquiryContent }) {
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "err">("idle");
   const [feedback, setFeedback] = useState("");
+  const [errors, setErrors] = useState<InquiryFormErrors>({});
 
   const formFields = content.formFields ?? {};
   const heroEyebrow = content.heroEyebrow?.trim() || DEFAULT_EYEBROW;
@@ -139,8 +141,8 @@ export default function ContactInquirySection({ content }: { content: ContactInq
     formFields.interestPlaceholder?.trim() || "Select a service category";
   const companyLabel = formFields.companyLabel?.trim() || "FACILITY NAME";
   const companyPlaceholder = formFields.companyPlaceholder?.trim() || "Dubai Medical Center";
-  const phoneLabel = formFields.phoneLabel?.trim() || "DEPARTMENT";
-  const phonePlaceholder = formFields.phonePlaceholder?.trim() || "Radiology / Procurement";
+  const phoneLabel = "PHONE NUMBER";
+  const phonePlaceholder = "+971501234567";
   const messagePlaceholder =
     formFields.messagePlaceholder?.trim() || "Detail your clinical requirements here...";
 
@@ -162,18 +164,33 @@ export default function ContactInquirySection({ content }: { content: ContactInq
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setStatus("loading");
     const form = e.currentTarget;
     const fd = new FormData(form);
     const body = {
-      name: String(fd.get("name") ?? ""),
-      email: String(fd.get("email") ?? ""),
-      phone: String(fd.get("department") ?? ""),
-      company: String(fd.get("facility") ?? ""),
-      inquiryType: String(fd.get("requestType") ?? ""),
+      name: String(fd.get("name") ?? "").trim(),
+      email: String(fd.get("email") ?? "").trim(),
+      phone: String(fd.get("phone") ?? "").trim(),
+      company: String(fd.get("facility") ?? "").trim(),
+      inquiryType: String(fd.get("requestType") ?? "").trim(),
       sourcePage: "contact",
-      message: String(fd.get("message") ?? ""),
+      message: String(fd.get("message") ?? "").trim(),
     };
+    const nextErrors = validateInquiryForm({
+      name: body.name,
+      email: body.email,
+      phone: body.phone,
+      facility: body.company,
+      requestType: body.inquiryType,
+      message: body.message,
+    });
+    setErrors(nextErrors);
+    setFeedback("");
+    if (Object.keys(nextErrors).length > 0) {
+      setStatus("err");
+      return;
+    }
+
+    setStatus("loading");
 
     try {
       const res = await fetch("/api/v1/contact", {
@@ -192,6 +209,7 @@ export default function ContactInquirySection({ content }: { content: ContactInq
         return;
       }
       setStatus("ok");
+      setErrors({});
       setFeedback(
         formFields.successMessage ||
           "Thank you. Our team will contact you shortly.",
@@ -277,10 +295,20 @@ export default function ContactInquirySection({ content }: { content: ContactInq
                       name="name"
                       type="text"
                       required
+                      minLength={2}
+                      maxLength={50}
+                      pattern="[A-Za-z\s]+"
                       autoComplete="name"
                       className="cx-contact__input"
                       placeholder={namePlaceholder}
+                      aria-invalid={errors.name ? "true" : undefined}
+                      aria-describedby={errors.name ? "contact-inquiry-name-error" : undefined}
                     />
+                    {errors.name ? (
+                      <p className="cx-contact__field-error" id="contact-inquiry-name-error">
+                        {errors.name}
+                      </p>
+                    ) : null}
                   </label>
                   <label className="cx-contact__field">
                     <span className="cx-contact__label">{emailLabel}</span>
@@ -289,10 +317,18 @@ export default function ContactInquirySection({ content }: { content: ContactInq
                       name="email"
                       type="email"
                       required
+                      maxLength={255}
                       autoComplete="email"
                       className="cx-contact__input"
                       placeholder={emailPlaceholder}
+                      aria-invalid={errors.email ? "true" : undefined}
+                      aria-describedby={errors.email ? "contact-inquiry-email-error" : undefined}
                     />
+                    {errors.email ? (
+                      <p className="cx-contact__field-error" id="contact-inquiry-email-error">
+                        {errors.email}
+                      </p>
+                    ) : null}
                   </label>
                 </div>
 
@@ -303,19 +339,43 @@ export default function ContactInquirySection({ content }: { content: ContactInq
                       suppressHydrationWarning
                       name="facility"
                       type="text"
+                      required
+                      minLength={2}
+                      maxLength={150}
                       className="cx-contact__input"
                       placeholder={companyPlaceholder}
+                      aria-invalid={errors.facility ? "true" : undefined}
+                      aria-describedby={
+                        errors.facility ? "contact-inquiry-facility-error" : undefined
+                      }
                     />
+                    {errors.facility ? (
+                      <p className="cx-contact__field-error" id="contact-inquiry-facility-error">
+                        {errors.facility}
+                      </p>
+                    ) : null}
                   </label>
                   <label className="cx-contact__field">
                     <span className="cx-contact__label">{phoneLabel}</span>
                     <input
                       suppressHydrationWarning
-                      name="department"
-                      type="text"
+                      name="phone"
+                      type="tel"
+                      required
+                      minLength={9}
+                      maxLength={16}
+                      inputMode="tel"
+                      autoComplete="tel"
                       className="cx-contact__input"
                       placeholder={phonePlaceholder}
+                      aria-invalid={errors.phone ? "true" : undefined}
+                      aria-describedby={errors.phone ? "contact-inquiry-phone-error" : undefined}
                     />
+                    {errors.phone ? (
+                      <p className="cx-contact__field-error" id="contact-inquiry-phone-error">
+                        {errors.phone}
+                      </p>
+                    ) : null}
                   </label>
                 </div>
 
@@ -329,6 +389,10 @@ export default function ContactInquirySection({ content }: { content: ContactInq
                         required
                         className="cx-contact__input cx-contact__select"
                         defaultValue=""
+                        aria-invalid={errors.requestType ? "true" : undefined}
+                        aria-describedby={
+                          errors.requestType ? "contact-inquiry-service-error" : undefined
+                        }
                       >
                         <option value="" disabled>
                           {subjectPlaceholder}
@@ -348,8 +412,17 @@ export default function ContactInquirySection({ content }: { content: ContactInq
                       required
                       className="cx-contact__input"
                       placeholder={subjectPlaceholder}
+                      aria-invalid={errors.requestType ? "true" : undefined}
+                      aria-describedby={
+                        errors.requestType ? "contact-inquiry-service-error" : undefined
+                      }
                     />
                   )}
+                  {errors.requestType ? (
+                    <p className="cx-contact__field-error" id="contact-inquiry-service-error">
+                      {errors.requestType}
+                    </p>
+                  ) : null}
                 </label>
 
                 <label className="cx-contact__field cx-contact__field--area">
@@ -358,10 +431,21 @@ export default function ContactInquirySection({ content }: { content: ContactInq
                     suppressHydrationWarning
                     name="message"
                     required
+                    minLength={10}
+                    maxLength={1000}
                     rows={5}
                     className="cx-contact__input cx-contact__textarea"
                     placeholder={messagePlaceholder}
+                    aria-invalid={errors.message ? "true" : undefined}
+                    aria-describedby={
+                      errors.message ? "contact-inquiry-message-error" : undefined
+                    }
                   />
+                  {errors.message ? (
+                    <p className="cx-contact__field-error" id="contact-inquiry-message-error">
+                      {errors.message}
+                    </p>
+                  ) : null}
                 </label>
 
                 <button

@@ -4,15 +4,52 @@ import { jsonData, jsonError } from "@/lib/api-response";
 import { connectMongo } from "@/lib/mongoose";
 import ContactLead from "@/models/ContactLead";
 import { env } from "@/env";
+import { ValidationRules } from "@/lib/validation";
 
 const bodySchema = z.object({
-  name: z.string().min(1).max(200),
-  email: z.string().email().max(320),
-  phone: z.string().max(120).optional().default(""),
-  company: z.string().max(200).optional().default(""),
-  inquiryType: z.string().max(200).optional().default(""),
+  name: z
+    .string()
+    .trim()
+    .min(1, ValidationRules.name.required)
+    .min(2, ValidationRules.name.min)
+    .max(50, ValidationRules.name.max)
+    .regex(/^[A-Za-z\s]+$/, ValidationRules.name.pattern),
+  email: z
+    .string()
+    .trim()
+    .min(1, ValidationRules.email.required)
+    .email(ValidationRules.email.pattern)
+    .max(ValidationRules.email.max, ValidationRules.email.pattern),
+  phone: z
+    .string()
+    .trim()
+    .min(1, ValidationRules.phone.required)
+    .refine((value) => /^\+?[0-9]+$/.test(value) && !value.slice(1).includes("+"), {
+      message: ValidationRules.phone.pattern,
+    })
+    .refine((value) => {
+      const digits = value.replace(/^\+/, "");
+      return digits.length >= 8 && digits.length <= 15;
+    }, ValidationRules.phone.digits)
+    .regex(ValidationRules.phone.regex, ValidationRules.phone.invalid),
+  company: z
+    .string()
+    .trim()
+    .min(1, ValidationRules.facility.required)
+    .max(150, ValidationRules.facility.max)
+    .regex(ValidationRules.facility.regex, ValidationRules.facility.pattern),
+  inquiryType: z
+    .string()
+    .trim()
+    .min(1, ValidationRules.service.required)
+    .max(200, ValidationRules.service.required),
   sourcePage: z.enum(["home", "about", "contact"]).optional().default("contact"),
-  message: z.string().min(1).max(8000),
+  message: z
+    .string()
+    .trim()
+    .min(1, ValidationRules.message.required)
+    .min(10, ValidationRules.message.min)
+    .max(1000, ValidationRules.message.max),
 });
 
 export async function POST(request: Request) {
@@ -24,7 +61,8 @@ export async function POST(request: Request) {
   }
   const parsed = bodySchema.safeParse(body);
   if (!parsed.success) {
-    return jsonError("validation_error", "Invalid payload", 422, parsed.error.flatten());
+    const firstMessage = parsed.error.issues[0]?.message || "Invalid payload";
+    return jsonError("validation_error", firstMessage, 422, parsed.error.flatten());
   }
 
   await connectMongo();

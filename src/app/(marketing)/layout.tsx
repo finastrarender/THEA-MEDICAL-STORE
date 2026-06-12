@@ -10,6 +10,7 @@ import ConditionalSiteFooter from "@/components/layout/ConditionalSiteFooter";
 import { type FooterColumn } from "@/components/layout/SiteFooter";
 import SiteHeader from "@/components/layout/SiteHeader";
 import ApplyNowModal from "@/components/apply/ApplyNowModal";
+import HashScrollHandler from "@/components/navigation/HashScrollHandler";
 
 export const dynamic = "force-dynamic";
 
@@ -46,6 +47,7 @@ export default async function MarketingLayout({
         headerActions={headerActions}
       />
       <main className="cx-site__main">{children}</main>
+      <HashScrollHandler />
       <ApplyNowModal content={applyNowModal} />
       <ConditionalSiteFooter columns={footerColumns} meta={footerMeta} />
     </div>

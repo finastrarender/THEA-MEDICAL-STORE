@@ -1,3 +1,9 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Syne:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Orbitron:wght@500;600;700;800&display=swap");
 
 :root {
@@ -48,16 +54,22 @@
   --font-body: var(--font-sans);
 }
 
+html {
+  margin: 0;
+  padding: 0;
+}
+
 body {
-  background: var(--color-surface);
+  margin: 0; padding: 0; background: var(--color-surface);
 }
 
 .owtc-app {
-  background-color: var(--color-surface);
+  margin: 0; padding: 0; background-color: var(--color-surface);
 }
 
 .owtc-app.cx-site {
   --cx-shell-pad: clamp(20px, 4vw, 96px);
+  padding: 0;
   background-color: #f3f3f3;
   background-image: none;
 }
@@ -85,10 +97,10 @@ body {
   left: 0;
   right: 0;
   width: 100%;
-  z-index: 100;
+  z-index: 1000; margin-top: 0; padding-top: 0;
   flex-shrink: 0;
   padding: 0;
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
@@ -12919,6 +12931,17 @@ a.cx-contact__hq-value:focus-visible {
   color: #dc2626;
 }
 
+.cx-contact__field-error {
+  margin: 6px 0 0;
+  color: #dc2626;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.cx-contact__input[aria-invalid="true"] {
+  border-color: #dc2626;
+}
+
 .cx-contact__matrix-band {
   background: #f3f4f6;
   padding: 0 0 clamp(48px, 6vw, 72px);
@@ -13112,8 +13135,9 @@ a.cx-contact__hq-value:focus-visible {
 
 .cx-site .site-header.site-header--institutional,
 .cx-site .site-header--institutional {
-  position: relative !important;
-  top: auto !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1000 !important;
   left: auto !important;
   width: 100% !important;
   padding: 0 !important;
@@ -13125,7 +13149,7 @@ a.cx-contact__hq-value:focus-visible {
 
 .cx-site .site-header--institutional .site-header__shell {
   width: 100% !important;
-  max-width: none !important;
+  max-width: var(--shell-width, 1280px) !important;
   margin-inline: auto !important;
   padding-inline: var(--cx-shell-pad) !important;
   box-sizing: border-box !important;
@@ -13199,7 +13223,7 @@ a.cx-contact__hq-value:focus-visible {
   border-radius: 0;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1100px) {
   .cx-site .site-header .site-nav,
   .cx-site .site-header .site-nav.is-open {
     position: absolute !important;
@@ -13231,7 +13255,7 @@ a.cx-contact__hq-value:focus-visible {
   }
 }
 
-@media (min-width: 1025px) {
+@media (min-width: 1101px) {
   .cx-site .site-header .site-nav,
   .cx-site .site-header .site-nav--institutional {
     position: static !important;
@@ -13275,8 +13299,16 @@ a.cx-contact__hq-value:focus-visible {
   --thea-nav: #4a5568;
   --cx-header-navy: var(--thea-primary);
   --cx-header-nav: var(--thea-nav);
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 100 !important;
   background: #ffffff !important;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.08) !important;
 }
+
+
 
 .cx-site .site-header--thea .site-header__inner {
   display: grid !important;
@@ -13424,7 +13456,12 @@ a.cx-contact__hq-value:focus-visible {
   background: #f3f4f6;
 }
 
-@media (max-width: 1024px) {
+
+.owtc-app.cx-site:has(.site-header--thea) {
+  padding-top: 0 !important;
+}
+
+@media (max-width: 1100px) {
   .cx-site .site-header--thea .site-header__inner {
     display: flex !important;
     justify-content: space-between !important;
@@ -13468,7 +13505,7 @@ a.cx-contact__hq-value:focus-visible {
   }
 }
 
-@media (min-width: 1025px) {
+@media (min-width: 1101px) {
   .cx-site .site-header--thea .site-nav__mobile-actions {
     display: none !important;
   }
@@ -14704,6 +14741,18 @@ a.cx-contact__hq-value:focus-visible {
 
 .cx-site .thea-inquiry__feedback--err {
   color: #c53030;
+}
+
+.cx-site .thea-inquiry__field-error {
+  margin: 6px 0 0;
+  color: #c53030;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.cx-site .thea-inquiry__input[aria-invalid="true"],
+.cx-site .thea-inquiry__select[aria-invalid="true"] {
+  border-color: #c53030;
 }
 
 @media (max-width: 900px) {
@@ -17218,6 +17267,18 @@ a.cx-contact__hq-value:focus-visible {
   color: #dc2626;
 }
 
+.cx-site .thea-about-inquiry__field-error {
+  margin: 6px 0 0;
+  color: #dc2626;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.cx-site .thea-about-inquiry__input[aria-invalid="true"],
+.cx-site .thea-about-inquiry__select[aria-invalid="true"] {
+  border-color: #dc2626;
+}
+
 .cx-site .thea-about-inquiry__aside {
   display: flex;
   flex-direction: column;
@@ -18859,13 +18920,17 @@ a.cx-contact__hq-value:focus-visible {
 .cx-site .thea-products-showcase__grid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: stretch;
   gap: 12px;
   margin: 0;
   min-width: 0;
 }
 
 .cx-site .thea-products-showcase__card {
+  display: flex;
+  flex-direction: column;
   min-width: 0;
+  min-height: 100%;
   background: #fff;
   border-radius: 10px;
   overflow: hidden;
@@ -18894,12 +18959,13 @@ a.cx-contact__hq-value:focus-visible {
 
 .cx-site .thea-products-showcase__media {
   position: relative;
+  flex: 0 0 auto;
   overflow: hidden;
   background: #e5e7eb;
 }
 
 .cx-site .thea-products-showcase__card--featured .thea-products-showcase__media {
-  min-height: 290px;
+  height: 290px;
 }
 
 .cx-site .thea-products-showcase__card--featured .thea-products-showcase__body {
@@ -18949,11 +19015,11 @@ a.cx-contact__hq-value:focus-visible {
 }
 
 .cx-site .thea-products-showcase__card--equipment .thea-products-showcase__media {
-  min-height: 250px;
+  height: 250px;
 }
 
 .cx-site .thea-products-showcase__card--surgical .thea-products-showcase__media {
-  min-height: 140px;
+  height: 140px;
 }
 
 .cx-site .thea-products-showcase__card--consumables .thea-products-showcase__media {
@@ -18993,6 +19059,7 @@ a.cx-contact__hq-value:focus-visible {
 }
 
 .cx-site .thea-products-showcase__body {
+  flex: 1;
   padding: 16px;
 }
 
@@ -19155,11 +19222,19 @@ a.cx-contact__hq-value:focus-visible {
 }
 
 @media (max-width: 1024px) {
+  .cx-site .thea-products-showcase__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .cx-site .thea-products-showcase__card--featured,
   .cx-site .thea-products-showcase__card--equipment,
   .cx-site .thea-products-showcase__card--surgical,
   .cx-site .thea-products-showcase__card--consumables {
-    grid-column: span 6;
+    grid-column: auto;
+  }
+
+  .cx-site .thea-products-showcase__card--consumables {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 
   .cx-site .thea-products-showcase__banner {
@@ -19173,15 +19248,31 @@ a.cx-contact__hq-value:focus-visible {
 }
 
 @media (max-width: 768px) {
+  .cx-site .thea-products-showcase__grid {
+    grid-template-columns: 1fr;
+  }
+
   .cx-site .thea-products-showcase__card--featured,
   .cx-site .thea-products-showcase__card--equipment,
   .cx-site .thea-products-showcase__card--surgical,
   .cx-site .thea-products-showcase__card--consumables {
-    grid-column: span 12;
+    grid-column: auto;
   }
 
   .cx-site .thea-products-showcase__card--consumables {
+    display: flex;
+    flex-direction: column;
     grid-template-columns: 1fr;
+  }
+
+  .cx-site .thea-products-showcase__card--featured .thea-products-showcase__media,
+  .cx-site .thea-products-showcase__card--equipment .thea-products-showcase__media,
+  .cx-site .thea-products-showcase__card--surgical .thea-products-showcase__media,
+  .cx-site .thea-products-showcase__card--consumables .thea-products-showcase__media {
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 16 / 10;
+    width: 100%;
   }
 
   .cx-site .thea-products-showcase__card--featured .thea-products-showcase__body {

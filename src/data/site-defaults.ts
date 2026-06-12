@@ -14,9 +14,9 @@ export const defaultFooterColumns: FooterColumn[] = [
   {
     title: "Categories",
     links: [
-      { label: "Pharmaceuticals", href: "/products" },
-      { label: "Equipment", href: "/products" },
-      { label: "Consumables", href: "/products" },
+      { label: "Pharmaceuticals", href: "/products#pharmaceuticals" },
+      { label: "Equipment", href: "/products#equipment" },
+      { label: "Consumables", href: "/products#consumables" },
     ],
   },
   {

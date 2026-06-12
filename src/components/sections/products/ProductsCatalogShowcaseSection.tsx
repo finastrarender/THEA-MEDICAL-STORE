@@ -62,7 +62,7 @@ export default function ProductsCatalogShowcaseSection({ content }: { content: C
         </header>
 
         <div className="thea-products-showcase__grid">
-          <article className="thea-products-showcase__card thea-products-showcase__card--featured">
+          <article id="pharmaceuticals" className="thea-products-showcase__card thea-products-showcase__card--featured">
             <div className="thea-products-showcase__media">
               {featured.image ? (
                 <img src={featured.image} alt="" className="thea-products-showcase__image" />
@@ -79,7 +79,7 @@ export default function ProductsCatalogShowcaseSection({ content }: { content: C
             </div>
           </article>
 
-          <article className="thea-products-showcase__card thea-products-showcase__card--equipment">
+          <article id="equipment" className="thea-products-showcase__card thea-products-showcase__card--equipment">
             <div className="thea-products-showcase__media">
               {equipment.image ? (
                 <img src={equipment.image} alt="" className="thea-products-showcase__image" />
@@ -96,7 +96,7 @@ export default function ProductsCatalogShowcaseSection({ content }: { content: C
             </div>
           </article>
 
-          <article className="thea-products-showcase__card thea-products-showcase__card--surgical">
+          <article id="surgical" className="thea-products-showcase__card thea-products-showcase__card--surgical">
             <div className="thea-products-showcase__media">
               {surgical.image ? (
                 <img src={surgical.image} alt="" className="thea-products-showcase__image" />
@@ -110,7 +110,7 @@ export default function ProductsCatalogShowcaseSection({ content }: { content: C
             </div>
           </article>
 
-          <article className="thea-products-showcase__card thea-products-showcase__card--consumables">
+          <article id="consumables" className="thea-products-showcase__card thea-products-showcase__card--consumables">
             <div className="thea-products-showcase__media">
               {consumables.image ? (
                 <img src={consumables.image} alt="" className="thea-products-showcase__image" />
