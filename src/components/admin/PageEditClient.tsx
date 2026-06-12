@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import HeroSectionForm from "@/components/admin/HeroSectionForm";
 import ImageUploadField from "@/components/admin/ImageUploadField";
+import InquiriesList, { toAdminInquiry } from "@/components/admin/InquiriesList";
 import { defaultPageSeoBySlug, defaultSeoDefaults } from "@/data/site-defaults";
 import {
   AboutAdvantageSectionForm,
@@ -998,30 +999,14 @@ export default function PageEditClient({ slug }: { slug: string }) {
             </p>
             {inquiriesLoading ? <p className="admin-muted">Loading inquiries...</p> : null}
             {inquiriesError ? <p className="contact-form__err">{inquiriesError}</p> : null}
-            {!inquiriesLoading && !inquiriesError && inquiries.length === 0 ? (
-              <p className="admin-muted">No inquiries found.</p>
+            {!inquiriesLoading && !inquiriesError ? (
+              <InquiriesList
+                inquiries={inquiries.map(toAdminInquiry)}
+                onDeleted={(id) =>
+                  setInquiries((current) => current.filter((inquiry) => inquiry.id !== id))
+                }
+              />
             ) : null}
-            <div className="admin-dashboard__grid">
-              {inquiries.map((inquiry) => (
-                <article key={inquiry.id} className="admin-dashboard__page-card">
-                  <span className="admin-dashboard__page-title">{inquiry.name}</span>
-                  <span className="admin-dashboard__page-meta">{inquiry.email}</span>
-                  {inquiry.phone ? (
-                    <span className="admin-dashboard__page-meta">Phone: {inquiry.phone}</span>
-                  ) : null}
-                  {inquiry.company ? (
-                    <span className="admin-dashboard__page-meta">Facility: {inquiry.company}</span>
-                  ) : null}
-                  {inquiry.inquiryType ? (
-                    <span className="admin-dashboard__page-meta">Service: {inquiry.inquiryType}</span>
-                  ) : null}
-                  <span className="admin-dashboard__page-meta">{inquiry.message}</span>
-                  <span className="admin-dashboard__page-link">
-                    {inquiry.createdAt ? new Date(inquiry.createdAt).toLocaleString() : "New inquiry"}
-                  </span>
-                </article>
-              ))}
-            </div>
           </section>
         ) : null}
 

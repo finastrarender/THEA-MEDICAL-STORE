@@ -8719,6 +8719,43 @@ button {
   color: var(--color-primary);
 }
 
+.admin-dashboard__inquiry-card {
+  position: relative;
+}
+
+.admin-dashboard__inquiry-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.admin-dashboard__inquiry-delete {
+  flex-shrink: 0;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #b91c1c;
+  background: #fef2f2;
+  cursor: pointer;
+}
+
+.admin-dashboard__inquiry-delete:hover:not(:disabled) {
+  background: #fee2e2;
+}
+
+.admin-dashboard__inquiry-delete:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.admin-dashboard__inquiry-error {
+  margin-bottom: 0.5rem;
+  color: #b91c1c;
+}
+
 .admin-dashboard__quick-links {
   margin-top: 0.75rem;
   display: flex;

@@ -4,6 +4,7 @@ import { connectMongo } from "@/lib/mongoose";
 import ContactLead from "@/models/ContactLead";
 import Page from "@/models/Page";
 import { redirect } from "next/navigation";
+import InquiriesList from "@/components/admin/InquiriesList";
 import LogoutButton from "@/components/admin/LogoutButton";
 
 export default async function AdminDashboardPage() {
@@ -14,10 +15,20 @@ export default async function AdminDashboardPage() {
 
   await connectMongo();
   const pages = await Page.find({}).sort({ slug: 1 }).lean();
-  const inquiries = await ContactLead.find({})
+  const inquiryDocs = await ContactLead.find({})
     .sort({ createdAt: -1 })
     .limit(10)
     .lean();
+  const inquiries = inquiryDocs.map((inquiry) => ({
+    id: String(inquiry._id),
+    name: inquiry.name,
+    email: inquiry.email,
+    phone: inquiry.phone ?? "",
+    company: inquiry.company ?? "",
+    inquiryType: inquiry.inquiryType ?? "",
+    message: inquiry.message,
+    createdAt: inquiry.createdAt ? new Date(inquiry.createdAt).toISOString() : "",
+  }));
   const hasHome = pages.some((page) => page.slug === "home");
 
   return (
@@ -94,30 +105,7 @@ export default async function AdminDashboardPage() {
             <p className="admin-muted">Latest messages sent from the home page quick inquiry form.</p>
           </div>
 
-          <div className="admin-dashboard__grid">
-            {inquiries.map((inquiry) => (
-              <article key={String(inquiry._id)} className="admin-dashboard__page-card">
-                <span className="admin-dashboard__page-title">{inquiry.name}</span>
-                <span className="admin-dashboard__page-meta">{inquiry.email}</span>
-                {inquiry.phone ? (
-                  <span className="admin-dashboard__page-meta">Phone: {inquiry.phone}</span>
-                ) : null}
-                {inquiry.company ? (
-                  <span className="admin-dashboard__page-meta">Facility: {inquiry.company}</span>
-                ) : null}
-                {inquiry.inquiryType ? (
-                  <span className="admin-dashboard__page-meta">Service: {inquiry.inquiryType}</span>
-                ) : null}
-                <span className="admin-dashboard__page-meta">{inquiry.message}</span>
-                <span className="admin-dashboard__page-link">
-                  {inquiry.createdAt ? new Date(inquiry.createdAt).toLocaleString() : "New inquiry"}
-                </span>
-              </article>
-            ))}
-            {inquiries.length === 0 ? (
-              <p className="admin-muted">No inquiries found.</p>
-            ) : null}
-          </div>
+          <InquiriesList inquiries={inquiries} />
         </section>
 
         <section className="admin-dashboard__section">
