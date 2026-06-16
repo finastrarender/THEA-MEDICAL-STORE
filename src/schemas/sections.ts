@@ -738,6 +738,7 @@ const contactLocationMatrixSchema = z.object({
   title: z.string().optional(),
   subtitle: z.string().optional(),
   mapImage: z.string().optional(),
+  mapEmbedUrl: z.string().optional(),
   linkLabel: z.string().optional(),
   linkHref: z.string().optional(),
 });

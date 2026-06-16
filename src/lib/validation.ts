@@ -1,3 +1,5 @@
+import { DEFAULT_PHONE_COUNTRY_CODE } from "@/data/phone-country-codes";
+
 export const ValidationRules = {
   name: {
     required: "Please enter your name.",
@@ -13,10 +15,10 @@ export const ValidationRules = {
     max: 255,
   },
   phone: {
-    required: "Please enter a phone number with country code.",
-    digits: "Phone number must contain 8-15 digits.",
-    pattern: "Only numbers and a leading '+' are allowed.",
-    invalid: "Please enter a valid international phone number.",
+    required: "Please enter your phone number.",
+    digits: "Full phone number (country code + number) must be 8–15 digits.",
+    pattern: "Phone number can only contain digits.",
+    invalid: "Please enter a valid phone number with country code.",
     regex: /^\+[0-9]{8,15}$/,
   },
   facility: {
@@ -46,6 +48,33 @@ export type InquiryFieldName =
 
 export type InquiryFormValues = Partial<Record<InquiryFieldName, string>>;
 export type InquiryFormErrors = Partial<Record<InquiryFieldName, string>>;
+
+export function combinePhoneNumber(countryCode: string, localNumber: string): string {
+  const codeDigits = countryCode.replace(/\D/g, "");
+  const localDigits = localNumber.replace(/\D/g, "");
+  return `+${codeDigits}${localDigits}`;
+}
+
+export function getPhoneFromFormData(
+  fd: FormData,
+  defaultCountryCode = DEFAULT_PHONE_COUNTRY_CODE,
+): string {
+  const phoneCountry = String(fd.get("phoneCountry") ?? defaultCountryCode).trim();
+  const phoneLocal = String(fd.get("phoneLocal") ?? "").trim();
+  return combinePhoneNumber(phoneCountry, phoneLocal);
+}
+
+export function validatePhoneParts(countryCode: string, localNumber: string): string | null {
+  const trimmedLocal = localNumber.trim();
+  const localDigits = trimmedLocal.replace(/\D/g, "");
+
+  if (!localDigits) return ValidationRules.phone.required;
+  if (!/^\d+$/.test(trimmedLocal.replace(/\s/g, ""))) {
+    return ValidationRules.phone.pattern;
+  }
+
+  return validateField("phone", combinePhoneNumber(countryCode, localDigits));
+}
 
 export function validateField(name: string, value: string): string | null {
   const v = value.trim();

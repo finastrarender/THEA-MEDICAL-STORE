@@ -2,34 +2,23 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
-
-function scrollToCurrentHash() {
-  const hash = window.location.hash;
-  if (!hash) return;
-
-  const id = decodeURIComponent(hash.slice(1));
-  if (!id) return;
-
-  const target = document.getElementById(id);
-  if (!target) return;
-
-  target.scrollIntoView({ block: "start" });
-}
+import { scrollToHashWithRetry, scrollToNavTargetWithRetry } from "@/lib/scroll-navigation";
 
 export default function HashScrollHandler() {
   const pathname = usePathname();
 
   useEffect(() => {
-    const scrollSoon = () => {
-      window.requestAnimationFrame(() => {
-        scrollToCurrentHash();
-        window.setTimeout(scrollToCurrentHash, 80);
-      });
+    const hash = window.location.hash;
+    if (hash) {
+      scrollToHashWithRetry(hash, "instant");
+    } else {
+      scrollToNavTargetWithRetry(pathname, "instant");
+    }
+
+    const handleHashChange = () => {
+      scrollToHashWithRetry(window.location.hash || undefined);
     };
 
-    scrollSoon();
-
-    const handleHashChange = () => scrollSoon();
     const handleClick = (event: MouseEvent) => {
       const link = (event.target as Element | null)?.closest("a[href]");
       if (!link) return;
@@ -43,7 +32,7 @@ export default function HashScrollHandler() {
         url.pathname === window.location.pathname &&
         url.hash
       ) {
-        window.setTimeout(scrollToCurrentHash, 0);
+        window.setTimeout(() => scrollToHashWithRetry(url.hash), 0);
       }
     };
 

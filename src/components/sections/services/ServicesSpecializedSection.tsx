@@ -38,7 +38,7 @@ function ImageTile({ tile }: { tile: Tile }) {
         <img
           className="thea-services-specialized__tile-photo"
           src={image}
-          alt=""
+          alt="Laboratory test tubes and clinical samples"
           width={400}
           height={520}
           loading="lazy"
@@ -62,7 +62,7 @@ function BrandTile({ tile }: { tile: Tile }) {
         <img
           className="thea-services-specialized__brand-logo"
           src={image}
-          alt=""
+          alt={tile.brandLine?.trim() ? `${tile.brandLine.trim()} logo` : "THEA Medical Store logo"}
           width={80}
           height={80}
           loading="lazy"

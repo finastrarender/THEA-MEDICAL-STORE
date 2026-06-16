@@ -37,7 +37,7 @@ export default function HomeAboutSection({
                 <img
                   className="thea-about__image"
                   src={image}
-                  alt="Clinical laboratory glassware representing pharmaceutical excellence"
+                  alt={`${title} — THEA Medical Store`}
                   width={480}
                   height={620}
                   loading="lazy"

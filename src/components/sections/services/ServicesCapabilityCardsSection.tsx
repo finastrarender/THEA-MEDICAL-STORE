@@ -26,7 +26,7 @@ export default function ServicesCapabilityCardsSection({ content }: { content: C
                     <img
                       className="thea-services-cards__image"
                       src={image}
-                      alt=""
+                      alt={card.title}
                       width={400}
                       height={260}
                       loading="lazy"

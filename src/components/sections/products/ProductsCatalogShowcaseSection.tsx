@@ -55,9 +55,9 @@ export default function ProductsCatalogShowcaseSection({ content }: { content: C
       <div className="thea-products-showcase__shell">
         <header className="thea-products-showcase__header">
           <p className="thea-products-showcase__badge">{badge}</p>
-          <h2 className="thea-products-showcase__title">
+          <h1 className="thea-products-showcase__title">
             {titleLead} <span>{titleHighlight}</span>
-          </h2>
+          </h1>
           <p className="thea-products-showcase__description">{description}</p>
         </header>
 

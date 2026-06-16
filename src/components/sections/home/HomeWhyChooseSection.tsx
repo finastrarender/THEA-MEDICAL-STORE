@@ -49,7 +49,7 @@ export default function HomeWhyChooseSection({
                     <img
                       className="thea-why__image"
                       src={image}
-                      alt="Healthcare professionals walking in a modern hospital corridor"
+                      alt={`${title} — healthcare professionals in a modern hospital`}
                       width={480}
                       height={600}
                       decoding="async"

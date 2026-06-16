@@ -6,7 +6,8 @@ import type { ComponentType } from "react";
 import type { z } from "zod";
 import type { aboutInquiryDataSchema } from "@/schemas/sections";
 import { theaAboutInquiryDefaults } from "@/data/thea-about-sections";
-import { validateInquiryForm, type InquiryFormErrors } from "@/lib/validation";
+import InquiryPhoneField from "@/components/forms/InquiryPhoneField";
+import { validateInquiryForm, getPhoneFromFormData, type InquiryFormErrors } from "@/lib/validation";
 
 type AboutInquiryContent = z.infer<typeof aboutInquiryDataSchema>;
 
@@ -43,10 +44,11 @@ export default function AboutInquirySection({ content }: { content: AboutInquiry
     e.preventDefault();
     const form = e.currentTarget;
     const fd = new FormData(form);
+    const phone = getPhoneFromFormData(fd);
     const body = {
       name: String(fd.get("name") ?? "").trim(),
       email: String(fd.get("email") ?? "").trim(),
-      phone: String(fd.get("phone") ?? "").trim(),
+      phone,
       company: String(fd.get("facility") ?? "").trim(),
       inquiryType: String(fd.get("requestType") ?? "").trim(),
       sourcePage: "about",
@@ -184,28 +186,11 @@ export default function AboutInquirySection({ content }: { content: AboutInquiry
                     </p>
                   ) : null}
                 </label>
-                <label className="thea-about-inquiry__field">
-                  <span className="thea-about-inquiry__label">PHONE NUMBER</span>
-                  <input
-                    suppressHydrationWarning
-                    name="phone"
-                    type="tel"
-                    required
-                    minLength={9}
-                    maxLength={16}
-                    inputMode="tel"
-                    autoComplete="tel"
-                    className="thea-about-inquiry__input"
-                    placeholder="+971501234567"
-                    aria-invalid={errors.phone ? "true" : undefined}
-                    aria-describedby={errors.phone ? "about-inquiry-phone-error" : undefined}
-                  />
-                  {errors.phone ? (
-                    <p className="thea-about-inquiry__field-error" id="about-inquiry-phone-error">
-                      {errors.phone}
-                    </p>
-                  ) : null}
-                </label>
+                <InquiryPhoneField
+                  variant="about"
+                  error={errors.phone}
+                  errorId="about-inquiry-phone-error"
+                />
               </div>
 
               <label className="thea-about-inquiry__field">

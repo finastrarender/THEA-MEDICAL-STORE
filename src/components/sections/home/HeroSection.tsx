@@ -80,6 +80,7 @@ export default function HeroSection({
 
   const primaryLabel = content.primaryAction?.label?.trim() || "Contact Us";
   const secondaryLabel = content.secondaryAction?.label?.trim() || "View Catalog";
+  const heroImageAlt = titleLines.join(" ").replace(/\s+/g, " ").trim();
 
   return (
     <section className="cx-hero thea-hero" id={anchorId ?? undefined}>
@@ -122,7 +123,7 @@ export default function HeroSection({
                   <img
                     className="thea-hero__image"
                     src={customImage}
-                    alt="Premium medical supplies and clinical equipment"
+                    alt={heroImageAlt || "Premium medical supplies and clinical equipment"}
                     width={584}
                     height={584}
                     decoding="async"

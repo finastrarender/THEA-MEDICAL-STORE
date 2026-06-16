@@ -574,7 +574,9 @@ function defaultSectionData(type: SectionType): Record<string, unknown> {
           label: "Dubai Headquarters",
           title: "Business Bay, Prism Tower",
           subtitle: "Level 24, Suite 2405, Dubai, UAE.",
-          mapImage: "/contact/uae-map.jpg",
+          mapImage: "",
+          mapEmbedUrl:
+            "https://maps.google.com/maps?q=Prism+Tower,+Business+Bay,+Dubai,+United+Arab+Emirates&hl=en&z=15&output=embed",
           linkLabel: "GET DIRECTIONS →",
           linkHref: "https://maps.google.com/?q=Business+Bay+Prism+Tower+Dubai",
         },

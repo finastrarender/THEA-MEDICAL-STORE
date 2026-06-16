@@ -4,7 +4,13 @@ import { theaAboutHeroDefaults } from "@/data/thea-about-sections";
 
 type AboutHeroContent = z.infer<typeof aboutHeroDataSchema>;
 
-export default function AboutHeroSection({ content }: { content: AboutHeroContent }) {
+export default function AboutHeroSection({
+  content,
+  anchorId,
+}: {
+  content: AboutHeroContent;
+  anchorId?: string;
+}) {
   const eyebrow = content.eyebrow?.trim() || theaAboutHeroDefaults.eyebrow;
   const titleLead = content.titleLead?.trim() || theaAboutHeroDefaults.titleLead;
   const titleHighlight = content.titleHighlight?.trim() || theaAboutHeroDefaults.titleHighlight;
@@ -21,7 +27,7 @@ export default function AboutHeroSection({ content }: { content: AboutHeroConten
     content.image?.trim() || content.backgroundImage?.trim() || theaAboutHeroDefaults.image;
 
   return (
-    <section className="thea-about-hero">
+    <section className="thea-about-hero" id={anchorId ?? undefined}>
       <div className="thea-about-hero__shell">
         <div className="thea-about-hero__inner">
           <div className="thea-about-hero__copy">

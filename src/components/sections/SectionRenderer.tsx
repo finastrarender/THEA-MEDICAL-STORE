@@ -164,7 +164,12 @@ export default function SectionRenderer({
     case "contactHero":
       return null;
     case "contactInquiry":
-      return <ContactInquirySection content={section.data as never} />;
+      return (
+        <ContactInquirySection
+          content={section.data as never}
+          anchorId={pageSlug === "contact" ? "contact" : undefined}
+        />
+      );
     case "servicesHero":
       return <ServicesHeroSection content={section.data as never} />;
     case "servicesAccordion":
@@ -176,7 +181,12 @@ export default function SectionRenderer({
     case "servicesLicensing":
       return <ServicesLicensingSection content={section.data as never} />;
     case "servicesPageHero":
-      return <ServicesPageHeroSection content={section.data as never} />;
+      return (
+        <ServicesPageHeroSection
+          content={section.data as never}
+          anchorId={pageSlug === "services" ? "services" : undefined}
+        />
+      );
     case "servicesCapabilityCards":
       return <ServicesCapabilityCardsSection content={section.data as never} />;
     case "servicesSpecialized":
@@ -202,7 +212,12 @@ export default function SectionRenderer({
     case "productsFooter":
       return null;
     case "aboutHero":
-      return <AboutHeroSection content={section.data as never} />;
+      return (
+        <AboutHeroSection
+          content={section.data as never}
+          anchorId={pageSlug === "about" ? "about" : undefined}
+        />
+      );
     case "aboutMission":
       return <AboutMissionSection content={section.data as never} />;
     case "aboutLeadership":

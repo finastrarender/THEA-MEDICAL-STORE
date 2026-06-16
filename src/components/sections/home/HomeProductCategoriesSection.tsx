@@ -49,7 +49,7 @@ function CategoryCard({ category }: { category: CategoryItem }) {
         <img
           className="thea-products__card-image"
           src={category.image}
-          alt=""
+          alt={category.title}
           loading="lazy"
           decoding="async"
         />

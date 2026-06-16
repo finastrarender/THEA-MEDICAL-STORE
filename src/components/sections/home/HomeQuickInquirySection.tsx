@@ -3,7 +3,8 @@
 import { useState } from "react";
 import type { z } from "zod";
 import type { homeQuickInquiryDataSchema } from "@/schemas/sections";
-import { validateInquiryForm, type InquiryFormErrors } from "@/lib/validation";
+import InquiryPhoneField from "@/components/forms/InquiryPhoneField";
+import { validateInquiryForm, getPhoneFromFormData, type InquiryFormErrors } from "@/lib/validation";
 import SimpleIcon from "../SimpleIcon";
 
 type HomeQuickInquiryContent = z.infer<typeof homeQuickInquiryDataSchema>;
@@ -50,10 +51,11 @@ export default function HomeQuickInquirySection({
     e.preventDefault();
     const form = e.currentTarget;
     const fd = new FormData(form);
+    const phone = getPhoneFromFormData(fd);
     const body = {
       name: String(fd.get("name") ?? "").trim(),
       email: String(fd.get("email") ?? "").trim(),
-      phone: String(fd.get("phone") ?? "").trim(),
+      phone,
       company: String(fd.get("facility") ?? "").trim(),
       inquiryType: String(fd.get("serviceType") ?? "").trim(),
       sourcePage: "home",
@@ -183,28 +185,11 @@ export default function HomeQuickInquirySection({
             </div>
 
             <div className="thea-inquiry__form-row">
-              <label className="thea-inquiry__field">
-                <span className="thea-inquiry__label">PHONE NUMBER</span>
-                <input
-                  suppressHydrationWarning
-                  name="phone"
-                  type="tel"
-                  required
-                  minLength={9}
-                  maxLength={16}
-                  inputMode="tel"
-                  autoComplete="tel"
-                  className="thea-inquiry__input"
-                  placeholder="+971501234567"
-                  aria-invalid={errors.phone ? "true" : undefined}
-                  aria-describedby={errors.phone ? "home-inquiry-phone-error" : undefined}
-                />
-                {errors.phone ? (
-                  <p className="thea-inquiry__field-error" id="home-inquiry-phone-error">
-                    {errors.phone}
-                  </p>
-                ) : null}
-              </label>
+              <InquiryPhoneField
+                variant="home"
+                error={errors.phone}
+                errorId="home-inquiry-phone-error"
+              />
 
               <label className="thea-inquiry__field">
                 <span className="thea-inquiry__label">FACILITY NAME</span>

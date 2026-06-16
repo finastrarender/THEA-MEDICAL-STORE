@@ -25,13 +25,19 @@ function HeroDecorIcon({ className }: { className?: string }) {
   );
 }
 
-export default function ServicesPageHeroSection({ content }: { content: Content }) {
+export default function ServicesPageHeroSection({
+  content,
+  anchorId,
+}: {
+  content: Content;
+  anchorId?: string;
+}) {
   const badge = content.badge?.trim() || theaServicesPageHeroDefaults.badge;
   const title = content.title?.trim() || theaServicesPageHeroDefaults.title;
   const description = content.description?.trim() || theaServicesPageHeroDefaults.description;
 
   return (
-    <section className="thea-services-hero">
+    <section className="thea-services-hero" id={anchorId ?? undefined}>
       <div className="thea-services-hero__shell">
         <div className="thea-services-hero__inner">
           <div className="thea-services-hero__copy">

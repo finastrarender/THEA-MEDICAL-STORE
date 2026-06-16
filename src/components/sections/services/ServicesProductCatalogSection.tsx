@@ -117,7 +117,7 @@ export default function ServicesProductCatalogSection({ content }: { content: Co
                   <img
                     className="thea-services-catalog__image"
                     src={image}
-                    alt=""
+                    alt={product.title}
                     width={320}
                     height={320}
                     loading="lazy"

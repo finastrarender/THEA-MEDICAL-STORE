@@ -3662,6 +3662,7 @@ type ContactInquiryFormValues = {
   matrixTitle: string;
   matrixSubtitle: string;
   matrixMapImage: string;
+  matrixMapEmbedUrl: string;
   matrixLinkLabel: string;
   matrixLinkHref: string;
 };
@@ -3743,8 +3744,10 @@ function toContactInquiryDefaultValues(
     matrixLabel: (matrix.label as string) ?? "Dubai Headquarters",
     matrixTitle: (matrix.title as string) ?? "Business Bay, Prism Tower",
     matrixSubtitle: (matrix.subtitle as string) ?? "Level 24, Suite 2405, Dubai, UAE.",
-    matrixMapImage:
-      (matrix.mapImage as string) ?? (data.mapImage as string) ?? "/contact/uae-map.jpg",
+    matrixMapImage: (matrix.mapImage as string) ?? (data.mapImage as string) ?? "",
+    matrixMapEmbedUrl:
+      (matrix.mapEmbedUrl as string) ??
+      "https://maps.google.com/maps?q=Prism+Tower,+Business+Bay,+Dubai,+United+Arab+Emirates&hl=en&z=15&output=embed",
     matrixLinkLabel: (matrix.linkLabel as string) ?? "GET DIRECTIONS →",
     matrixLinkHref:
       (matrix.linkHref as string) ??
@@ -3825,6 +3828,7 @@ export function ContactInquirySectionForm({
         title: values.matrixTitle.trim(),
         subtitle: values.matrixSubtitle.trim(),
         mapImage: values.matrixMapImage.trim(),
+        mapEmbedUrl: values.matrixMapEmbedUrl.trim(),
         linkLabel: values.matrixLinkLabel.trim(),
         linkHref: values.matrixLinkHref.trim(),
       },
@@ -4002,16 +4006,23 @@ export function ContactInquirySectionForm({
           Address line 2
           <input {...register("matrixSubtitle", { required: true })} />
         </label>
-        <input type="hidden" {...register("matrixMapImage", { required: true })} />
+        <input type="hidden" {...register("matrixMapImage")} />
         <ImageUploadField
-          label="Map image"
+          label="Map image (optional — used only when embed URL is empty)"
           value={matrixMapImage}
           onChange={(value) =>
             setValue("matrixMapImage", value, { shouldDirty: true, shouldValidate: true })
           }
           folder={`sections/${section.type}`}
-          placeholder="/contact/uae-map.jpg"
+          placeholder="Leave empty to use Google Maps embed"
         />
+        <label>
+          Map embed URL
+          <input
+            {...register("matrixMapEmbedUrl", { required: true })}
+            placeholder="https://maps.google.com/maps?q=..."
+          />
+        </label>
         <label>
           Link label
           <input {...register("matrixLinkLabel", { required: true })} />

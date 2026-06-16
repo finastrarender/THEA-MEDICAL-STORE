@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { formatAdminDateTime } from "@/lib/format-admin-date";
 
 export type AdminInquiry = {
   id: string;
@@ -108,7 +109,7 @@ export default function InquiriesList({ inquiries: initialInquiries, onDeleted }
             <span className="admin-dashboard__page-meta">{inquiry.message}</span>
             <span className="admin-dashboard__page-link">
               {inquiry.createdAt
-                ? new Date(inquiry.createdAt).toLocaleString()
+                ? formatAdminDateTime(inquiry.createdAt)
                 : "New inquiry"}
             </span>
           </article>

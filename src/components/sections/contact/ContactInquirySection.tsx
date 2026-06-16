@@ -3,7 +3,8 @@
 import { useState } from "react";
 import type { z } from "zod";
 import type { contactInquiryDataSchema } from "@/schemas/sections";
-import { validateInquiryForm, type InquiryFormErrors } from "@/lib/validation";
+import InquiryPhoneField from "@/components/forms/InquiryPhoneField";
+import { validateInquiryForm, getPhoneFromFormData, type InquiryFormErrors } from "@/lib/validation";
 import SimpleIcon from "../SimpleIcon";
 
 type ContactInquiryContent = z.infer<typeof contactInquiryDataSchema>;
@@ -42,10 +43,14 @@ const DEFAULT_MATRIX = {
   label: "Dubai Headquarters",
   title: "Business Bay, Prism Tower",
   subtitle: "Level 24, Suite 2405, Dubai, UAE.",
-  mapImage: "/contact/uae-map.jpg",
+  mapImage: "",
+  mapEmbedUrl:
+    "https://maps.google.com/maps?q=Prism+Tower,+Business+Bay,+Dubai,+United+Arab+Emirates&hl=en&z=15&output=embed",
   linkLabel: "GET DIRECTIONS →",
   linkHref: "https://maps.google.com/?q=Business+Bay+Prism+Tower+Dubai",
 };
+
+const LEGACY_MAP_IMAGE = "/contact/uae-map.jpg";
 
 const DEFAULT_INQUIRY_OPTIONS = [
   "General Inquiry",
@@ -116,7 +121,13 @@ function resolveComplianceText(content: ContactInquiryContent) {
   return DEFAULT_COMPLIANCE.text;
 }
 
-export default function ContactInquirySection({ content }: { content: ContactInquiryContent }) {
+export default function ContactInquirySection({
+  content,
+  anchorId,
+}: {
+  content: ContactInquiryContent;
+  anchorId?: string;
+}) {
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "err">("idle");
   const [feedback, setFeedback] = useState("");
   const [errors, setErrors] = useState<InquiryFormErrors>({});
@@ -142,7 +153,6 @@ export default function ContactInquirySection({ content }: { content: ContactInq
   const companyLabel = formFields.companyLabel?.trim() || "FACILITY NAME";
   const companyPlaceholder = formFields.companyPlaceholder?.trim() || "Dubai Medical Center";
   const phoneLabel = "PHONE NUMBER";
-  const phonePlaceholder = "+971501234567";
   const messagePlaceholder =
     formFields.messagePlaceholder?.trim() || "Detail your clinical requirements here...";
 
@@ -160,16 +170,26 @@ export default function ContactInquirySection({ content }: { content: ContactInq
       content.locationMatrix?.mapImage?.trim() ||
       content.mapImage?.trim() ||
       DEFAULT_MATRIX.mapImage,
+    mapEmbedUrl:
+      content.locationMatrix?.mapEmbedUrl?.trim() ||
+      DEFAULT_MATRIX.mapEmbedUrl,
   };
+
+  const mapEmbedUrl = matrix.mapEmbedUrl?.trim() || DEFAULT_MATRIX.mapEmbedUrl;
+  const mapImage = matrix.mapImage?.trim();
+  const useStaticMap =
+    Boolean(mapImage) && mapImage !== LEGACY_MAP_IMAGE && !content.locationMatrix?.mapEmbedUrl?.trim();
+  const mapAlt = `${matrix.label} — ${matrix.title}`;
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
     const fd = new FormData(form);
+    const phone = getPhoneFromFormData(fd);
     const body = {
       name: String(fd.get("name") ?? "").trim(),
       email: String(fd.get("email") ?? "").trim(),
-      phone: String(fd.get("phone") ?? "").trim(),
+      phone,
       company: String(fd.get("facility") ?? "").trim(),
       inquiryType: String(fd.get("requestType") ?? "").trim(),
       sourcePage: "contact",
@@ -222,7 +242,7 @@ export default function ContactInquirySection({ content }: { content: ContactInq
   }
 
   return (
-    <div className="cx-contact">
+    <div className="cx-contact" id={anchorId ?? undefined}>
       <section className="cx-contact__main" aria-labelledby="cx-contact-title">
         <div className="section-shell cx-contact__shell">
           <header className="cx-contact__hero">
@@ -355,28 +375,12 @@ export default function ContactInquirySection({ content }: { content: ContactInq
                       </p>
                     ) : null}
                   </label>
-                  <label className="cx-contact__field">
-                    <span className="cx-contact__label">{phoneLabel}</span>
-                    <input
-                      suppressHydrationWarning
-                      name="phone"
-                      type="tel"
-                      required
-                      minLength={9}
-                      maxLength={16}
-                      inputMode="tel"
-                      autoComplete="tel"
-                      className="cx-contact__input"
-                      placeholder={phonePlaceholder}
-                      aria-invalid={errors.phone ? "true" : undefined}
-                      aria-describedby={errors.phone ? "contact-inquiry-phone-error" : undefined}
-                    />
-                    {errors.phone ? (
-                      <p className="cx-contact__field-error" id="contact-inquiry-phone-error">
-                        {errors.phone}
-                      </p>
-                    ) : null}
-                  </label>
+                  <InquiryPhoneField
+                    variant="contact"
+                    label={phoneLabel}
+                    error={errors.phone}
+                    errorId="contact-inquiry-phone-error"
+                  />
                 </div>
 
                 <label className="cx-contact__field">
@@ -479,14 +483,25 @@ export default function ContactInquirySection({ content }: { content: ContactInq
       <section className="cx-contact__matrix-band" aria-labelledby="cx-contact-matrix-title">
         <div className="section-shell cx-contact__matrix-shell">
           <div className="cx-contact__matrix-media">
-            <img
-              src={matrix.mapImage}
-              alt=""
-              width={1600}
-              height={700}
-              decoding="async"
-              loading="lazy"
-            />
+            {useStaticMap ? (
+              <img
+                src={mapImage}
+                alt={mapAlt}
+                width={1600}
+                height={700}
+                decoding="async"
+                loading="lazy"
+              />
+            ) : (
+              <iframe
+                className="cx-contact__matrix-embed"
+                src={mapEmbedUrl}
+                title={mapAlt}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
+              />
+            )}
             <article className="cx-contact__matrix-card">
               <h2 id="cx-contact-matrix-title" className="cx-contact__matrix-title">
                 {matrix.label}
@@ -500,7 +515,12 @@ export default function ContactInquirySection({ content }: { content: ContactInq
                   </>
                 ) : null}
               </p>
-              <a className="cx-contact__matrix-link" href={matrix.linkHref}>
+              <a
+                className="cx-contact__matrix-link"
+                href={matrix.linkHref}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 {matrix.linkLabel}
               </a>
             </article>

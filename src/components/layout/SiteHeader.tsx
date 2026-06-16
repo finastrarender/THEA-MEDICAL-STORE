@@ -2,15 +2,45 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import { normalizeSitePath } from "@/lib/site-path";
+import { scrollToHash, scrollToNavTarget } from "@/lib/scroll-navigation";
 import { defaultHeaderActions } from "@/data/site-defaults";
 
 export type NavItem = { label: string; href: string; active?: boolean };
 
 function isActive(pathname: string, href: string) {
-  if (href === "/") return pathname === "/";
-  return pathname === href || pathname.startsWith(`${href}/`);
+  const path = href.split("#")[0] || "/";
+  if (path === "/") return pathname === "/";
+  return pathname === path || pathname.startsWith(`${path}/`);
+}
+
+function handleInPageNavClick(
+  event: MouseEvent<HTMLAnchorElement>,
+  href: string,
+  pathname: string,
+  onNavigate?: () => void,
+) {
+  const url = new URL(href, window.location.origin);
+  const targetPath = url.pathname || "/";
+  const samePage =
+    targetPath === pathname ||
+    (targetPath === "/" && pathname === "/");
+
+  if (!samePage) {
+    onNavigate?.();
+    return;
+  }
+
+  event.preventDefault();
+  onNavigate?.();
+
+  if (url.hash) {
+    scrollToHash(url.hash);
+    return;
+  }
+
+  scrollToNavTarget(targetPath);
 }
 
 const CENTER_NAV = [
@@ -96,7 +126,12 @@ export default function SiteHeader({
     <header className="site-header site-header--institutional site-header--thea">
       <div className="site-header__shell section-shell">
         <div className="site-header__inner">
-          <Link className="brand" href="/" aria-label={`${brand} home`}>
+          <Link
+            className="brand"
+            href="/"
+            aria-label={`${brand} home`}
+            onClick={(event) => handleInPageNavClick(event, "/", pathname)}
+          >
             <span className="brand__title">{brand}</span>
           </Link>
 
@@ -113,7 +148,9 @@ export default function SiteHeader({
                   className={`site-nav__link${active ? " site-nav__link--active" : ""}`}
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={(event) =>
+                    handleInPageNavClick(event, item.href, pathname, () => setIsMenuOpen(false))
+                  }
                 >
                   {item.label}
                   {active ? (

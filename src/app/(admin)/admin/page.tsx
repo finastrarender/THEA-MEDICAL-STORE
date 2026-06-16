@@ -1,10 +1,8 @@
 import Link from "next/link";
 import { auth } from "@/auth";
 import { connectMongo } from "@/lib/mongoose";
-import ContactLead from "@/models/ContactLead";
 import Page from "@/models/Page";
 import { redirect } from "next/navigation";
-import InquiriesList from "@/components/admin/InquiriesList";
 import LogoutButton from "@/components/admin/LogoutButton";
 
 export default async function AdminDashboardPage() {
@@ -15,20 +13,6 @@ export default async function AdminDashboardPage() {
 
   await connectMongo();
   const pages = await Page.find({}).sort({ slug: 1 }).lean();
-  const inquiryDocs = await ContactLead.find({})
-    .sort({ createdAt: -1 })
-    .limit(10)
-    .lean();
-  const inquiries = inquiryDocs.map((inquiry) => ({
-    id: String(inquiry._id),
-    name: inquiry.name,
-    email: inquiry.email,
-    phone: inquiry.phone ?? "",
-    company: inquiry.company ?? "",
-    inquiryType: inquiry.inquiryType ?? "",
-    message: inquiry.message,
-    createdAt: inquiry.createdAt ? new Date(inquiry.createdAt).toISOString() : "",
-  }));
   const hasHome = pages.some((page) => page.slug === "home");
 
   return (
@@ -97,15 +81,6 @@ export default async function AdminDashboardPage() {
               <p className="admin-muted">No pages found.</p>
             ) : null}
           </div>
-        </section>
-
-        <section className="admin-dashboard__section">
-          <div className="admin-dashboard__section-head">
-            <h2>Thea Inquiries</h2>
-            <p className="admin-muted">Latest messages sent from the home page quick inquiry form.</p>
-          </div>
-
-          <InquiriesList inquiries={inquiries} />
         </section>
 
         <section className="admin-dashboard__section">
