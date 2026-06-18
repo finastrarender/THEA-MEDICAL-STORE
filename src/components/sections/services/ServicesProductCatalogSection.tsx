@@ -103,7 +103,8 @@ export default function ServicesProductCatalogSection({ content }: { content: Co
         </header>
 
         <div className="thea-services-catalog__grid">
-          {products.map((product) => {
+          {products.map((product, index) => {
+            const productKey = `${product.filterId}-${product.title}-${index}`;
             const defaultProduct =
               theaServicesProductCatalogDefaults.products.find((p) => p.title === product.title) ||
               theaPharmaceuticalMedicinesCatalogDefaults.products.find((p) => p.title === product.title);
@@ -141,7 +142,7 @@ export default function ServicesProductCatalogSection({ content }: { content: Co
             if (href) {
               return (
                 <a
-                  key={product.title}
+                  key={productKey}
                   href={href}
                   className="thea-services-catalog__card thea-services-catalog__card--link"
                   data-filter-id={filterId}
@@ -154,7 +155,7 @@ export default function ServicesProductCatalogSection({ content }: { content: Co
 
             return (
               <article
-                key={product.title}
+                key={productKey}
                 className="thea-services-catalog__card"
                 data-filter-id={filterId}
               >

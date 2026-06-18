@@ -16213,6 +16213,22 @@ a.cx-contact__hq-value:focus-visible {
   box-shadow: 0 12px 36px rgba(59, 199, 196, 0.36);
 }
 
+.cx-site .thea-services-specialized__tile--brand-art {
+  padding: 0;
+  align-items: stretch;
+  justify-content: stretch;
+  text-align: left;
+  box-shadow: 0 8px 32px rgba(59, 199, 196, 0.28);
+}
+
+.cx-site .thea-services-specialized__tile--brand-art:hover {
+  box-shadow: 0 14px 40px rgba(59, 199, 196, 0.36);
+}
+
+.cx-site .thea-services-specialized__tile--brand-art .thea-services-specialized__tile-photo {
+  object-fit: contain;
+}
+
 .cx-site .thea-services-specialized__tile--product {
   justify-content: flex-start;
   padding: clamp(18px, 2vw, 24px);
@@ -16275,7 +16291,8 @@ a.cx-contact__hq-value:focus-visible {
   background: linear-gradient(160deg, #3bc7c4 0%, #0d9488 55%, #115e59 100%);
 }
 
-.cx-site .thea-services-specialized__brand-logo {
+.cx-site .thea-services-specialized__brand-logo--mono {
+  flex-shrink: 0;
   width: clamp(64px, 8vw, 80px);
   height: clamp(64px, 8vw, 80px);
   margin-bottom: 14px;

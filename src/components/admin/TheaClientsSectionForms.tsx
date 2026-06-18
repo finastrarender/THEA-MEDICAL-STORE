@@ -4,6 +4,9 @@ import { useMemo } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import ImageUploadField from "@/components/admin/ImageUploadField";
 import SectionSaveFooter from "@/components/admin/SectionSaveFooter";
+import TheaHomeIconPicker from "@/components/admin/TheaHomeIconPicker";
+import ClientsComplianceIcon from "@/components/sections/clients/ClientsComplianceIcon";
+import ClientsSectorIcon from "@/components/sections/clients/ClientsSectorIcon";
 import {
   THEA_CLIENTS_COMPLIANCE_ICONS,
   THEA_CLIENTS_SECTOR_ICONS,
@@ -201,14 +204,19 @@ export function ClientsSectorsSectionForm({
               </select>
             </label>
             <label>
-              Icon
-              <select {...register(`cards.${index}.icon` as const)}>
-                {THEA_CLIENTS_SECTOR_ICONS.map((opt) => (
-                  <option key={opt.key} value={opt.key}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+              <span className="admin-field-label">Icon</span>
+              <input type="hidden" {...register(`cards.${index}.icon` as const)} />
+              <TheaHomeIconPicker
+                value={watchedCards?.[index]?.icon}
+                onChange={(icon) =>
+                  setValue(`cards.${index}.icon`, icon, { shouldDirty: true })
+                }
+                options={THEA_CLIENTS_SECTOR_ICONS}
+                fallbackKey="hospital"
+                renderIcon={(name, className) => (
+                  <ClientsSectorIcon name={name} className={className} />
+                )}
+              />
             </label>
             <label>
               Title
@@ -307,7 +315,7 @@ export function ClientsComplianceSectionForm({
     [section.data],
   );
 
-  const { register, control, handleSubmit, formState: { isSubmitting } } = useForm({
+  const { register, control, handleSubmit, setValue, watch, formState: { isSubmitting } } = useForm({
     defaultValues,
   });
   const { fields: badgeFields, append: appendBadge, remove: removeBadge } = useFieldArray({
@@ -318,6 +326,7 @@ export function ClientsComplianceSectionForm({
     control,
     name: "certifications",
   });
+  const watchedCertifications = watch("certifications");
 
   return (
     <form
@@ -359,14 +368,19 @@ export function ClientsComplianceSectionForm({
       {certFields.map((field, index) => (
         <div key={field.id} className="admin-field-group">
           <label>
-            Icon
-            <select {...register(`certifications.${index}.icon` as const)}>
-              {THEA_CLIENTS_COMPLIANCE_ICONS.map((opt) => (
-                <option key={opt.key} value={opt.key}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
+            <span className="admin-field-label">Icon</span>
+            <input type="hidden" {...register(`certifications.${index}.icon` as const)} />
+            <TheaHomeIconPicker
+              value={watchedCertifications?.[index]?.icon}
+              onChange={(icon) =>
+                setValue(`certifications.${index}.icon`, icon, { shouldDirty: true })
+              }
+              options={THEA_CLIENTS_COMPLIANCE_ICONS}
+              fallbackKey="shieldMedical"
+              renderIcon={(name, className) => (
+                <ClientsComplianceIcon name={name} className={className} />
+              )}
+            />
           </label>
           <label>
             Label

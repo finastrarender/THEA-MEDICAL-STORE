@@ -6,6 +6,16 @@ import ServicesCapabilityIcon from "./ServicesCapabilityIcon";
 type Content = z.infer<typeof servicesSpecializedDataSchema>;
 type Tile = Content["tiles"][number];
 
+const DEFAULT_BRAND_LOGO = "/home/headerLogo.svg";
+
+function normalizeAssetPath(url: string) {
+  return url.split("?")[0]?.split("#")[0] ?? url;
+}
+
+function isDefaultBrandLogo(url: string) {
+  return normalizeAssetPath(url) === DEFAULT_BRAND_LOGO;
+}
+
 function resolveTile(tiles: Tile[], variant: Tile["variant"]): Tile {
   return (
     tiles.find((t) => t.variant === variant) ??
@@ -56,13 +66,36 @@ function BrandTile({ tile }: { tile: Tile }) {
   const image =
     tile.image?.trim() ||
     (theaServicesSpecializedDefaults.tiles.find((t) => t.variant === "brand")?.image ?? "");
+  const useCustomBrandArt = image ? !isDefaultBrandLogo(image) : false;
+  const brandAlt = tile.brandLine?.trim()
+    ? `${tile.brandLine.trim()} logo`
+    : "THEA Medical Store logo";
+
+  if (useCustomBrandArt) {
+    return (
+      <article
+        className="thea-services-specialized__tile thea-services-specialized__tile--brand thea-services-specialized__tile--brand-art"
+      >
+        <img
+          className="thea-services-specialized__tile-photo"
+          src={image}
+          alt={brandAlt}
+          width={400}
+          height={520}
+          loading="lazy"
+          decoding="async"
+        />
+      </article>
+    );
+  }
+
   return (
     <article className="thea-services-specialized__tile thea-services-specialized__tile--brand">
       {image ? (
         <img
-          className="thea-services-specialized__brand-logo"
+          className="thea-services-specialized__brand-logo thea-services-specialized__brand-logo--mono"
           src={image}
-          alt={tile.brandLine?.trim() ? `${tile.brandLine.trim()} logo` : "THEA Medical Store logo"}
+          alt={brandAlt}
           width={80}
           height={80}
           loading="lazy"
