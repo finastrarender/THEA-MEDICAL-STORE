@@ -153,7 +153,10 @@ export const homeServicesLimits = {
 
 export const whyChooseLimits = {
   title: getSeededLength("Why Choose THEA Medical Store"),
+  subheading: getSeededLength("We combine deep local expertise with international standard supply chain protocols."),
   description: getSeededLength("We combine deep local expertise with international standard supply chain protocols."),
+  itemTitle: getSeededLength("MOHAP CERTIFIED"),
+  itemDescription: getSeededLength("Ensuring all products meet the rigorous safety and quality standards of the UAE Ministry of Health."),
   cardTitle: getSeededLength("MOHAP CERTIFIED"),
   cardDescription: getSeededLength("Ensuring all products meet the rigorous safety and quality standards of the UAE Ministry of Health."),
 };
@@ -161,6 +164,7 @@ export const whyChooseLimits = {
 export const ctaSectionLimits = {
   title: getSeededLength("READY TO ELEVATE YOUR CLINICAL INFRASTRUCTURE?"),
   description: getSeededLength("Partner with the UAE's premier medical distribution and equipment firm for unparalleled expertise and reliability."),
+  actionLabel: getSeededLength("REQUEST CREDENTIALS"),
   primaryLabel: getSeededLength("REQUEST CREDENTIALS"),
   secondaryLabel: getSeededLength("VIEW SOLUTIONS"),
 };

@@ -46,9 +46,15 @@ function handleInPageNavClick(
 export default function SiteHeader({
   navItems,
   brandTitle = "THEA Medical Store",
+  headerActions = defaultHeaderActions,
 }: {
   navItems: NavItem[];
   brandTitle?: string;
+  headerActions?: {
+    contactLabel: string;
+    inquireLabel: string;
+    inquireHref: string;
+  };
 }) {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);

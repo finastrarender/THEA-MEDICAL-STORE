@@ -453,9 +453,10 @@ export function ServicesSectionForm({
     handleSubmit,
     watch,
     formState: { errors, isSubmitting },
-  } = useForm<CapabilityFormValues>({ defaultValues });
+  } = useForm<ServicesFormValues>({ defaultValues });
   const { fields, append, remove } = useFieldArray({ control, name: "cards" });
 
+  const eyebrow = watch("eyebrow") ?? "";
   const title = watch("title") ?? "";
   const description = watch("description") ?? "";
   const cards = watch("cards");
