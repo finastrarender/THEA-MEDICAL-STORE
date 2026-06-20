@@ -8,11 +8,25 @@ import {
   type RefObject,
 } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
+import { Plus, Trash2 } from "lucide-react";
 import ImageUploadField from "@/components/admin/ImageUploadField";
+import CharacterCount from "@/components/admin/CharacterCount";
 import ContactHqIconPicker from "@/components/admin/ContactHqIconPicker";
 import ProjectsIntegrityIconPicker from "@/components/admin/ProjectsIntegrityIconPicker";
 import SectionSaveFooter from "@/components/admin/SectionSaveFooter";
 import IconPicker, { HOME_SERVICE_CARD_ICON_OPTIONS } from "./IconPicker";
+import {
+  introLimits,
+  servicesLimits,
+  servicesGridLimits,
+  capabilityCardsLimits,
+  homeAboutLimits,
+  trustedByLimits,
+  whyChooseLimits,
+  productCategoriesLimits,
+  qualityGridLimits,
+  ctaSectionLimits,
+} from "@/lib/seeded-lengths";
 
 type SectionRow = {
   id: string;
@@ -173,8 +187,8 @@ type IntroFormValues = {
 function toIntroDefaultValues(data: Record<string, unknown>): IntroFormValues {
   const stats = Array.isArray(data.stats)
     ? (data.stats as Array<{ value?: string; label?: string }>)
-        .map((s) => `${s.value ?? ""} | ${s.label ?? ""}`)
-        .join("\n")
+      .map((s) => `${s.value ?? ""} | ${s.label ?? ""}`)
+      .join("\n")
     : "UAE | JURISDICTION\nRAK | ECONOMIC ZONE";
 
   return {
@@ -205,8 +219,25 @@ export function IntroSectionForm({
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<IntroFormValues>({ defaultValues });
+
+  const titleLines = watch("titleLines");
+  const description = watch("description");
+  const more = watch("more");
+  const cardLabel = watch("cardLabel");
+  const cardDescription = watch("cardDescription");
+  const cardLinkLabel = watch("cardLinkLabel");
+
+  const limits = useMemo(() => ({
+    titleLines: Math.max(introLimits.titleLines, defaultValues.titleLines.length),
+    description: Math.max(introLimits.description, defaultValues.description.length),
+    more: Math.max(introLimits.more, defaultValues.more.length),
+    cardLabel: Math.max(introLimits.cardLabel, defaultValues.cardLabel.length),
+    cardDescription: Math.max(introLimits.cardDescription, defaultValues.cardDescription.length),
+    cardLinkLabel: Math.max(introLimits.cardLinkLabel, defaultValues.cardLinkLabel.length),
+  }), [defaultValues]);
 
   function handleValid(values: IntroFormValues) {
     const stats = values.statsLines
@@ -251,10 +282,17 @@ export function IntroSectionForm({
       <SectionHeading section={section} />
 
       <label>
-        Title lines (one per line)
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Title lines (one per line)
+          <CharacterCount current={titleLines.length} max={limits.titleLines} />
+        </div>
         <textarea
           rows={2}
-          {...register("titleLines", { required: "Title is required" })}
+          {...register("titleLines", {
+            required: "Title is required",
+            maxLength: limits.titleLines,
+          })}
+          maxLength={limits.titleLines}
           placeholder={"The Foundation of\nDigital Trust"}
         />
         {errors.titleLines ? (
@@ -263,10 +301,17 @@ export function IntroSectionForm({
       </label>
 
       <label>
-        Description (paragraph 1)
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Description (paragraph 1)
+          <CharacterCount current={description.length} max={limits.description} />
+        </div>
         <textarea
           rows={4}
-          {...register("description", { required: "Description is required" })}
+          {...register("description", {
+            required: "Description is required",
+            maxLength: limits.description,
+          })}
+          maxLength={limits.description}
           placeholder="Cryptonexis Limited stands at the forefront of the UAE's evolving digital economy..."
         />
         {errors.description ? (
@@ -275,10 +320,14 @@ export function IntroSectionForm({
       </label>
 
       <label>
-        Description (paragraph 2)
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Description (paragraph 2)
+          <CharacterCount current={more.length} max={limits.more} />
+        </div>
         <textarea
           rows={4}
-          {...register("more")}
+          {...register("more", { maxLength: limits.more })}
+          maxLength={limits.more}
           placeholder="Our approach is built on three core pillars..."
         />
       </label>
@@ -295,22 +344,40 @@ export function IntroSectionForm({
       <h4>Licensing card</h4>
 
       <label>
-        Card label
-        <input {...register("cardLabel")} placeholder="LICENSING AUTHORITY" />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Card label
+          <CharacterCount current={cardLabel.length} max={limits.cardLabel} />
+        </div>
+        <input
+          {...register("cardLabel", { maxLength: limits.cardLabel })}
+          maxLength={limits.cardLabel}
+          placeholder="LICENSING AUTHORITY"
+        />
       </label>
 
       <label>
-        Card description
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Card description
+          <CharacterCount current={cardDescription.length} max={limits.cardDescription} />
+        </div>
         <textarea
           rows={3}
-          {...register("cardDescription")}
+          {...register("cardDescription", { maxLength: limits.cardDescription })}
+          maxLength={limits.cardDescription}
           placeholder="Cryptonexis Limited is registered and regulated within the RAK Economic Zone..."
         />
       </label>
 
       <label>
-        Card link label
-        <input {...register("cardLinkLabel")} placeholder="REVIEW CERTIFICATION" />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Card link label
+          <CharacterCount current={cardLinkLabel.length} max={limits.cardLinkLabel} />
+        </div>
+        <input
+          {...register("cardLinkLabel", { maxLength: limits.cardLinkLabel })}
+          maxLength={limits.cardLinkLabel}
+          placeholder="REVIEW CERTIFICATION"
+        />
       </label>
 
       <label>
@@ -359,12 +426,12 @@ function toServicesDefaultValues(
     cards:
       rawCards.length > 0
         ? rawCards.map((card) => ({
-            icon: (card.icon as string) ?? "spark",
-            title: (card.title as string) ?? "",
-            description: (card.description as string) ?? "",
-            category: (card.category as string) ?? "",
-            iconImage: (card.iconImage as string) ?? "",
-          }))
+          icon: (card.icon as string) ?? "spark",
+          title: (card.title as string) ?? "",
+          description: (card.description as string) ?? "",
+          category: (card.category as string) ?? "",
+          iconImage: (card.iconImage as string) ?? "",
+        }))
         : [{ icon: "spark", title: "", description: "", category: "", iconImage: "" }],
   };
 }
@@ -384,9 +451,23 @@ export function ServicesSectionForm({
     register,
     control,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
-  } = useForm<ServicesFormValues>({ defaultValues });
+  } = useForm<CapabilityFormValues>({ defaultValues });
   const { fields, append, remove } = useFieldArray({ control, name: "cards" });
+
+  const title = watch("title") ?? "";
+  const description = watch("description") ?? "";
+  const cards = watch("cards");
+
+  const limits = useMemo(() => ({
+    eyebrow: Math.max(servicesLimits.eyebrow, defaultValues.eyebrow.length),
+    title: Math.max(servicesLimits.title, defaultValues.title.length),
+    description: Math.max(servicesLimits.description, defaultValues.description.length),
+    cardTitle: Math.max(servicesLimits.cardTitle, defaultValues.cards.reduce((max, c) => Math.max(max, c.title.length), 0)),
+    cardDescription: Math.max(servicesLimits.cardDescription, defaultValues.cards.reduce((max, c) => Math.max(max, c.description.length), 0)),
+  }), [defaultValues]);
+
   const iconOptionLabels: Record<string, string> = {
     shield: "Cybersecurity (shield)",
     nodes: "Data & Cloud (network)",
@@ -427,9 +508,16 @@ export function ServicesSectionForm({
       <SectionHeading section={section} />
 
       <label>
-        Eyebrow
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Eyebrow
+          <CharacterCount current={eyebrow.length} max={limits.eyebrow} />
+        </div>
         <input
-          {...register("eyebrow", { required: "Eyebrow is required" })}
+          {...register("eyebrow", {
+            required: "Eyebrow is required",
+            maxLength: limits.eyebrow,
+          })}
+          maxLength={limits.eyebrow}
           placeholder="OUR CAPABILITIES"
         />
         {errors.eyebrow ? (
@@ -438,9 +526,16 @@ export function ServicesSectionForm({
       </label>
 
       <label>
-        Title
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Title
+          <CharacterCount current={title.length} max={limits.title} />
+        </div>
         <input
-          {...register("title", { required: "Title is required" })}
+          {...register("title", {
+            required: "Title is required",
+            maxLength: limits.title,
+          })}
+          maxLength={limits.title}
           placeholder="CORE PILLARS"
         />
         <FieldHint>Main heading for this services block.</FieldHint>
@@ -450,10 +545,17 @@ export function ServicesSectionForm({
       </label>
 
       <label>
-        Description
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Description
+          <CharacterCount current={description.length} max={limits.description} />
+        </div>
         <textarea
           rows={4}
-          {...register("description", { required: "Description is required" })}
+          {...register("description", {
+            required: "Description is required",
+            maxLength: limits.description,
+          })}
+          maxLength={limits.description}
           placeholder="Briefly describe your service offering and value."
         />
         <FieldHint>Use a short summary that supports the heading.</FieldHint>
@@ -467,22 +569,32 @@ export function ServicesSectionForm({
         {fields.map((field, index) => (
           <div key={field.id} className="admin-section-card">
             <label>
-              Card title
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                Card title
+                <CharacterCount current={(cards?.[index]?.title ?? "").length} max={limits.cardTitle} />
+              </div>
               <input
                 {...register(`cards.${index}.title`, {
                   required: "Card title is required",
+                  maxLength: limits.cardTitle,
                 })}
+                maxLength={limits.cardTitle}
                 placeholder="Business Setup"
               />
               <FieldHint>Short name of this service card.</FieldHint>
             </label>
             <label>
-              Card description
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                Card description
+                <CharacterCount current={(cards?.[index]?.description ?? "").length} max={limits.cardDescription} />
+              </div>
               <textarea
                 rows={3}
                 {...register(`cards.${index}.description`, {
                   required: "Card description is required",
+                  maxLength: limits.cardDescription,
                 })}
+                maxLength={limits.cardDescription}
                 placeholder="Describe what this service includes."
               />
               <FieldHint>1-2 lines explaining this service.</FieldHint>
@@ -572,15 +684,15 @@ function toServicesAccordionDefaultValues(
     cards:
       rawCards.length > 0
         ? rawCards.map((card) => ({
-            title: (card.title as string) ?? "",
-            description: (card.description as string) ?? "",
-            category: (card.category as string) ?? "",
-            icon: (card.icon as string) ?? "",
-            iconImage: (card.iconImage as string) ?? "",
-            pointsLines: Array.isArray(card.points)
-              ? (card.points as string[]).join("\n")
-              : "",
-          }))
+          title: (card.title as string) ?? "",
+          description: (card.description as string) ?? "",
+          category: (card.category as string) ?? "",
+          icon: (card.icon as string) ?? "",
+          iconImage: (card.iconImage as string) ?? "",
+          pointsLines: Array.isArray(card.points)
+            ? (card.points as string[]).join("\n")
+            : "",
+        }))
         : [{ title: "", description: "", category: "", icon: "", iconImage: "", pointsLines: "" }],
   };
 }
@@ -606,6 +718,12 @@ export function ServicesAccordionSectionForm({
   } = useForm<ServicesAccordionFormValues>({ defaultValues });
   const { fields, append, remove } = useFieldArray({ control, name: "cards" });
   const cards = watch("cards");
+
+  const limits = useMemo(() => ({
+    cardTitle: Math.max(servicesGridLimits.cardTitle, defaultValues.cards.reduce((max, c) => Math.max(max, c.title.length), 0)),
+    cardDescription: Math.max(servicesGridLimits.cardDescription, defaultValues.cards.reduce((max, c) => Math.max(max, c.description.length), 0)),
+    cardCategory: Math.max(servicesGridLimits.cardCategory, defaultValues.cards.reduce((max, c) => Math.max(max, c.category.length), 0)),
+  }), [defaultValues]);
 
   function handleValid(values: ServicesAccordionFormValues) {
     onSave({
@@ -640,25 +758,43 @@ export function ServicesAccordionSectionForm({
         {fields.map((field, index) => (
           <div key={field.id} className="admin-section-card">
             <label>
-              Item title
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                Item title
+                <CharacterCount current={(watch(`cards.${index}.title`) ?? "").length} max={limits.cardTitle} />
+              </div>
               <input
-                {...register(`cards.${index}.title`, {
+                {...register(`cards.${index}.title` as const, {
                   required: "Item title is required",
+                  maxLength: limits.cardTitle,
                 })}
+                maxLength={limits.cardTitle}
               />
             </label>
             <label>
-              Item description
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                Item description
+                <CharacterCount current={(watch(`cards.${index}.description`) ?? "").length} max={limits.cardDescription} />
+              </div>
               <textarea
                 rows={4}
-                {...register(`cards.${index}.description`, {
+                {...register(`cards.${index}.description` as const, {
                   required: "Item description is required",
+                  maxLength: limits.cardDescription,
                 })}
+                maxLength={limits.cardDescription}
               />
             </label>
             <label>
-              Category
-              <input {...register(`cards.${index}.category`)} />
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                Category
+                <CharacterCount current={(watch(`cards.${index}.category`) ?? "").length} max={limits.cardCategory} />
+              </div>
+              <input
+                {...register(`cards.${index}.category` as const, {
+                  maxLength: limits.cardCategory,
+                })}
+                maxLength={limits.cardCategory}
+              />
             </label>
             <label>
               Icon
@@ -742,6 +878,8 @@ type ServicesGridCardFormValue = {
 };
 
 type ServicesGridFormValues = {
+  title: string;
+  description: string;
   cards: ServicesGridCardFormValue[];
 };
 
@@ -753,26 +891,28 @@ function toServicesGridDefaultValues(
     : [];
 
   return {
+    title: (data.title as string) ?? "",
+    description: (data.description as string) ?? "",
     cards:
       rawCards.length > 0
         ? rawCards.map((card) => ({
-            category: (card.category as string) ?? "",
-            title: (card.title as string) ?? "",
-            description: (card.description as string) ?? "",
-            featuresLines: Array.isArray(card.features)
-              ? (card.features as string[]).join("\n")
-              : "",
-            icon: (card.icon as string) ?? "security",
-          }))
+          category: (card.category as string) ?? "",
+          title: (card.title as string) ?? "",
+          description: (card.description as string) ?? "",
+          featuresLines: Array.isArray(card.features)
+            ? (card.features as string[]).join("\n")
+            : "",
+          icon: (card.icon as string) ?? "security",
+        }))
         : [
-            {
-              category: "",
-              title: "",
-              description: "",
-              featuresLines: "",
-              icon: "security",
-            },
-          ],
+          {
+            category: "",
+            title: "",
+            description: "",
+            featuresLines: "",
+            icon: "security",
+          },
+        ],
   };
 }
 
@@ -792,14 +932,26 @@ export function ServicesGridSectionForm({
     register,
     control,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<ServicesGridFormValues>({ defaultValues });
   const { fields, append, remove } = useFieldArray({ control, name: "cards" });
 
+  const title = watch("title");
+  const description = watch("description");
+
+  const limits = useMemo(() => ({
+    title: Math.max(servicesLimits.title, defaultValues.title.length),
+    description: Math.max(servicesLimits.description, defaultValues.description.length),
+    cardCategory: Math.max(20, defaultValues.cards.reduce((max, c) => Math.max(max, c.category.length), 0)),
+    cardTitle: Math.max(30, defaultValues.cards.reduce((max, c) => Math.max(max, c.title.length), 0)),
+    cardDescription: Math.max(200, defaultValues.cards.reduce((max, c) => Math.max(max, c.description.length), 0)),
+  }), [defaultValues]);
+
   function handleValid(values: ServicesGridFormValues) {
     onSave({
-      title: "",
-      description: "",
+      title: values.title,
+      description: values.description,
       filters: ["ALL"],
       cards: values.cards.map((card) => ({
         category: card.category,
@@ -827,9 +979,35 @@ export function ServicesGridSectionForm({
     >
       <SectionHeading section={section} />
 
-      <p className="admin-field-hint">
-        This section is fixed to the reference layout (2x2 capability cards).
-      </p>
+      <label>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Section title
+          <CharacterCount current={(watch("title") ?? "").length} max={limits.title} />
+        </div>
+        <input
+          {...register("title", {
+            required: "Title is required",
+            maxLength: limits.title,
+          })}
+          maxLength={limits.title}
+          placeholder="SERVICES"
+        />
+      </label>
+      <label>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Section description
+          <CharacterCount current={(watch("description") ?? "").length} max={limits.description} />
+        </div>
+        <textarea
+          rows={3}
+          {...register("description", {
+            required: "Description is required",
+            maxLength: limits.description,
+          })}
+          maxLength={limits.description}
+          placeholder="Briefly describe your services."
+        />
+      </label>
 
       <div className="admin-section-group">
         <h4>Service cards</h4>
@@ -943,13 +1121,13 @@ function toWhyChooseDefaultValues(
     items:
       rawItems.length > 0
         ? rawItems.map((item) => ({
-            icon: typeof item.icon === "string" ? item.icon : "",
-            title: (item.title as string) ?? "",
-            description: (item.description as string) ?? "",
-            tags: Array.isArray(item.tags)
-              ? (item.tags as string[]).filter(Boolean).join(", ")
-              : "",
-          }))
+          icon: typeof item.icon === "string" ? item.icon : "",
+          title: (item.title as string) ?? "",
+          description: (item.description as string) ?? "",
+          tags: Array.isArray(item.tags)
+            ? (item.tags as string[]).filter(Boolean).join(", ")
+            : "",
+        }))
         : [{ icon: "", title: "", description: "", tags: "" }],
   };
 }
@@ -969,9 +1147,17 @@ export function WhyChooseSectionForm({
     register,
     control,
     handleSubmit,
+    watch,
     formState: { isSubmitting },
   } = useForm<WhyChooseFormValues>({ defaultValues });
   const { fields, append, remove } = useFieldArray({ control, name: "items" });
+
+  const limits = useMemo(() => ({
+    title: Math.max(whyChooseLimits.title, defaultValues.title.length),
+    subheading: Math.max(whyChooseLimits.subheading, defaultValues.subheading.length),
+    itemTitle: Math.max(whyChooseLimits.itemTitle, defaultValues.items.reduce((max, i) => Math.max(max, i.title.length), 0)),
+    itemDescription: Math.max(whyChooseLimits.itemDescription, defaultValues.items.reduce((max, i) => Math.max(max, i.description.length), 0)),
+  }), [defaultValues]);
 
   function handleValid(values: WhyChooseFormValues) {
     onSave({
@@ -1113,21 +1299,21 @@ function toInvestmentDefaultValues(
   const items =
     rawItems.length > 0
       ? rawItems.map((item) => ({
-          icon: (item.icon as string) ?? "",
-          title: (item.title as string) ?? "",
-          description: (item.description as string) ?? "",
-        }))
+        icon: (item.icon as string) ?? "",
+        title: (item.title as string) ?? "",
+        description: (item.description as string) ?? "",
+      }))
       : legacyStats.length > 0
         ? legacyStats.map((stat) => ({
-            icon: "✓",
-            title: (stat.label as string) ?? "",
-            description: legacyDescription,
-          }))
+          icon: "✓",
+          title: (stat.label as string) ?? "",
+          description: legacyDescription,
+        }))
         : [
-            { icon: "✓", title: "Global Expertise", description: "" },
-            { icon: "✓", title: "Strategic Advisory", description: "" },
-            { icon: "✓", title: "Risk Management", description: "" },
-          ];
+          { icon: "✓", title: "Global Expertise", description: "" },
+          { icon: "✓", title: "Strategic Advisory", description: "" },
+          { icon: "✓", title: "Risk Management", description: "" },
+        ];
 
   const headingLines = Array.isArray(data.heading)
     ? (data.heading as string[])
@@ -1160,9 +1346,19 @@ export function InvestmentSectionForm({
     register,
     control,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<InvestmentFormValues>({ defaultValues });
   const { fields, append, remove } = useFieldArray({ control, name: "items" });
+
+  const limits = useMemo(() => ({
+    headingLines: Math.max(200, defaultValues.headingLines.length),
+    itemTitle: Math.max(40, defaultValues.items.reduce((max, i) => Math.max(max, i.title.length), 0)),
+    itemDescription: Math.max(200, defaultValues.items.reduce((max, i) => Math.max(max, i.description.length), 0)),
+    quoteText: Math.max(500, defaultValues.quoteText.length),
+    quoteAuthor: Math.max(50, defaultValues.quoteAuthor.length),
+    quoteRole: Math.max(50, defaultValues.quoteRole.length),
+  }), [defaultValues]);
 
   function handleValid(values: InvestmentFormValues) {
     const heading = values.headingLines
@@ -1320,18 +1516,23 @@ export function InvestmentSectionForm({
 
 type ClientLogosFormValues = {
   eyebrow: string;
-  logosLines: string;
+  logos: Array<{ src: string; alt: string }>;
 };
 
 function toClientLogosDefaultValues(
   data: Record<string, unknown>,
 ): ClientLogosFormValues {
+  const logos = Array.isArray(data.logos) ? data.logos : [];
+
   return {
-    eyebrow:
-      (data.eyebrow as string) ?? "TRUSTED BY INSTITUTIONAL LEADERS",
-    logosLines: Array.isArray(data.logos)
-      ? (data.logos as string[]).join("\n")
-      : "GLOBAL BANK\nTECH LOGISTICS\nDUBAI URBAN\nGOV SECTOR\nCORE ENERGY",
+    eyebrow: (data.eyebrow as string) ?? "TRUSTED BY INSTITUTIONAL LEADERS",
+    logos: logos.map((l: any) => {
+      if (typeof l === "string") return { src: "", alt: l };
+      return {
+        src: (l.src as string) ?? "",
+        alt: (l.alt as string) ?? "",
+      };
+    }),
   };
 }
 
@@ -1348,24 +1549,29 @@ export function ClientLogosSectionForm({
   );
   const {
     register,
+    control,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<ClientLogosFormValues>({ defaultValues });
 
-  function handleValid(values: ClientLogosFormValues) {
-    onSave({
-      eyebrow: values.eyebrow,
-      logos: values.logosLines
-        .split("\n")
-        .map((line) => line.trim())
-        .filter(Boolean),
-    });
-  }
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "logos",
+  });
+
+  const logos = watch("logos");
+  const eyebrow = watch("eyebrow");
+
+  const limits = useMemo(() => ({
+    eyebrow: Math.max(trustedByLimits.eyebrow, defaultValues.eyebrow.length),
+  }), [defaultValues]);
 
   return (
-    <SectionForm
+    <form
       className="admin-form admin-section-form"
-      onSubmit={handleSubmit(handleValid)}
+      onSubmit={handleSubmit(onSave)}
       style={{
         marginBottom: 24,
         paddingBottom: 24,
@@ -1375,7 +1581,10 @@ export function ClientLogosSectionForm({
       <SectionHeading section={section} />
 
       <label>
-        Eyebrow
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Eyebrow
+          <CharacterCount current={eyebrow.length} max={limits.eyebrow} />
+        </div>
         <input
           {...register("eyebrow", { required: "Eyebrow is required" })}
           placeholder="TRUSTED BY INSTITUTIONAL LEADERS"
@@ -1385,17 +1594,47 @@ export function ClientLogosSectionForm({
         ) : null}
       </label>
 
-      <label>
-        Logos (one per line)
-        <textarea
-          rows={6}
-          {...register("logosLines", { required: "At least one logo text is required" })}
-          placeholder={"GLOBAL BANK\nTECH LOGISTICS\nDUBAI URBAN\nGOV SECTOR\nCORE ENERGY"}
-        />
-        {errors.logosLines ? (
-          <p className="admin-field-error">{errors.logosLines.message}</p>
-        ) : null}
-      </label>
+      <h4>Logos</h4>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+        {fields.map((field, index) => (
+          <div key={field.id} className="admin-field-group" style={{ position: "relative", padding: "16px", background: "#f8fafc", borderRadius: "8px" }}>
+            <button
+              type="button"
+              onClick={() => remove(index)}
+              style={{ position: "absolute", right: "8px", top: "8px", color: "#ef4444", padding: "4px" }}
+              title="Remove logo"
+            >
+              <Trash2 size={16} />
+            </button>
+
+            <ImageUploadField
+              label={`Logo ${index + 1}`}
+              value={logos?.[index]?.src ?? ""}
+              onChange={(val) => setValue(`logos.${index}.src`, val, { shouldDirty: true })}
+              folder={`sections/${section.type}`}
+              aspectRatio={1}
+            />
+
+            <label style={{ marginTop: "12px" }}>
+              Alt Text / Label
+              <input
+                {...register(`logos.${index}.alt` as const)}
+                placeholder="e.g. Hospital Name"
+              />
+            </label>
+          </div>
+        ))}
+      </div>
+
+      <button
+        type="button"
+        onClick={() => append({ src: "", alt: "" })}
+        className="admin-button-secondary"
+        style={{ marginTop: "16px" }}
+      >
+        <Plus size={16} style={{ marginRight: "8px" }} />
+        Add Logo
+      </button>
 
       <SectionSaveFooter
         isSubmitting={isSubmitting}
@@ -1403,7 +1642,7 @@ export function ClientLogosSectionForm({
         messageTone={saveMessageTone}
         previewHref={previewHref}
       />
-    </SectionForm>
+    </form>
   );
 }
 
@@ -1442,8 +1681,19 @@ export function CtaSectionForm({
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<CtaFormValues>({ defaultValues });
+
+  const title = watch("title") ?? "";
+  const description = watch("description") ?? "";
+  const actionLabel = watch("actionLabel") ?? "";
+
+  const limits = useMemo(() => ({
+    title: Math.max(ctaSectionLimits.title, defaultValues.title.length),
+    description: Math.max(ctaSectionLimits.description, defaultValues.description.length),
+    actionLabel: Math.max(ctaSectionLimits.actionLabel, defaultValues.actionLabel.length),
+  }), [defaultValues]);
 
   function handleValid(values: CtaFormValues) {
     onSave({
@@ -1806,9 +2056,18 @@ export function ContactHeroSectionForm({
     control,
     setValue,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<ContactHeroFormValues>({ defaultValues });
   const backgroundImage = useWatch({ control, name: "backgroundImage" });
+
+  const titleLines = watch("titleLines") ?? "";
+  const description = watch("description") ?? "";
+
+  const limits = useMemo(() => ({
+    titleLines: Math.max(introLimits.titleLines, defaultValues.titleLines.length),
+    description: Math.max(introLimits.description, defaultValues.description.length),
+  }), [defaultValues]);
 
   function handleValid(values: ContactHeroFormValues) {
     onSave({
@@ -2149,11 +2408,11 @@ function toIncubationDefaultValues(
     rawRoadmapItems.length > 0
       ? rawRoadmapItems
       : rawSteps.map((step) => ({
-          title: (step.title as string) ?? "",
-          description: (step.description as string) ?? "",
-          points: [],
-          image: (data.image as string) ?? "",
-        }));
+        title: (step.title as string) ?? "",
+        description: (step.description as string) ?? "",
+        points: [],
+        image: (data.image as string) ?? "",
+      }));
 
   return {
     badge: (data.badge as string) ?? "",
@@ -2171,16 +2430,16 @@ function toIncubationDefaultValues(
     roadmapItems:
       defaultRoadmapItems.length > 0
         ? defaultRoadmapItems.map((item) => ({
-            title: (item.title as string) ?? "",
-            description: (item.description as string) ?? "",
-            pointsLines: Array.isArray(item.points) ? (item.points as string[]).join("\n") : "",
-            image: (item.image as string) ?? "",
-          }))
+          title: (item.title as string) ?? "",
+          description: (item.description as string) ?? "",
+          pointsLines: Array.isArray(item.points) ? (item.points as string[]).join("\n") : "",
+          image: (item.image as string) ?? "",
+        }))
         : [
-            { title: "", description: "", pointsLines: "", image: "" },
-            { title: "", description: "", pointsLines: "", image: "" },
-            { title: "", description: "", pointsLines: "", image: "" },
-          ],
+          { title: "", description: "", pointsLines: "", image: "" },
+          { title: "", description: "", pointsLines: "", image: "" },
+          { title: "", description: "", pointsLines: "", image: "" },
+        ],
     portfolioTitle: (data.portfolioTitle as string) ?? "Portfolio Highlights",
     portfolioDescription:
       (data.portfolioDescription as string) ??
@@ -2190,42 +2449,42 @@ function toIncubationDefaultValues(
     portfolioCards:
       rawPortfolioCards.length > 0
         ? rawPortfolioCards.map((card) => ({
-            category: (card.category as string) ?? "",
-            title: (card.title as string) ?? "",
-            description: (card.description as string) ?? "",
-            image: (card.image as string) ?? "",
-            metrics: Array.isArray(card.metrics)
-              ? (card.metrics as Record<string, unknown>[]).map((metric) => ({
-                  value: (metric.value as string) ?? "",
-                  label: (metric.label as string) ?? "",
-                }))
-              : [
-                  { value: "", label: "" },
-                  { value: "", label: "" },
-                ],
-          }))
+          category: (card.category as string) ?? "",
+          title: (card.title as string) ?? "",
+          description: (card.description as string) ?? "",
+          image: (card.image as string) ?? "",
+          metrics: Array.isArray(card.metrics)
+            ? (card.metrics as Record<string, unknown>[]).map((metric) => ({
+              value: (metric.value as string) ?? "",
+              label: (metric.label as string) ?? "",
+            }))
+            : [
+              { value: "", label: "" },
+              { value: "", label: "" },
+            ],
+        }))
         : [
-            {
-              category: "",
-              title: "",
-              description: "",
-              image: "",
-              metrics: [
-                { value: "", label: "" },
-                { value: "", label: "" },
-              ],
-            },
-            {
-              category: "",
-              title: "",
-              description: "",
-              image: "",
-              metrics: [
-                { value: "", label: "" },
-                { value: "", label: "" },
-              ],
-            },
-          ],
+          {
+            category: "",
+            title: "",
+            description: "",
+            image: "",
+            metrics: [
+              { value: "", label: "" },
+              { value: "", label: "" },
+            ],
+          },
+          {
+            category: "",
+            title: "",
+            description: "",
+            image: "",
+            metrics: [
+              { value: "", label: "" },
+              { value: "", label: "" },
+            ],
+          },
+        ],
     applicationTitle: (data.applicationTitle as string) ?? "Ready to Build Your Legacy?",
     applicationDescription:
       (data.applicationDescription as string) ??
@@ -2233,18 +2492,18 @@ function toIncubationDefaultValues(
     applicationFields:
       rawApplicationFields.length > 0
         ? rawApplicationFields.map((field) => ({
-            label: (field.label as string) ?? "",
-            placeholder: (field.placeholder as string) ?? "",
-          }))
+          label: (field.label as string) ?? "",
+          placeholder: (field.placeholder as string) ?? "",
+        }))
         : [
-            { label: "Full Name", placeholder: "Jane Doe" },
-            { label: "Startup Name", placeholder: "Acme Inc." },
-            { label: "Email Address", placeholder: "jane@startup.com" },
-            {
-              label: "Pitch Deck URL",
-              placeholder: "https://dropbox.com/your-pitch-deck",
-            },
-          ],
+          { label: "Full Name", placeholder: "Jane Doe" },
+          { label: "Startup Name", placeholder: "Acme Inc." },
+          { label: "Email Address", placeholder: "jane@startup.com" },
+          {
+            label: "Pitch Deck URL",
+            placeholder: "https://dropbox.com/your-pitch-deck",
+          },
+        ],
     applicationSubmitLabel: (data.applicationSubmitLabel as string) ?? "Submit Application",
     applicationNote:
       (data.applicationNote as string) ??
@@ -2254,15 +2513,15 @@ function toIncubationDefaultValues(
     steps:
       rawSteps.length > 0
         ? rawSteps.map((step, index) => ({
-            number: typeof step.number === "number" ? step.number : index + 1,
-            title: (step.title as string) ?? "",
-            description: (step.description as string) ?? "",
-          }))
+          number: typeof step.number === "number" ? step.number : index + 1,
+          title: (step.title as string) ?? "",
+          description: (step.description as string) ?? "",
+        }))
         : [
-            { number: 1, title: "", description: "" },
-            { number: 2, title: "", description: "" },
-            { number: 3, title: "", description: "" },
-          ],
+          { number: 1, title: "", description: "" },
+          { number: 2, title: "", description: "" },
+          { number: 3, title: "", description: "" },
+        ],
     image: (data.image as string) ?? "",
     statValue: ((data.stat as Record<string, unknown>)?.value as string) ?? "",
     statLabel: ((data.stat as Record<string, unknown>)?.label as string) ?? "",
@@ -2670,15 +2929,15 @@ function toGlobalStandardsDefaultValues(
     pillars:
       rawPillars.length > 0
         ? rawPillars.map((pillar) => ({
-            icon: (pillar.icon as string) ?? "spark",
-            title: (pillar.title as string) ?? "",
-            description: (pillar.description as string) ?? "",
-          }))
+          icon: (pillar.icon as string) ?? "spark",
+          title: (pillar.title as string) ?? "",
+          description: (pillar.description as string) ?? "",
+        }))
         : [
-            { icon: "tokenize", title: "Asset Tokenization", description: "" },
-            { icon: "architecture", title: "Contract Architecture", description: "" },
-            { icon: "compliance", title: "Regulatory Advisory", description: "" },
-          ],
+          { icon: "tokenize", title: "Asset Tokenization", description: "" },
+          { icon: "architecture", title: "Contract Architecture", description: "" },
+          { icon: "compliance", title: "Regulatory Advisory", description: "" },
+        ],
   };
 }
 
@@ -2697,9 +2956,18 @@ export function GlobalStandardsSectionForm({
     register,
     control,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<GlobalStandardsFormValues>({ defaultValues });
   const { fields, append, remove } = useFieldArray({ control, name: "pillars" });
+
+  const eyebrow = watch("eyebrow");
+  const title = watch("title");
+
+  const limits = useMemo(() => ({
+    eyebrow: Math.max(servicesLimits.eyebrow, defaultValues.eyebrow.length),
+    title: Math.max(servicesLimits.title, defaultValues.title.length),
+  }), [defaultValues]);
 
   function handleValid(values: GlobalStandardsFormValues) {
     onSave({
@@ -2727,9 +2995,16 @@ export function GlobalStandardsSectionForm({
       <SectionHeading section={section} />
 
       <label>
-        Eyebrow
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Eyebrow
+          <CharacterCount current={eyebrow.length} max={servicesLimits.eyebrow} />
+        </div>
         <input
-          {...register("eyebrow", { required: "Eyebrow is required" })}
+          {...register("eyebrow", {
+            required: "Eyebrow is required",
+            maxLength: servicesLimits.eyebrow,
+          })}
+          maxLength={servicesLimits.eyebrow}
           placeholder="CAPABILITIES"
         />
         {errors.eyebrow ? (
@@ -2738,9 +3013,16 @@ export function GlobalStandardsSectionForm({
       </label>
 
       <label>
-        Title
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Title
+          <CharacterCount current={title.length} max={servicesLimits.title} />
+        </div>
         <input
-          {...register("title", { required: "Title is required" })}
+          {...register("title", {
+            required: "Title is required",
+            maxLength: servicesLimits.title,
+          })}
+          maxLength={servicesLimits.title}
           placeholder="Strategic Issuance"
         />
         {errors.title ? (
@@ -3137,17 +3419,17 @@ function toIndustriesGridDefaultValues(
     items:
       rawItems.length > 0
         ? rawItems.map((item) => ({
-            icon: (item.icon as string) ?? "SquareCode",
-            title: (item.title as string) ?? "",
-            description: (item.description as string) ?? "",
-          }))
+          icon: (item.icon as string) ?? "SquareCode",
+          title: (item.title as string) ?? "",
+          description: (item.description as string) ?? "",
+        }))
         : [
-            {
-              icon: "SquareCode",
-              title: "",
-              description: "",
-            },
-          ],
+          {
+            icon: "SquareCode",
+            title: "",
+            description: "",
+          },
+        ],
     partnerTitle: (partnerCard.title as string) ?? "",
     partnerDescription: (partnerCard.description as string) ?? "",
     partnerHref: (partnerCard.href as string) ?? "/contact",
@@ -3722,15 +4004,15 @@ function toContactInquiryDefaultValues(
       hqFromDb.length > 0
         ? hqFromDb
         : [
-            { icon: "spark", label: "EMERGENCY LINE", value: "+971 4 000 0000", note: "" },
-            { icon: "mail", label: "EMAIL CORRESPONDENCE", value: "inquiry@theamedical.ae", note: "" },
-            {
-              icon: "clock",
-              label: "CLINICAL SUPPORT HOURS",
-              value: "Mon - Fri: 08:00 - 18:00",
-              note: "24/7 Support for Priority Clients",
-            },
-          ],
+          { icon: "spark", label: "EMERGENCY LINE", value: "+971 4 000 0000", note: "" },
+          { icon: "mail", label: "EMAIL CORRESPONDENCE", value: "inquiry@theamedical.ae", note: "" },
+          {
+            icon: "clock",
+            label: "CLINICAL SUPPORT HOURS",
+            value: "Mon - Fri: 08:00 - 18:00",
+            note: "24/7 Support for Priority Clients",
+          },
+        ],
     hoursHeading: (data.hoursHeading as string) ?? "Regulatory Compliance Guaranteed",
     complianceText:
       (data.complianceText as string) ??
@@ -4269,29 +4551,29 @@ function toCoursesCatalogDefaultValues(
     courses:
       rawCourses.length > 0
         ? rawCourses.map((course) => ({
-            badge: (course.badge as string) ?? "",
-            category: (course.category as string) ?? "",
-            level: (course.level as string) ?? "",
-            title: (course.title as string) ?? "",
-            description: (course.description as string) ?? "",
-            skillsLines: Array.isArray(course.skills)
-              ? (course.skills as string[]).join("\n")
-              : "",
-            weeks: (course.weeks as string) ?? "",
-            image: ((course.image as string) ?? (course.iconImage as string) ?? "").trim(),
-          }))
+          badge: (course.badge as string) ?? "",
+          category: (course.category as string) ?? "",
+          level: (course.level as string) ?? "",
+          title: (course.title as string) ?? "",
+          description: (course.description as string) ?? "",
+          skillsLines: Array.isArray(course.skills)
+            ? (course.skills as string[]).join("\n")
+            : "",
+          weeks: (course.weeks as string) ?? "",
+          image: ((course.image as string) ?? (course.iconImage as string) ?? "").trim(),
+        }))
         : [
-            {
-              badge: "",
-              category: "",
-              level: "",
-              title: "",
-              description: "",
-              skillsLines: "",
-              weeks: "",
-              image: "",
-            },
-          ],
+          {
+            badge: "",
+            category: "",
+            level: "",
+            title: "",
+            description: "",
+            skillsLines: "",
+            weeks: "",
+            image: "",
+          },
+        ],
   };
 }
 
@@ -4650,28 +4932,28 @@ function toAboutVisionMissionDefaultValues(
     items:
       rawItems.length > 0
         ? rawItems.map((item) => ({
-            title: (item.title as string) ?? "",
-            description: (item.description as string) ?? "",
-            icon: (item.icon as string) ?? "",
-            iconImage: (item.iconImage as string) ?? "",
-            accentColor: (item.accentColor as string) ?? "#0b3d91",
-          }))
+          title: (item.title as string) ?? "",
+          description: (item.description as string) ?? "",
+          icon: (item.icon as string) ?? "",
+          iconImage: (item.iconImage as string) ?? "",
+          accentColor: (item.accentColor as string) ?? "#0b3d91",
+        }))
         : [
-            {
-              title: "Our Mission",
-              description: "",
-              icon: "Zap",
-              iconImage: "",
-              accentColor: "#0b3d91",
-            },
-            {
-              title: "Our Vision",
-              description: "",
-              icon: "Eye",
-              iconImage: "",
-              accentColor: "#c8a96a",
-            },
-          ],
+          {
+            title: "Our Mission",
+            description: "",
+            icon: "Zap",
+            iconImage: "",
+            accentColor: "#0b3d91",
+          },
+          {
+            title: "Our Vision",
+            description: "",
+            icon: "Eye",
+            iconImage: "",
+            accentColor: "#c8a96a",
+          },
+        ],
     visionTitle:
       ((data.vision as Record<string, unknown> | undefined)?.title as string) ??
       "VISION 2030",
@@ -4727,9 +5009,9 @@ export function AboutVisionMissionSectionForm({
         action:
           values.visionActionLabel.trim() && values.visionActionHref.trim()
             ? {
-                label: values.visionActionLabel.trim(),
-                href: values.visionActionHref.trim(),
-              }
+              label: values.visionActionLabel.trim(),
+              href: values.visionActionHref.trim(),
+            }
             : undefined,
       },
     });
@@ -4918,10 +5200,10 @@ function toAboutFrameworkDefaultValues(
     pillars:
       rawPillars.length > 0
         ? rawPillars.map((item) => ({
-            letter: (item.letter as string) ?? "",
-            title: (item.title as string) ?? "",
-            description: (item.description as string) ?? "",
-          }))
+          letter: (item.letter as string) ?? "",
+          title: (item.title as string) ?? "",
+          description: (item.description as string) ?? "",
+        }))
         : fallbackPillars,
   };
 }
@@ -5206,66 +5488,66 @@ function toAboutValuesDefaultValues(
       String(
         (Array.isArray((data.reach as Record<string, unknown> | undefined)?.metrics)
           ? ((data.reach as Record<string, unknown>).metrics as Array<Record<string, unknown>>)[0]
-              ?.value
+            ?.value
           : "0.4MS") ?? "",
       ),
     reachMetric1Label:
       String(
         (Array.isArray((data.reach as Record<string, unknown> | undefined)?.metrics)
           ? ((data.reach as Record<string, unknown>).metrics as Array<Record<string, unknown>>)[0]
-              ?.label
+            ?.label
           : "LOCAL LATENCY") ?? "",
       ),
     reachMetric2Value:
       String(
         (Array.isArray((data.reach as Record<string, unknown> | undefined)?.metrics)
           ? ((data.reach as Record<string, unknown>).metrics as Array<Record<string, unknown>>)[1]
-              ?.value
+            ?.value
           : "500PB") ?? "",
       ),
     reachMetric2Label:
       String(
         (Array.isArray((data.reach as Record<string, unknown> | undefined)?.metrics)
           ? ((data.reach as Record<string, unknown>).metrics as Array<Record<string, unknown>>)[1]
-              ?.label
+            ?.label
           : "DATA MANAGED") ?? "",
       ),
     reachMetric3Value:
       String(
         (Array.isArray((data.reach as Record<string, unknown> | undefined)?.metrics)
           ? ((data.reach as Record<string, unknown>).metrics as Array<Record<string, unknown>>)[2]
-              ?.value
+            ?.value
           : "128-BIT") ?? "",
       ),
     reachMetric3Label:
       String(
         (Array.isArray((data.reach as Record<string, unknown> | undefined)?.metrics)
           ? ((data.reach as Record<string, unknown>).metrics as Array<Record<string, unknown>>)[2]
-              ?.label
+            ?.label
           : "ENCRYPTION STANDARD") ?? "",
       ),
     reachMetric4Value:
       String(
         (Array.isArray((data.reach as Record<string, unknown> | undefined)?.metrics)
           ? ((data.reach as Record<string, unknown>).metrics as Array<Record<string, unknown>>)[3]
-              ?.value
+            ?.value
           : "24/7") ?? "",
       ),
     reachMetric4Label:
       String(
         (Array.isArray((data.reach as Record<string, unknown> | undefined)?.metrics)
           ? ((data.reach as Record<string, unknown>).metrics as Array<Record<string, unknown>>)[3]
-              ?.label
+            ?.label
           : "THREAT MONITORING") ?? "",
       ),
     items:
       rawItems.length > 0
         ? rawItems.map((item) => ({
-            title: (item.title as string) ?? "",
-            description: (item.description as string) ?? "",
-            icon: (item.icon as string) ?? "",
-            iconImage: (item.iconImage as string) ?? "",
-          }))
+          title: (item.title as string) ?? "",
+          description: (item.description as string) ?? "",
+          icon: (item.icon as string) ?? "",
+          iconImage: (item.iconImage as string) ?? "",
+        }))
         : [{ title: "", description: "", icon: "", iconImage: "" }],
   };
 }
@@ -5948,11 +6230,11 @@ function toAboutLeadershipDefaults(data: Record<string, unknown>): AboutLeadersh
     members:
       members.length > 0
         ? members.map((member) => ({
-            name: (member.name as string) ?? "",
-            role: (member.role as string) ?? "",
-            bio: (member.bio as string) ?? "",
-            image: (member.image as string) ?? "",
-          }))
+          name: (member.name as string) ?? "",
+          role: (member.role as string) ?? "",
+          bio: (member.bio as string) ?? "",
+          image: (member.image as string) ?? "",
+        }))
         : [{ name: "", role: "", bio: "", image: "" }],
   };
 }
@@ -6227,10 +6509,10 @@ function toProjectsGridDefaultValues(data: Record<string, unknown>): ProjectsGri
     items:
       items.length > 0
         ? items.map((item) => ({
-            category: (item.category as string) ?? "",
-            title: (item.title as string) ?? "",
-            image: (item.image as string) ?? "",
-          }))
+          category: (item.category as string) ?? "",
+          title: (item.title as string) ?? "",
+          image: (item.image as string) ?? "",
+        }))
         : [{ category: "", title: "", image: "" }],
   };
 }
@@ -6395,17 +6677,17 @@ function toProjectsIntegrityDefaultValues(data: Record<string, unknown>): Projec
     items:
       items.length > 0
         ? items.map((item) => ({
-            icon: (item.icon as string) ?? "verified",
-            title: (item.title as string) ?? "",
-            description: (item.description as string) ?? "",
-          }))
+          icon: (item.icon as string) ?? "verified",
+          title: (item.title as string) ?? "",
+          description: (item.description as string) ?? "",
+        }))
         : [
-            {
-              icon: "verified",
-              title: "",
-              description: "",
-            },
-          ],
+          {
+            icon: "verified",
+            title: "",
+            description: "",
+          },
+        ],
   };
 }
 

@@ -43,28 +43,12 @@ function handleInPageNavClick(
   scrollToNavTarget(targetPath);
 }
 
-const CENTER_NAV = [
-  { keys: ["home"], href: "/", label: "Home" },
-  { keys: ["services", "service"], href: "/services", label: "Services" },
-  { keys: ["products", "product"], href: "/products", label: "Products" },
-  { keys: ["clients", "client"], href: "/clients", label: "Clients" },
-  { keys: ["about", "about us"], href: "/about", label: "About" },
-] as const;
-
 export default function SiteHeader({
   navItems,
   brandTitle = "THEA Medical Store",
-  contactHref = "/contact",
-  headerActions,
 }: {
   navItems: NavItem[];
   brandTitle?: string;
-  contactHref?: string;
-  headerActions?: {
-    contactLabel?: string;
-    inquireLabel?: string;
-    inquireHref?: string;
-  };
 }) {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -90,37 +74,9 @@ export default function SiteHeader({
       item.label.trim() !== "",
   );
 
-  const displayNavItems = CENTER_NAV.map(({ keys, href, label }) => {
-    const found = validNavItems.find((item) =>
-      (keys as readonly string[]).includes(item.label.trim().toLowerCase()),
-    );
-    if (found) {
-      return {
-        label: found.label.trim() || label,
-        href: normalizeSitePath(found.href, href),
-      };
-    }
-    return { label, href };
-  });
-
-  const contactLink = normalizeSitePath(
-    validNavItems.find((item) =>
-      ["contact", "contact us"].includes(item.label.trim().toLowerCase()),
-    )?.href ?? contactHref,
-    "/contact",
-  );
-
   const brand = brandTitle.trim() || "THEA Medical Store";
-  const contactLabel =
-    headerActions?.contactLabel?.trim() || defaultHeaderActions.contactLabel;
-  const navItemsWithContact = [...displayNavItems];
-  const hasContactLink = navItemsWithContact.some(
-    (item) =>
-      item.href === contactLink || item.label.trim().toLowerCase() === contactLabel.trim().toLowerCase(),
-  );
-  if (!hasContactLink) {
-    navItemsWithContact.push({ label: contactLabel, href: contactLink });
-  }
+
+  const navItemsWithContact = [...validNavItems];
 
   return (
     <header className="site-header site-header--institutional site-header--thea">

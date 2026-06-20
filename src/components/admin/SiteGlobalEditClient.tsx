@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import ContactHqIconPicker from "@/components/admin/ContactHqIconPicker";
 import {
@@ -10,7 +10,9 @@ import {
   defaultNavItems,
   defaultSeoDefaults,
 } from "@/data/site-defaults";
+import CharacterCount from "@/components/admin/CharacterCount";
 import { normalizeSitePath } from "@/lib/site-path";
+import { siteGlobalLimits } from "@/lib/seeded-lengths";
 import type { FooterColumn } from "@/components/layout/SiteFooter";
 
 type NavItem = { label: string; href: string };
@@ -89,9 +91,6 @@ export default function SiteGlobalEditClient() {
   const [footerCopyright, setFooterCopyright] = useState(defaultFooterMeta.copyright);
   const [footerCtaLabel, setFooterCtaLabel] = useState("REQUEST CREDENTIALS");
   const [footerCtaHref, setFooterCtaHref] = useState("/contact");
-  const [headerContactLabel, setHeaderContactLabel] = useState(defaultHeaderActions.contactLabel);
-  const [headerInquireLabel, setHeaderInquireLabel] = useState(defaultHeaderActions.inquireLabel);
-  const [headerInquireHref, setHeaderInquireHref] = useState(defaultHeaderActions.inquireHref);
 
   const [seoDefaultTitle, setSeoDefaultTitle] = useState(defaultSeoDefaults.defaultTitle);
   const [seoDefaultDescription, setSeoDefaultDescription] = useState(
@@ -99,6 +98,8 @@ export default function SiteGlobalEditClient() {
   );
   const [clientLogosFlag, setClientLogosFlag] = useState(true);
   const [preservedLegal, setPreservedLegal] = useState(defaultFooterMeta.legal);
+
+  const [limits, setLimits] = useState(siteGlobalLimits);
 
   useEffect(() => {
     let cancelled = false;
@@ -117,48 +118,55 @@ export default function SiteGlobalEditClient() {
           (d.footerColumns as FooterColumn[] | undefined) ?? defaultFooterColumns,
         );
 
-        setHeaderBrand(
-          (d.headerBrand as string) ??
+        const currentHeaderBrand = (d.headerBrand as string) ??
             (d.footerMeta?.brand as string) ??
-            defaultFooterMeta.brand,
-        );
-        setNavItems((d.navItems as NavItem[]) ?? defaultNavItems);
+            defaultFooterMeta.brand;
+        const currentNavItems = (d.navItems as NavItem[]) ?? defaultNavItems;
+        const currentFooterBrand = (d.footerMeta?.brand as string) ?? defaultFooterMeta.brand;
+        const currentFooterDescription = (d.footerMeta?.description as string) ?? defaultFooterMeta.description;
+        const currentCopyright = (d.footerMeta?.copyright as string) ?? defaultFooterMeta.copyright;
+        const currentCtaLabel = (d.footerMeta?.ctaLabel as string) ?? "REQUEST CREDENTIALS";
+        const currentSeoTitle = d.seoDefaults?.defaultTitle ?? defaultSeoDefaults.defaultTitle;
+        const currentSeoDescription = d.seoDefaults?.defaultDescription ?? defaultSeoDefaults.defaultDescription;
+
+        setHeaderBrand(currentHeaderBrand);
+        setNavItems(currentNavItems);
         setPages((pagesJson.data ?? []) as PageSummary[]);
-        setFooterBrand((d.footerMeta?.brand as string) ?? defaultFooterMeta.brand);
-        setFooterDescription(
-          (d.footerMeta?.description as string) ?? defaultFooterMeta.description,
-        );
+        setFooterBrand(currentFooterBrand);
+        setFooterDescription(currentFooterDescription);
         setLinkColumnTitle(footer.linkColumnTitle);
         setLinkColumnLinks(footer.linkColumnLinks);
         setContactColumnTitle(footer.contactColumnTitle);
         setContactRows(footer.contactRows);
         setComplianceColumnTitle(footer.bodyColumnTitle);
         setComplianceColumnBody(footer.bodyColumnBody);
-        setFooterCopyright(
-          (d.footerMeta?.copyright as string) ?? defaultFooterMeta.copyright,
-        );
-        setFooterCtaLabel((d.footerMeta?.ctaLabel as string) ?? "REQUEST CREDENTIALS");
+        setFooterCopyright(currentCopyright);
+        setFooterCtaLabel(currentCtaLabel);
         setFooterCtaHref((d.footerMeta?.ctaHref as string) ?? "/contact");
-        setHeaderContactLabel(
-          (d.headerActions?.contactLabel as string) ?? defaultHeaderActions.contactLabel,
-        );
-        setHeaderInquireLabel(
-          (d.headerActions?.inquireLabel as string) ?? defaultHeaderActions.inquireLabel,
-        );
-        setHeaderInquireHref(
-          (d.headerActions?.inquireHref as string) ?? defaultHeaderActions.inquireHref,
-        );
         setPreservedLegal(
           (d.footerMeta?.legal as typeof defaultFooterMeta.legal) ?? defaultFooterMeta.legal,
         );
 
         setClientLogosFlag(d.featureFlags?.clientLogos !== false);
-        setSeoDefaultTitle(
-          d.seoDefaults?.defaultTitle ?? defaultSeoDefaults.defaultTitle,
-        );
-        setSeoDefaultDescription(
-          d.seoDefaults?.defaultDescription ?? defaultSeoDefaults.defaultDescription,
-        );
+        setSeoDefaultTitle(currentSeoTitle);
+        setSeoDefaultDescription(currentSeoDescription);
+
+        setLimits({
+          headerBrand: Math.max(siteGlobalLimits.headerBrand, currentHeaderBrand.length),
+          navLabel: Math.max(siteGlobalLimits.navLabel, currentNavItems.reduce((max, item) => Math.max(max, item.label.length), 0)),
+          footerBrand: Math.max(siteGlobalLimits.footerBrand, currentFooterBrand.length),
+          footerDescription: Math.max(siteGlobalLimits.footerDescription, currentFooterDescription.length),
+          footerCopyright: Math.max(siteGlobalLimits.footerCopyright, currentCopyright.length),
+          footerCtaLabel: Math.max(siteGlobalLimits.footerCtaLabel, currentCtaLabel.length),
+          seoTitle: Math.max(siteGlobalLimits.seoTitle, currentSeoTitle.length),
+          seoDescription: Math.max(siteGlobalLimits.seoDescription, currentSeoDescription.length),
+          linkColumnTitle: Math.max(siteGlobalLimits.linkColumnTitle, (footer.linkColumnTitle ?? "").length),
+          contactColumnTitle: Math.max(siteGlobalLimits.contactColumnTitle, (footer.contactColumnTitle ?? "").length),
+          complianceColumnTitle: Math.max(siteGlobalLimits.complianceColumnTitle, (footer.bodyColumnTitle ?? "").length),
+          complianceColumnBody: Math.max(siteGlobalLimits.complianceColumnBody, (d.footerMeta?.complianceBody as string ?? "").length),
+        });
+
+        // Character limits are now handled by siteGlobalLimits registry
       } catch (e) {
         if (!cancelled) setMessage(e instanceof Error ? e.message : "Load error");
       } finally {
@@ -227,7 +235,7 @@ export default function SiteGlobalEditClient() {
     });
   }
 
-  async function onSave(e: React.FormEvent) {
+  async function onSave(e: FormEvent) {
     e.preventDefault();
     setSaving(true);
     setMessage(null);
@@ -278,11 +286,6 @@ export default function SiteGlobalEditClient() {
         defaultDescription: seoDefaultDescription.trim() || undefined,
       },
       featureFlags: { clientLogos: clientLogosFlag },
-      headerActions: {
-        contactLabel: headerContactLabel.trim() || defaultHeaderActions.contactLabel,
-        inquireLabel: headerInquireLabel.trim() || defaultHeaderActions.inquireLabel,
-        inquireHref: headerInquireHref.trim() || defaultHeaderActions.inquireHref,
-      },
     };
 
     try {
@@ -322,11 +325,15 @@ export default function SiteGlobalEditClient() {
             </p>
 
             <label>
-              Brand title
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                Brand title
+                <CharacterCount current={headerBrand.length} max={limits.headerBrand} warningAt={limits.headerBrand - 5} />
+              </div>
               <input
                 value={headerBrand}
                 onChange={(e) => setHeaderBrand(e.target.value)}
-                placeholder="CRYPTONEXIS LIMITED"
+                maxLength={limits.headerBrand}
+                placeholder="THEA Medical Store"
               />
             </label>
 
@@ -334,21 +341,27 @@ export default function SiteGlobalEditClient() {
             {navItems.map((item, index) => (
               <div key={index} className="admin-section-card">
                 <label>
-                  Page route
+                  <span className="admin-field-label">Page link (Quick fill)</span>
                   <select
                     value={
-                      pages.some(
-                        (page) => getPageHref(page) === item.href,
-                      )
-                        ? item.href
-                        : ""
+                      pages.some((page) => getPageHref(page) === item.href) ? item.href : ""
                     }
                     onChange={(e) => {
-                      if (!e.target.value) return;
-                      updateNav(index, "href", e.target.value);
+                      const val = e.target.value;
+                      if (!val) return;
+                      const page = pages.find((p) => getPageHref(p) === val);
+                      setNavItems((prev) => {
+                        const next = [...prev];
+                        next[index] = {
+                          ...next[index],
+                          href: val,
+                          label: next[index].label.trim() === "" ? (page?.title ?? "") : next[index].label,
+                        };
+                        return next;
+                      });
                     }}
                   >
-                    <option value="">Select page…</option>
+                    <option value="">Select an existing page…</option>
                     {pages.map((page) => {
                       const href = getPageHref(page);
                       return (
@@ -360,19 +373,27 @@ export default function SiteGlobalEditClient() {
                   </select>
                 </label>
                 <label>
-                  Link label
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                    Link text
+                    <CharacterCount
+                      current={item.label.length}
+                      max={limits.navLabel}
+                      warningAt={limits.navLabel - 5}
+                    />
+                  </div>
                   <input
                     value={item.label}
                     onChange={(e) => updateNav(index, "label", e.target.value)}
-                    placeholder="Home"
+                    maxLength={limits.navLabel}
+                    placeholder="e.g. Services"
                   />
                 </label>
                 <label>
-                  URL
+                  URL path (manual override)
                   <input
                     value={item.href}
                     onChange={(e) => updateNav(index, "href", e.target.value)}
-                    placeholder="/about"
+                    placeholder="e.g. /services"
                   />
                 </label>
                 <button
@@ -388,36 +409,7 @@ export default function SiteGlobalEditClient() {
               Add navigation link
             </button>
 
-            <div className="admin-section-card" style={{ marginTop: 16 }}>
-              <h3 style={{ margin: "0 0 12px" }}>Header actions</h3>
-              <p className="admin-muted" style={{ margin: "0 0 12px" }}>
-                These actions appear in the header on all pages (same as Home).
-              </p>
-              <label>
-                Contact label
-                <input
-                  value={headerContactLabel}
-                  onChange={(e) => setHeaderContactLabel(e.target.value)}
-                  placeholder="Contact Us"
-                />
-              </label>
-              <label>
-                Inquire button label
-                <input
-                  value={headerInquireLabel}
-                  onChange={(e) => setHeaderInquireLabel(e.target.value)}
-                  placeholder="Inquire"
-                />
-              </label>
-              <label>
-                Inquire button URL
-                <input
-                  value={headerInquireHref}
-                  onChange={(e) => setHeaderInquireHref(e.target.value)}
-                  placeholder="/contact?apply=1"
-                />
-              </label>
-            </div>
+            <hr />
           </div>
 
           <div className="admin-section-group">
@@ -428,33 +420,44 @@ export default function SiteGlobalEditClient() {
             </p>
 
             <label>
-              Brand name
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                Brand name
+                <CharacterCount current={footerBrand.length} max={limits.footerBrand} warningAt={limits.footerBrand - 10} />
+              </div>
               <input
                 value={footerBrand}
                 onChange={(e) => setFooterBrand(e.target.value)}
-                placeholder="CRYPTONEXIS LIMITED"
+                maxLength={limits.footerBrand}
+                placeholder="THEA Medical Store"
               />
             </label>
             <label>
-              Brand description
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                Brand description
+                <CharacterCount current={footerDescription.length} max={limits.footerDescription} warningAt={limits.footerDescription - 50} />
+              </div>
               <textarea
                 rows={3}
                 value={footerDescription}
                 onChange={(e) => setFooterDescription(e.target.value)}
+                maxLength={limits.footerDescription}
               />
             </label>
 
             <div className="admin-section-card">
               <h3 style={{ margin: "0 0 12px" }}>Link column</h3>
               <p className="admin-muted" style={{ margin: "0 0 12px" }}>
-                Middle footer column — page links (Home, About Us, Service, NFT Projects, Contact
-                Us).
+                Middle footer column — page links (Home, About, Services, Products, etc).
               </p>
               <label>
-                Column heading
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                  Column heading
+                  <CharacterCount current={linkColumnTitle.length} max={limits.linkColumnTitle} warningAt={limits.linkColumnTitle - 5} />
+                </div>
                 <input
                   value={linkColumnTitle}
                   onChange={(e) => setLinkColumnTitle(e.target.value)}
+                  maxLength={limits.linkColumnTitle}
                   placeholder="LINK"
                 />
               </label>
@@ -484,10 +487,18 @@ export default function SiteGlobalEditClient() {
                     </select>
                   </label>
                   <label>
-                    Link label
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                      Link label
+                      <CharacterCount
+                        current={link.label.length}
+                        max={limits.navLabel}
+                        warningAt={limits.navLabel - 5}
+                      />
+                    </div>
                     <input
                       value={link.label}
                       onChange={(e) => updateFooterLink(index, "label", e.target.value)}
+                      maxLength={limits.navLabel}
                       placeholder="Home"
                     />
                   </label>
@@ -536,10 +547,14 @@ export default function SiteGlobalEditClient() {
                 Right footer column — address, email, and the request credentials button.
               </p>
               <label>
-                Column heading
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                  Column heading
+                  <CharacterCount current={contactColumnTitle.length} max={limits.contactColumnTitle} warningAt={limits.contactColumnTitle - 5} />
+                </div>
                 <input
                   value={contactColumnTitle}
                   onChange={(e) => setContactColumnTitle(e.target.value)}
+                  maxLength={limits.contactColumnTitle}
                   placeholder="CONTACT INFO"
                 />
               </label>
@@ -566,20 +581,28 @@ export default function SiteGlobalEditClient() {
                     />
                   </div>
                   <label>
-                    {row.type === "location"
-                      ? "Address"
-                      : row.type === "mail"
-                        ? "Email address"
-                        : "Phone number"}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                      {row.type === "location"
+                        ? "Address"
+                        : row.type === "mail"
+                          ? "Email address"
+                          : "Phone number"}
+                      <CharacterCount
+                        current={row.value.length}
+                        max={row.type === "location" ? 150 : 60}
+                        warningAt={(row.type === "location" ? 150 : 60) - 20}
+                      />
+                    </div>
                     <textarea
                       rows={row.type === "location" ? 3 : 2}
                       value={row.value}
                       onChange={(e) => updateContactRow(index, "value", e.target.value)}
+                      maxLength={row.type === "location" ? 150 : 60}
                       placeholder={
                         row.type === "location"
                           ? "RAK Economic Zone, Building 4, Ras Al Khaimah, United Arab Emirates"
                           : row.type === "mail"
-                            ? "inquiry@cryptonexis.com"
+                            ? "inquiry@thea.com"
                             : "+971 (0) 7 204 1111"
                       }
                     />
@@ -620,10 +643,14 @@ export default function SiteGlobalEditClient() {
               >
                 <h4 style={{ margin: "0 0 12px" }}>Request credentials button</h4>
                 <label>
-                  Button label
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                    Button label
+                    <CharacterCount current={footerCtaLabel.length} max={limits.footerCtaLabel} warningAt={limits.footerCtaLabel - 5} />
+                  </div>
                   <input
                     value={footerCtaLabel}
                     onChange={(e) => setFooterCtaLabel(e.target.value)}
+                    maxLength={limits.footerCtaLabel}
                     placeholder="REQUEST CREDENTIALS"
                   />
                 </label>
@@ -644,19 +671,27 @@ export default function SiteGlobalEditClient() {
                 Right-most footer column — regulatory compliance and licensing text.
               </p>
               <label>
-                Column heading
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                  Column heading
+                  <CharacterCount current={complianceColumnTitle.length} max={limits.complianceColumnTitle} warningAt={limits.complianceColumnTitle - 5} />
+                </div>
                 <input
                   value={complianceColumnTitle}
                   onChange={(e) => setComplianceColumnTitle(e.target.value)}
+                  maxLength={limits.complianceColumnTitle}
                   placeholder="Compliance"
                 />
               </label>
               <label>
-                Compliance body text
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                  Compliance body text
+                  <CharacterCount current={complianceColumnBody.length} max={limits.complianceColumnBody} warningAt={limits.complianceColumnBody - 50} />
+                </div>
                 <textarea
                   rows={4}
                   value={complianceColumnBody}
                   onChange={(e) => setComplianceColumnBody(e.target.value)}
+                  maxLength={limits.complianceColumnBody}
                   placeholder="Regulatory Compliance: MOHAP Certified..."
                 />
               </label>
@@ -674,11 +709,15 @@ export default function SiteGlobalEditClient() {
             </div>
 
             <label>
-              Copyright line
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                Copyright line
+                <CharacterCount current={footerCopyright.length} max={limits.footerCopyright} warningAt={limits.footerCopyright - 30} />
+              </div>
               <input
                 value={footerCopyright}
                 onChange={(e) => setFooterCopyright(e.target.value)}
-                placeholder="© 2024 CRYPTONEXIS LIMITED. UAE REGULATED. RAK ECONOMIC ZONE."
+                maxLength={limits.footerCopyright}
+                placeholder="© 2024 THEA Medical Store. All rights reserved."
               />
             </label>
           </div>
@@ -689,19 +728,27 @@ export default function SiteGlobalEditClient() {
               Used when a page has no custom SEO title or description.
             </p>
             <label>
-              Default SEO title
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                Default SEO title
+                <CharacterCount current={seoDefaultTitle.length} max={limits.seoTitle} warningAt={limits.seoTitle - 10} />
+              </div>
               <input
                 value={seoDefaultTitle}
                 onChange={(e) => setSeoDefaultTitle(e.target.value)}
+                maxLength={limits.seoTitle}
                 placeholder={defaultSeoDefaults.defaultTitle}
               />
             </label>
             <label>
-              Default SEO description
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                Default SEO description
+                <CharacterCount current={seoDefaultDescription.length} max={limits.seoDescription} warningAt={limits.seoDescription - 10} />
+              </div>
               <textarea
                 rows={3}
                 value={seoDefaultDescription}
                 onChange={(e) => setSeoDefaultDescription(e.target.value)}
+                maxLength={limits.seoDescription}
                 placeholder={defaultSeoDefaults.defaultDescription}
               />
             </label>

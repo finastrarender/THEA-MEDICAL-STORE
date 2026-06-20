@@ -13,7 +13,7 @@ export const theaServicesCapabilityCardsDefaults = {
       title: "Drug Store",
       description:
         "Pharmaceutical distribution excellence ensuring safe, temperature-controlled logistics for essential medicines across the region.",
-      image: "/services/drug-store.jpg",
+      image: "/services/Pharmaceutical storage facility.png",
       features: ["GDP Compliant Logistics", "Cold Chain Management"],
     },
     {
@@ -21,7 +21,7 @@ export const theaServicesCapabilityCardsDefaults = {
       title: "Equipment Trading",
       description:
         "Direct procurement of New & Certified Pre-owned medical technology from world-leading manufacturers.",
-      image: "/services/equipment-trading.jpg",
+      image: "/services/Medical ultrasound machine.png",
       features: ["New Installations", "Refurbished Systems"],
     },
     {
@@ -60,7 +60,7 @@ export const theaServicesSpecializedDefaults = {
     },
     {
       variant: "image" as const,
-      image: "/services/lab-tubes.jpg",
+      image: "/services/Laboratory testing.png",
     },
     {
       variant: "brand" as const,
@@ -99,7 +99,7 @@ export const theaServicesProductCatalogDefaults = {
       title: "Sterile Wound Care Kit",
       category: "Surgical Consumables",
       filterId: "consumables",
-      image: "/services/catalog-wound-care.jpg",
+      image: "/services/Surgical supplies (1).png",
       href: "",
     },
     {
@@ -113,7 +113,7 @@ export const theaServicesProductCatalogDefaults = {
       title: "Precision Syringes",
       category: "Injection Consumables",
       filterId: "consumables",
-      image: "/services/catalog-syringes.jpg",
+      image: "/services/Syringes.png",
       href: "",
     },
   ],

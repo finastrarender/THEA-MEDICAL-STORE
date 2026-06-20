@@ -28,15 +28,15 @@ const footerBodyColumnSchema = z.object({
 });
 
 export const heroDataSchema = z.object({
-  badge: z.string().optional(),
-  title: z.array(z.string()),
-  lede: z.string().optional(),
-  description: z.string(),
-  primaryAction: z.object({ label: z.string(), href: z.string() }),
-  secondaryAction: z.object({ label: z.string(), href: z.string() }),
+  badge: z.string().max(40).optional(),
+  title: z.array(z.string().max(40)),
+  lede: z.string().max(100).optional(),
+  description: z.string().max(300),
+  primaryAction: z.object({ label: z.string().max(25), href: z.string() }),
+  secondaryAction: z.object({ label: z.string().max(25), href: z.string() }),
   backgroundImage: z.string().optional(),
-  overlayLabel: z.string().optional(),
-  overlayText: z.string().optional(),
+  overlayLabel: z.string().max(40).optional(),
+  overlayText: z.string().max(100).optional(),
 });
 
 const introStatSchema = z.object({
@@ -45,29 +45,29 @@ const introStatSchema = z.object({
 });
 
 export const introDataSchema = z.object({
-  eyebrow: z.string().optional(),
-  title: z.array(z.string()),
-  description: z.string(),
-  highlights: z.array(z.string()).optional(),
+  eyebrow: z.string().max(40).optional(),
+  title: z.array(z.string().max(40)),
+  description: z.string().max(500),
+  highlights: z.array(z.string().max(60)).optional(),
   image: z.string().optional(),
-  more: z.string().optional(),
+  more: z.string().max(40).optional(),
   href: z.string().optional(),
   icon: z.string().optional(),
   expcount: z.number().optional(),
   stats: z.array(introStatSchema).optional(),
-  cardLabel: z.string().optional(),
-  cardDescription: z.string().optional(),
-  cardLinkLabel: z.string().optional(),
+  cardLabel: z.string().max(40).optional(),
+  cardDescription: z.string().max(160).optional(),
+  cardLinkLabel: z.string().max(25).optional(),
   cardHref: z.string().optional(),
 });
 
 const serviceCardSchema = z.object({
-  title: z.string(),
-  description: z.string(),
+  title: z.string().max(40),
+  description: z.string().max(160),
   icon: z.string().optional(),
   iconImage: z.string().optional(),
-  category: z.string().optional(),
-  points: z.array(z.string()).optional(),
+  category: z.string().max(25).optional(),
+  points: z.array(z.string().max(60)).optional(),
 });
 
 const applyNowModalSchema = z.object({
@@ -103,9 +103,9 @@ const applyNowModalSchema = z.object({
 });
 
 export const servicesDataSchema = z.object({
-  eyebrow: z.string().optional(),
-  title: z.string(),
-  description: z.string(),
+  eyebrow: z.string().max(40).optional(),
+  title: z.string().max(40),
+  description: z.string().max(300),
   backgroundImage: z.string().optional(),
   cards: z.array(serviceCardSchema),
 });
@@ -131,10 +131,10 @@ export const servicesGridDataSchema = z.object({
 });
 
 export const servicesCtaDataSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-  primaryAction: z.object({ label: z.string(), href: z.string() }),
-  secondaryAction: z.object({ label: z.string(), href: z.string() }),
+  title: z.string().max(60),
+  description: z.string().max(200),
+  primaryAction: z.object({ label: z.string().max(25), href: z.string() }),
+  secondaryAction: z.object({ label: z.string().max(25), href: z.string() }),
 });
 
 const servicesLicensingRowSchema = z.object({
@@ -323,21 +323,21 @@ const globalStandardsPillarSchema = z.object({
 });
 
 export const globalStandardsDataSchema = z.object({
-  eyebrow: z.string().optional(),
-  title: z.string(),
-  description: z.string(),
+  eyebrow: z.string().max(40).optional(),
+  title: z.string().max(40),
+  description: z.string().max(300),
   pillars: z.array(globalStandardsPillarSchema).min(1),
 });
 
 export const homeAboutDataSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-  description2: z.string().optional(),
+  title: z.string().max(60),
+  description: z.string().max(500),
+  description2: z.string().max(500).optional(),
   image: z.string().optional(),
-  missionTitle: z.string(),
-  missionText: z.string(),
-  visionTitle: z.string(),
-  visionText: z.string(),
+  missionTitle: z.string().max(40),
+  missionText: z.string().max(300),
+  visionTitle: z.string().max(40),
+  visionText: z.string().max(300),
 });
 
 const homeServiceItemSchema = z.object({
@@ -361,7 +361,7 @@ const homeProductCategorySchema = z.object({
 });
 
 export const homeProductCategoriesDataSchema = z.object({
-  title: z.string(),
+  title: z.string().max(60),
   categories: z.array(homeProductCategorySchema).min(4),
 });
 
@@ -381,13 +381,13 @@ const homeQuickInquiryContactSchema = z.object({
 });
 
 export const homeQuickInquiryDataSchema = z.object({
-  title: z.string(),
-  description: z.string(),
+  title: z.string().max(60),
+  description: z.string().max(300),
   contacts: z.array(homeQuickInquiryContactSchema).min(1),
-  submitLabel: z.string().optional(),
-  serviceOptions: z.array(z.string()).optional(),
-  successMessage: z.string().optional(),
-  errorMessage: z.string().optional(),
+  submitLabel: z.string().max(25).optional(),
+  serviceOptions: z.array(z.string().max(40)).optional(),
+  successMessage: z.string().max(100).optional(),
+  errorMessage: z.string().max(100).optional(),
 });
 
 const homeWhyChooseItemSchema = z.object({
@@ -397,7 +397,7 @@ const homeWhyChooseItemSchema = z.object({
 });
 
 export const homeWhyChooseDataSchema = z.object({
-  title: z.string(),
+  title: z.string().max(60),
   items: z.array(homeWhyChooseItemSchema).min(1),
   image: z.string().optional(),
 });
@@ -507,11 +507,11 @@ const clientsHeroCertSchema = z.object({
 });
 
 export const clientsPageHeroDataSchema = z.object({
-  badge: z.string(),
-  titleLead: z.string(),
-  titleHighlight: z.string(),
-  titleAfter: z.string(),
-  description: z.string(),
+  badge: z.string().max(40),
+  titleLead: z.string().max(40),
+  titleHighlight: z.string().max(40),
+  titleAfter: z.string().max(40),
+  description: z.string().max(300),
   backgroundImage: z.string().optional(),
   certifications: z.array(clientsHeroCertSchema).min(1),
 });
@@ -636,8 +636,13 @@ export const investmentDataSchema = z.object({
 });
 
 export const clientLogosDataSchema = z.object({
-  eyebrow: z.string(),
-  logos: z.array(z.string()).min(1),
+  eyebrow: z.string().optional(),
+  logos: z.array(
+    z.object({
+      src: z.string(),
+      alt: z.string().optional(),
+    })
+  ).default([]),
 });
 
 export const ctaDataSchema = z.object({
@@ -772,27 +777,27 @@ export const serviceHeroDataSchema = z.object({
 });
 
 export const aboutHeroDataSchema = z.object({
-  eyebrow: z.string().optional(),
-  titleLead: z.string().optional(),
-  titleHighlight: z.string().optional(),
-  titleAfter: z.string().optional(),
-  titleLines: z.array(z.string()).min(1).optional(),
+  eyebrow: z.string().max(40).optional(),
+  titleLead: z.string().max(40).optional(),
+  titleHighlight: z.string().max(40).optional(),
+  titleAfter: z.string().max(40).optional(),
+  titleLines: z.array(z.string().max(40)).min(1).optional(),
   /** @deprecated Legacy fields */
-  titleAccent: z.string().optional(),
-  titleMain: z.string().optional(),
-  sideCopy: z.string().optional(),
-  description: z.string().optional(),
+  titleAccent: z.string().max(40).optional(),
+  titleMain: z.string().max(40).optional(),
+  sideCopy: z.string().max(200).optional(),
+  description: z.string().max(500).optional(),
   highlights: z
     .array(
       z.object({
-        title: z.string(),
-        subtitle: z.string(),
+        title: z.string().max(25),
+        subtitle: z.string().max(60),
         accent: z.enum(["teal", "blue"]).optional(),
       }),
     )
     .optional(),
-  quote: z.string().optional(),
-  quoteAttribution: z.string().optional(),
+  quote: z.string().max(160).optional(),
+  quoteAttribution: z.string().max(60).optional(),
   image: z.string().optional(),
   backgroundImage: z.string().optional(),
 });
@@ -1139,8 +1144,8 @@ export function parseSectionData(type: string, data: unknown): unknown {
                         : type === "projectspartners"
                           ? "projectsPartners"
                           : type === "aboutoverview"
-                          ? "aboutOverview"
-                          : type;
+                            ? "aboutOverview"
+                            : type;
   if (!SECTION_TYPES.includes(normalizedType as SectionType)) {
     throw new Error(`Unknown section type: ${type}`);
   }

@@ -107,7 +107,13 @@ function buildHomeSections(): PageSection[] {
       order: 4,
       data: {
         eyebrow: "TRUSTED BY INSTITUTIONAL LEADERS",
-        logos: ["GLOBAL BANK", "TECH LOGISTICS", "DUBAI URBAN", "GOV SECTOR", "CORE ENERGY"],
+        logos: [
+          { src: "", alt: "GLOBAL BANK" },
+          { src: "", alt: "TECH LOGISTICS" },
+          { src: "", alt: "DUBAI URBAN" },
+          { src: "", alt: "GOV SECTOR" },
+          { src: "", alt: "CORE ENERGY" },
+        ],
       },
     },
     {

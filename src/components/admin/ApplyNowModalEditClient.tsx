@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { defaultApplyNowModal } from "@/data/site-defaults";
+import CharacterCount from "@/components/admin/CharacterCount";
+import { applyNowModalLimits } from "@/lib/seeded-lengths";
 
 type CustomField = {
   label: string;
@@ -37,6 +39,7 @@ export default function ApplyNowModalEditClient() {
   const [termsText, setTermsText] = useState(defaultApplyNowModal.termsText);
   const [marketingConsentText, setMarketingConsentText] = useState(defaultApplyNowModal.marketingConsentText);
   const [submitLabel, setSubmitLabel] = useState(defaultApplyNowModal.submitLabel);
+  const [limits, setLimits] = useState(applyNowModalLimits);
 
   useEffect(() => {
     let cancelled = false;
@@ -70,6 +73,19 @@ export default function ApplyNowModalEditClient() {
         setTermsText(content.termsText ?? defaultApplyNowModal.termsText);
         setMarketingConsentText(content.marketingConsentText ?? defaultApplyNowModal.marketingConsentText);
         setSubmitLabel(content.submitLabel ?? defaultApplyNowModal.submitLabel);
+
+        setLimits({
+          panelTitle: Math.max(applyNowModalLimits.panelTitle, (content.panelTitle ?? "").length),
+          panelDescription: Math.max(applyNowModalLimits.panelDescription, (content.panelDescription ?? "").length),
+          highlight: Math.max(applyNowModalLimits.highlight, (content.panelHighlights ?? []).reduce((max: number, h: string) => Math.max(max, h.length), 0)),
+          formTitle: Math.max(applyNowModalLimits.formTitle, (content.formTitle ?? "").length),
+          formDescription: Math.max(applyNowModalLimits.formDescription, (content.formDescription ?? "").length),
+          label: Math.max(applyNowModalLimits.label, (content.fullNameLabel ?? "").length, (content.phoneLabel ?? "").length, (content.emailLabel ?? "").length, (content.cityLabel ?? "").length, (content.experienceLabel ?? "").length, (content.messageLabel ?? "").length),
+          placeholder: Math.max(applyNowModalLimits.placeholder, (content.fullNamePlaceholder ?? "").length, (content.phonePlaceholder ?? "").length, (content.emailPlaceholder ?? "").length, (content.cityPlaceholder ?? "").length, (content.experiencePlaceholder ?? "").length, (content.messagePlaceholder ?? "").length),
+          termsText: Math.max(applyNowModalLimits.termsText, (content.termsText ?? "").length),
+          marketingConsentText: Math.max(applyNowModalLimits.marketingConsentText, (content.marketingConsentText ?? "").length),
+          submitLabel: Math.max(applyNowModalLimits.submitLabel, (content.submitLabel ?? "").length),
+        });
       } catch (err) {
         if (!cancelled) setMessage(err instanceof Error ? err.message : "Load error");
       } finally {
@@ -190,15 +206,22 @@ export default function ApplyNowModalEditClient() {
         <p className="admin-muted">Edit the content shown when users click the Apply Now button.</p>
         <form className="admin-form" onSubmit={onSave}>
           <label>
-            Left panel title
-            <input value={panelTitle} onChange={(e) => setPanelTitle(e.target.value)} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Left panel title
+              <CharacterCount current={panelTitle.length} max={limits.panelTitle} warningAt={limits.panelTitle - 10} />
+            </div>
+            <input value={panelTitle} onChange={(e) => setPanelTitle(e.target.value)} maxLength={limits.panelTitle} />
           </label>
           <label>
-            Left panel description
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Left panel description
+              <CharacterCount current={panelDescription.length} max={limits.panelDescription} warningAt={limits.panelDescription - 20} />
+            </div>
             <textarea
               rows={3}
               value={panelDescription}
               onChange={(e) => setPanelDescription(e.target.value)}
+              maxLength={limits.panelDescription}
             />
           </label>
           <label>
@@ -210,65 +233,104 @@ export default function ApplyNowModalEditClient() {
             />
           </label>
           <label>
-            Form title
-            <input value={formTitle} onChange={(e) => setFormTitle(e.target.value)} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Form title
+              <CharacterCount current={formTitle.length} max={limits.formTitle} warningAt={limits.formTitle - 10} />
+            </div>
+            <input value={formTitle} onChange={(e) => setFormTitle(e.target.value)} maxLength={limits.formTitle} />
           </label>
           <label>
-            Form description
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Form description
+              <CharacterCount current={formDescription.length} max={limits.formDescription} warningAt={limits.formDescription - 20} />
+            </div>
             <textarea
               rows={3}
               value={formDescription}
               onChange={(e) => setFormDescription(e.target.value)}
+              maxLength={limits.formDescription}
             />
           </label>
           <label>
-            Full name label
-            <input value={fullNameLabel} onChange={(e) => setFullNameLabel(e.target.value)} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Full name label
+              <CharacterCount current={fullNameLabel.length} max={limits.label} warningAt={limits.label - 5} />
+            </div>
+            <input value={fullNameLabel} onChange={(e) => setFullNameLabel(e.target.value)} maxLength={limits.label} />
           </label>
           <label>
-            Full name placeholder
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Full name placeholder
+              <CharacterCount current={fullNamePlaceholder.length} max={limits.placeholder} warningAt={limits.placeholder - 10} />
+            </div>
             <input
               value={fullNamePlaceholder}
               onChange={(e) => setFullNamePlaceholder(e.target.value)}
+              maxLength={limits.placeholder}
             />
           </label>
           <label>
-            Phone label
-            <input value={phoneLabel} onChange={(e) => setPhoneLabel(e.target.value)} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Phone label
+              <CharacterCount current={phoneLabel.length} max={limits.label} warningAt={limits.label - 5} />
+            </div>
+            <input value={phoneLabel} onChange={(e) => setPhoneLabel(e.target.value)} maxLength={limits.label} />
           </label>
           <label>
-            Phone placeholder
-            <input value={phonePlaceholder} onChange={(e) => setPhonePlaceholder(e.target.value)} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Phone placeholder
+              <CharacterCount current={phonePlaceholder.length} max={limits.placeholder} warningAt={limits.placeholder - 10} />
+            </div>
+            <input value={phonePlaceholder} onChange={(e) => setPhonePlaceholder(e.target.value)} maxLength={limits.placeholder} />
           </label>
           <label>
-            Email label
-            <input value={emailLabel} onChange={(e) => setEmailLabel(e.target.value)} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Email label
+              <CharacterCount current={emailLabel.length} max={limits.label} warningAt={limits.label - 5} />
+            </div>
+            <input value={emailLabel} onChange={(e) => setEmailLabel(e.target.value)} maxLength={limits.label} />
           </label>
           <label>
-            Email placeholder
-            <input value={emailPlaceholder} onChange={(e) => setEmailPlaceholder(e.target.value)} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Email placeholder
+              <CharacterCount current={emailPlaceholder.length} max={limits.placeholder} warningAt={limits.placeholder - 10} />
+            </div>
+            <input value={emailPlaceholder} onChange={(e) => setEmailPlaceholder(e.target.value)} maxLength={limits.placeholder} />
           </label>
           <label>
-            City label
-            <input value={cityLabel} onChange={(e) => setCityLabel(e.target.value)} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              City label
+              <CharacterCount current={cityLabel.length} max={limits.label} warningAt={limits.label - 5} />
+            </div>
+            <input value={cityLabel} onChange={(e) => setCityLabel(e.target.value)} maxLength={limits.label} />
           </label>
           <label>
-            City placeholder
-            <input value={cityPlaceholder} onChange={(e) => setCityPlaceholder(e.target.value)} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              City placeholder
+              <CharacterCount current={cityPlaceholder.length} max={limits.placeholder} warningAt={limits.placeholder - 10} />
+            </div>
+            <input value={cityPlaceholder} onChange={(e) => setCityPlaceholder(e.target.value)} maxLength={limits.placeholder} />
           </label>
           <label>
             City options (one per line)
             <textarea rows={4} value={cityOptions} onChange={(e) => setCityOptions(e.target.value)} />
           </label>
           <label>
-            Experience label
-            <input value={experienceLabel} onChange={(e) => setExperienceLabel(e.target.value)} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Experience label
+              <CharacterCount current={experienceLabel.length} max={limits.label} warningAt={limits.label - 5} />
+            </div>
+            <input value={experienceLabel} onChange={(e) => setExperienceLabel(e.target.value)} maxLength={limits.label} />
           </label>
           <label>
-            Experience placeholder
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Experience placeholder
+              <CharacterCount current={experiencePlaceholder.length} max={limits.placeholder} warningAt={limits.placeholder - 10} />
+            </div>
             <input
               value={experiencePlaceholder}
               onChange={(e) => setExperiencePlaceholder(e.target.value)}
+              maxLength={limits.placeholder}
             />
           </label>
           <label>
@@ -280,14 +342,21 @@ export default function ApplyNowModalEditClient() {
             />
           </label>
           <label>
-            Message label
-            <input value={messageLabel} onChange={(e) => setMessageLabel(e.target.value)} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Message label
+              <CharacterCount current={messageLabel.length} max={limits.label} warningAt={limits.label - 5} />
+            </div>
+            <input value={messageLabel} onChange={(e) => setMessageLabel(e.target.value)} maxLength={limits.label} />
           </label>
           <label>
-            Message placeholder
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Message placeholder
+              <CharacterCount current={messagePlaceholder.length} max={limits.placeholder} warningAt={limits.placeholder - 10} />
+            </div>
             <input
               value={messagePlaceholder}
               onChange={(e) => setMessagePlaceholder(e.target.value)}
+              maxLength={limits.placeholder}
             />
           </label>
           <h3 style={{ marginBottom: 0 }}>Additional input fields</h3>
@@ -306,15 +375,25 @@ export default function ApplyNowModalEditClient() {
                 marginBottom: 8,
               }}
             >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                <span>Field label</span>
+                <CharacterCount current={field.label.length} max={limits.label} />
+              </div>
               <input
                 value={field.label}
                 onChange={(e) => updateCustomField(index, "label", e.target.value)}
                 placeholder="Field label"
+                maxLength={limits.label}
               />
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                <span>Placeholder</span>
+                <CharacterCount current={field.placeholder.length} max={limits.placeholder} />
+              </div>
               <input
                 value={field.placeholder}
                 onChange={(e) => updateCustomField(index, "placeholder", e.target.value)}
                 placeholder="Placeholder"
+                maxLength={limits.placeholder}
               />
               <select
                 value={field.inputType}
@@ -337,20 +416,30 @@ export default function ApplyNowModalEditClient() {
             Add input field
           </button>
           <label>
-            Terms checkbox text
-            <textarea rows={2} value={termsText} onChange={(e) => setTermsText(e.target.value)} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Terms checkbox text
+              <CharacterCount current={termsText.length} max={limits.termsText} warningAt={limits.termsText - 10} />
+            </div>
+            <textarea rows={2} value={termsText} onChange={(e) => setTermsText(e.target.value)} maxLength={limits.termsText} />
           </label>
           <label>
-            Marketing consent checkbox text
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Marketing consent checkbox text
+              <CharacterCount current={marketingConsentText.length} max={limits.marketingConsentText} warningAt={limits.marketingConsentText - 10} />
+            </div>
             <textarea
               rows={2}
               value={marketingConsentText}
               onChange={(e) => setMarketingConsentText(e.target.value)}
+              maxLength={limits.marketingConsentText}
             />
           </label>
           <label>
-            Submit button label
-            <input value={submitLabel} onChange={(e) => setSubmitLabel(e.target.value)} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Submit button label
+              <CharacterCount current={submitLabel.length} max={limits.submitLabel} warningAt={limits.submitLabel - 5} />
+            </div>
+            <input value={submitLabel} onChange={(e) => setSubmitLabel(e.target.value)} maxLength={limits.submitLabel} />
           </label>
           <button type="submit" disabled={saving}>
             {saving ? "Saving..." : "Save"}

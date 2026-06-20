@@ -9,24 +9,40 @@ export default function ClientLogosSection({ content }: { content: LogosContent 
       ? content.eyebrow
       : "TRUSTED BY INSTITUTIONAL LEADERS";
 
-  const logos = (Array.isArray(content.logos) ? content.logos : [])
-    .map((logo) => String(logo).trim())
-    .filter(Boolean);
-  const normalizedLogos =
-    logos.length > 0
-      ? logos
-      : ["GLOBAL BANK", "TECH LOGISTICS", "DUBAI URBAN", "GOV SECTOR", "CORE ENERGY"];
+  const logos = Array.isArray(content.logos) ? content.logos : [];
+  const normalizedLogos = logos.filter(
+    (logo: any) => (typeof logo === "string" ? logo.trim() !== "" : !!logo?.src)
+  );
 
   return (
     <section className="logos-section">
       <div className="logos-section__card">
         <p className="logos-section__eyebrow">{eyebrow}</p>
-        <div className="logos-section__grid">
-          {normalizedLogos.map((logo) => (
-            <p key={logo} className="logos-section__logo">
-              {logo}
-            </p>
-          ))}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-12 items-center opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+          {normalizedLogos.map((logo: any, index: number) => {
+            const src = typeof logo === "string" ? "" : logo.src;
+            const alt = typeof logo === "string" ? logo : logo.alt || "";
+
+            return (
+              <div
+                key={index}
+                className="flex items-center justify-center p-4 hover:scale-105 transition-transform"
+              >
+                {src ? (
+                  <img
+                    src={src}
+                    alt={alt}
+                    className="max-h-12 w-auto object-contain pointer-events-none"
+                    loading="lazy"
+                  />
+                ) : (
+                  <p className="font-bold text-center text-xs tracking-[0.2em] whitespace-nowrap">
+                    {alt}
+                  </p>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

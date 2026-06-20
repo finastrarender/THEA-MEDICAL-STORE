@@ -14,7 +14,7 @@ export const theaAboutHeroDefaults = {
   quote:
     "Our mission is to ensure every medical facility in the region has access to the highest caliber of instruments and pharmaceuticals.",
   quoteAttribution: "EXECUTIVE BOARD",
-  image: "",
+  image: "/about/thea-about.png",
 };
 
 export const theaAboutMissionDefaults = {
@@ -53,25 +53,25 @@ export const theaAboutLeadershipDefaults = {
       name: "Dr. Salim Al-Maktoum",
       role: "CHIEF EXECUTIVE OFFICER",
       bio: "20+ Years in Pharmaceutical Logistics.",
-      image: "",
+      image: "/about/dr.salim.png",
     },
     {
       name: "Elena Rodriguez, PharmD",
       role: "DIRECTOR OF COMPLIANCE",
       bio: "Former Regulatory Advisor for MOHAP.",
-      image: "",
+      image: "/about/dr2.png",
     },
     {
       name: "Mark Jensen",
       role: "HEAD OF DISTRIBUTION",
       bio: "Supply Chain Specialist, Global Health.",
-      image: "",
+      image: "/about/dr3.png",
     },
     {
       name: "Sarah Chen",
       role: "CLINICAL RELATIONS MANAGER",
       bio: "Hospital Infrastructure Specialist.",
-      image: "",
+      image: "/about/dr4.png",
     },
   ],
 };
@@ -79,7 +79,7 @@ export const theaAboutLeadershipDefaults = {
 export const theaAboutRegulatoryDefaults = {
   title: "Regulatory Excellence & Certification",
   description: "",
-  mohapLogo: "",
+  mohapLogo: "/about/iso.png",
   isoLine1: "ISO 9001:2015",
   isoLine2: "Certified",
   guaranteeTitle: "Total Compliance Guarantee",
@@ -135,7 +135,7 @@ export const theaAboutInquiryDefaults = {
   map: {
     title: "THEA Medical Headquarters",
     subtitle: "Business Bay, Dubai, UAE",
-    mapImage: "",
+    mapImage: "/contact/uae-map.jpg",
     linkHref: "https://maps.google.com/?q=Business+Bay+Dubai",
   },
   formFields: {

@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
+import CharacterCount from "@/components/admin/CharacterCount";
 import ContactHqIconPicker from "@/components/admin/ContactHqIconPicker";
 import ImageUploadField from "@/components/admin/ImageUploadField";
 import SectionSaveFooter from "@/components/admin/SectionSaveFooter";
@@ -22,6 +23,15 @@ import {
   theaHomeTrustedByDefaults,
   theaHomeWhyChooseDefaults,
 } from "@/data/thea-home-sections";
+import {
+  homeAboutLimits,
+  homeServicesLimits,
+  productCategoriesLimits,
+  trustedByLimits,
+  quickInquiryLimits,
+  whyChooseLimits,
+  aboutMissionVisionLimits,
+} from "@/lib/seeded-lengths";
 
 type SectionFormProps = {
   section: { id: string; type: string; order: number; data: Record<string, unknown> };
@@ -68,6 +78,25 @@ export function HomeAboutSectionForm({
   const { register, setValue, watch, handleSubmit, formState: { isSubmitting } } = useForm({
     defaultValues,
   });
+
+  const title = watch("title");
+  const description = watch("description");
+  const description2 = watch("description2") ?? "";
+  const missionTitle = watch("missionTitle");
+  const missionText = watch("missionText");
+  const visionTitle = watch("visionTitle");
+  const visionText = watch("visionText");
+
+  const limits = useMemo(() => ({
+    title: Math.max(homeAboutLimits.title, defaultValues.title.length),
+    description: Math.max(homeAboutLimits.description, defaultValues.description.length),
+    description2: Math.max(homeAboutLimits.description2, defaultValues.description2.length),
+    missionTitle: Math.max(homeAboutLimits.missionTitle, defaultValues.missionTitle.length),
+    missionText: Math.max(homeAboutLimits.missionText, defaultValues.missionText.length),
+    visionTitle: Math.max(homeAboutLimits.visionTitle, defaultValues.visionTitle.length),
+    visionText: Math.max(homeAboutLimits.visionText, defaultValues.visionText.length),
+  }), [defaultValues]);
+
   const image = watch("image");
 
   return (
@@ -79,47 +108,140 @@ export function HomeAboutSectionForm({
       <SectionHeading section={section} />
 
       <label>
-        Title
-        <input {...register("title", { required: true })} placeholder="About THEA Medical Store" />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Title
+          <CharacterCount current={title.length} max={limits.title} />
+        </div>
+        <input
+          {...register("title", {
+            required: true,
+            maxLength: {
+              value: limits.title,
+              message: "Maximum character limit reached.",
+            },
+          })}
+          maxLength={limits.title}
+          placeholder="About THEA Medical Store"
+        />
       </label>
 
       <label>
-        Paragraph 1
-        <textarea rows={4} {...register("description", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Paragraph 1
+          <CharacterCount current={description.length} max={limits.description} />
+        </div>
+        <textarea
+          rows={4}
+          {...register("description", {
+            required: true,
+            maxLength: {
+              value: limits.description,
+              message: "Maximum character limit reached.",
+            },
+          })}
+          maxLength={limits.description}
+        />
       </label>
 
       <label>
-        Paragraph 2
-        <textarea rows={4} {...register("description2")} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Paragraph 2
+          <CharacterCount current={description2.length} max={limits.description2} />
+        </div>
+        <textarea
+          rows={4}
+          {...register("description2", {
+            maxLength: {
+              value: limits.description2,
+              message: "Maximum character limit reached.",
+            },
+          })}
+          maxLength={limits.description2}
+        />
       </label>
 
       <input type="hidden" {...register("image")} />
       <ImageUploadField
-        label="Featured image (optional)"
+        label="Featured image"
         value={image}
         onChange={(value) => setValue("image", value, { shouldDirty: true })}
         folder={`sections/${section.type}`}
         placeholder="Leave empty for default illustration"
+        minWidth={600}
+        minHeight={600}
+        aspectRatio={1}
       />
 
       <h4>Mission card</h4>
       <label>
-        Title
-        <input {...register("missionTitle", { required: true })} placeholder="Our Mission" />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Title
+          <CharacterCount current={missionTitle.length} max={limits.missionTitle} />
+        </div>
+        <input
+          {...register("missionTitle", {
+            required: true,
+            maxLength: {
+              value: limits.missionTitle,
+              message: "Maximum character limit reached.",
+            },
+          })}
+          maxLength={limits.missionTitle}
+          placeholder="Our Mission"
+        />
       </label>
       <label>
-        Text
-        <textarea rows={2} {...register("missionText", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Text
+          <CharacterCount current={missionText.length} max={limits.missionText} />
+        </div>
+        <textarea
+          rows={2}
+          {...register("missionText", {
+            required: true,
+            maxLength: {
+              value: limits.missionText,
+              message: "Maximum character limit reached.",
+            },
+          })}
+          maxLength={limits.missionText}
+        />
       </label>
 
       <h4>Vision card</h4>
       <label>
-        Title
-        <input {...register("visionTitle", { required: true })} placeholder="Our Vision" />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Title
+          <CharacterCount current={visionTitle.length} max={limits.visionTitle} />
+        </div>
+        <input
+          {...register("visionTitle", {
+            required: true,
+            maxLength: {
+              value: limits.visionTitle,
+              message: "Maximum character limit reached.",
+            },
+          })}
+          maxLength={limits.visionTitle}
+          placeholder="Our Vision"
+        />
       </label>
       <label>
-        Text
-        <textarea rows={2} {...register("visionText", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Text
+          <CharacterCount current={visionText.length} max={limits.visionText} />
+        </div>
+        <textarea
+          rows={2}
+          {...register("visionText", {
+            required: true,
+            maxLength: {
+              value: limits.visionText,
+              message: "Maximum character limit reached.",
+            },
+          })}
+          maxLength={limits.visionText}
+        />
       </label>
 
       <SectionSaveFooter
@@ -148,10 +270,10 @@ export function HomeServicesGridSectionForm({
       items:
         ((section.data.items as ServiceItem[]) ?? []).length > 0
           ? (section.data.items as ServiceItem[]).map((item) => ({
-              icon: item.icon ?? "drugStore",
-              title: item.title ?? "",
-              description: item.description ?? "",
-            }))
+            icon: item.icon ?? "drugStore",
+            title: item.title ?? "",
+            description: item.description ?? "",
+          }))
           : theaHomeServicesDefaults.items,
     }),
     [section.data],
@@ -160,8 +282,19 @@ export function HomeServicesGridSectionForm({
   const { register, control, setValue, watch, handleSubmit, formState: { isSubmitting } } = useForm({
     defaultValues,
   });
-  const { fields, append, remove } = useFieldArray({ control, name: "items" });
+
+  const title = watch("title");
+  const description = watch("description");
   const items = watch("items");
+
+  const limits = useMemo(() => ({
+    title: Math.max(homeServicesLimits.title, defaultValues.title.length),
+    description: Math.max(homeServicesLimits.description, defaultValues.description.length),
+    cardTitle: Math.max(homeServicesLimits.cardTitle, defaultValues.items.reduce((max, s) => Math.max(max, s.title.length), 0)),
+    cardDescription: Math.max(homeServicesLimits.cardDescription, defaultValues.items.reduce((max, s) => Math.max(max, s.description.length), 0)),
+  }), [defaultValues]);
+
+  const { fields, append, remove } = useFieldArray({ control, name: "items" });
 
   function handleValid(values: typeof defaultValues) {
     onSave({
@@ -180,13 +313,33 @@ export function HomeServicesGridSectionForm({
       <SectionHeading section={section} />
 
       <label>
-        Section title
-        <input {...register("title", { required: true })} placeholder="Specialized Healthcare Services" />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Section title
+          <CharacterCount current={title.length} max={limits.title} />
+        </div>
+        <input
+          {...register("title", {
+            required: true,
+            maxLength: limits.title,
+          })}
+          maxLength={limits.title}
+          placeholder="Specialized Healthcare Services"
+        />
       </label>
 
       <label>
-        Subtitle
-        <textarea rows={2} {...register("description", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Subtitle
+          <CharacterCount current={description.length} max={limits.description} />
+        </div>
+        <textarea
+          rows={2}
+          {...register("description", {
+            required: true,
+            maxLength: limits.description,
+          })}
+          maxLength={limits.description}
+        />
       </label>
 
       <h4>Service cards</h4>
@@ -208,12 +361,37 @@ export function HomeServicesGridSectionForm({
             />
           </label>
           <label>
-            Title
-            <input {...register(`items.${index}.title` as const, { required: true })} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Title
+              <CharacterCount
+                current={(items?.[index]?.title ?? "").length}
+                max={limits.cardTitle}
+              />
+            </div>
+            <input
+              {...register(`items.${index}.title` as const, {
+                required: true,
+                maxLength: limits.cardTitle,
+              })}
+              maxLength={limits.cardTitle}
+            />
           </label>
           <label>
-            Description
-            <textarea rows={2} {...register(`items.${index}.description` as const, { required: true })} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Description
+              <CharacterCount
+                current={(items?.[index]?.description ?? "").length}
+                max={limits.cardDescription}
+              />
+            </div>
+            <textarea
+              rows={2}
+              {...register(`items.${index}.description` as const, {
+                required: true,
+                maxLength: limits.cardDescription,
+              })}
+              maxLength={limits.cardDescription}
+            />
           </label>
           {fields.length > 1 ? (
             <button type="button" onClick={() => remove(index)}>
@@ -262,12 +440,12 @@ export function HomeProductCategoriesSectionForm({
       categories:
         ((section.data.categories as CategoryItem[]) ?? []).length >= 4
           ? (section.data.categories as CategoryItem[]).slice(0, 4).map((cat) => ({
-              layout: cat.layout ?? "small",
-              title: cat.title ?? "",
-              description: cat.description ?? "",
-              image: cat.image ?? "",
-              theme: cat.theme ?? "pharma",
-            }))
+            layout: cat.layout ?? "small",
+            title: cat.title ?? "",
+            description: cat.description ?? "",
+            image: cat.image ?? "",
+            theme: cat.theme ?? "pharma",
+          }))
           : theaHomeProductsDefaults.categories,
     }),
     [section.data],
@@ -276,7 +454,14 @@ export function HomeProductCategoriesSectionForm({
   const { register, setValue, watch, handleSubmit, formState: { isSubmitting } } = useForm({
     defaultValues,
   });
+
+  const title = watch("title");
   const categories = watch("categories");
+  const limits = useMemo(() => ({
+    title: Math.max(productCategoriesLimits.title, defaultValues.title.length),
+    cardTitle: Math.max(productCategoriesLimits.cardTitle, defaultValues.categories.reduce((max, c) => Math.max(max, c.title.length), 0)),
+    cardDescription: Math.max(productCategoriesLimits.cardDescription, defaultValues.categories.reduce((max, c) => Math.max(max, c.description.length), 0)),
+  }), [defaultValues]);
 
   function handleValid(values: typeof defaultValues) {
     onSave(values);
@@ -291,8 +476,18 @@ export function HomeProductCategoriesSectionForm({
       <SectionHeading section={section} />
 
       <label>
-        Section title
-        <input {...register("title", { required: true })} placeholder="Product Categories" />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Section title
+          <CharacterCount current={title.length} max={limits.title} />
+        </div>
+        <input
+          {...register("title", {
+            required: true,
+            maxLength: limits.title,
+          })}
+          maxLength={limits.title}
+          placeholder="Product Categories"
+        />
       </label>
 
       <h4>Category cards (4 required for layout)</h4>
@@ -318,22 +513,49 @@ export function HomeProductCategoriesSectionForm({
             </select>
           </label>
           <label>
-            Title
-            <input {...register(`categories.${index}.title` as const, { required: true })} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Title
+              <CharacterCount
+                current={(categories?.[index]?.title ?? "").length}
+                max={limits.cardTitle}
+              />
+            </div>
+            <input
+              {...register(`categories.${index}.title` as const, {
+                required: true,
+                maxLength: limits.cardTitle,
+              })}
+              maxLength={limits.cardTitle}
+            />
           </label>
           <label>
-            Description (optional for small cards)
-            <textarea rows={2} {...register(`categories.${index}.description` as const)} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Description (optional for small cards)
+              <CharacterCount
+                current={(categories?.[index]?.description ?? "").length}
+                max={limits.cardDescription}
+              />
+            </div>
+            <textarea
+              rows={2}
+              {...register(`categories.${index}.description` as const, {
+                maxLength: limits.cardDescription,
+              })}
+              maxLength={limits.cardDescription}
+            />
           </label>
           <input type="hidden" {...register(`categories.${index}.image` as const)} />
           <ImageUploadField
-            label="Background image (optional)"
-            value={categories[index]?.image ?? ""}
+            label="Background image"
+            value={categories?.[index]?.image ?? ""}
             onChange={(value) =>
               setValue(`categories.${index}.image`, value, { shouldDirty: true })
             }
             folder={`sections/${section.type}`}
             placeholder="Leave empty for theme gradient"
+            minWidth={400}
+            minHeight={400}
+            aspectRatio={categories?.[index]?.layout === "tall" ? 0.75 : 1}
           />
         </div>
       ))}
@@ -367,8 +589,15 @@ export function HomeTrustedBySectionForm({
   const { register, control, setValue, watch, handleSubmit, formState: { isSubmitting } } = useForm({
     defaultValues,
   });
-  const { fields, append, remove } = useFieldArray({ control, name: "items" });
+
+  const title = watch("title");
   const items = watch("items");
+  const limits = useMemo(() => ({
+    title: Math.max(trustedByLimits.title, defaultValues.title.length),
+    cardLabel: Math.max(trustedByLimits.cardLabel, defaultValues.items.reduce((max, i) => Math.max(max, i.label.length), 0)),
+  }), [defaultValues]);
+
+  const { fields, append, remove } = useFieldArray({ control, name: "items" });
 
   return (
     <form
@@ -379,8 +608,17 @@ export function HomeTrustedBySectionForm({
       <SectionHeading section={section} />
 
       <label>
-        Title
-        <input {...register("title", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Title
+          <CharacterCount current={title.length} max={limits.title} />
+        </div>
+        <input
+          {...register("title", {
+            required: true,
+            maxLength: limits.title,
+          })}
+          maxLength={limits.title}
+        />
       </label>
 
       <h4>Institutions</h4>
@@ -402,8 +640,20 @@ export function HomeTrustedBySectionForm({
             />
           </label>
           <label>
-            Label
-            <input {...register(`items.${index}.label` as const, { required: true })} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Label
+              <CharacterCount
+                current={(items?.[index]?.label ?? "").length}
+                max={limits.cardLabel}
+              />
+            </div>
+            <input
+              {...register(`items.${index}.label` as const, {
+                required: true,
+                maxLength: limits.cardLabel,
+              })}
+              maxLength={limits.cardLabel}
+            />
           </label>
           <button type="button" onClick={() => remove(index)}>
             Remove
@@ -452,6 +702,17 @@ export function HomeQuickInquirySectionForm({
   const { register, control, setValue, watch, handleSubmit, formState: { isSubmitting } } = useForm({
     defaultValues,
   });
+
+  const title = watch("title");
+  const description = watch("description");
+  const submitLabel = watch("submitLabel") ?? "";
+
+  const limits = useMemo(() => ({
+    title: Math.max(quickInquiryLimits.title, defaultValues.title.length),
+    description: Math.max(quickInquiryLimits.description, defaultValues.description.length),
+    submitLabel: Math.max(quickInquiryLimits.submitLabel, defaultValues.submitLabel.length),
+  }), [defaultValues]);
+
   const { fields: contactFields, append: appendContact, remove: removeContact } = useFieldArray({
     control,
     name: "contacts",
@@ -479,16 +740,43 @@ export function HomeQuickInquirySectionForm({
       <SectionHeading section={section} />
 
       <label>
-        Title
-        <input {...register("title", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Title
+          <CharacterCount current={title.length} max={limits.title} />
+        </div>
+        <input
+          {...register("title", {
+            required: true,
+            maxLength: limits.title,
+          })}
+          maxLength={limits.title}
+        />
       </label>
       <label>
-        Description
-        <textarea rows={3} {...register("description", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Description
+          <CharacterCount current={description.length} max={limits.description} />
+        </div>
+        <textarea
+          rows={3}
+          {...register("description", {
+            required: true,
+            maxLength: limits.description,
+          })}
+          maxLength={limits.description}
+        />
       </label>
       <label>
-        Submit button label
-        <input {...register("submitLabel")} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Submit button label
+          <CharacterCount current={submitLabel.length} max={limits.submitLabel} />
+        </div>
+        <input
+          {...register("submitLabel", {
+            maxLength: limits.submitLabel,
+          })}
+          maxLength={limits.submitLabel}
+        />
       </label>
 
       <h4>Contact details</h4>
@@ -577,9 +865,17 @@ export function HomeWhyChooseSectionForm({
 
   const { register, control, setValue, watch, handleSubmit, formState: { isSubmitting } } =
     useForm({ defaultValues });
+
+  const title = watch("title");
+  const items = watch("items");
+  const limits = useMemo(() => ({
+    title: Math.max(whyChooseLimits.title, defaultValues.title.length),
+    cardTitle: Math.max(whyChooseLimits.cardTitle, defaultValues.items.reduce((max, r) => Math.max(max, r.title.length), 0)),
+    cardDescription: Math.max(whyChooseLimits.cardDescription, defaultValues.items.reduce((max, r) => Math.max(max, r.description.length), 0)),
+  }), [defaultValues]);
+
   const { fields, append, remove } = useFieldArray({ control, name: "items" });
   const image = watch("image");
-  const items = watch("items");
 
   return (
     <form
@@ -590,17 +886,29 @@ export function HomeWhyChooseSectionForm({
       <SectionHeading section={section} />
 
       <label>
-        Title
-        <input {...register("title", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Title
+          <CharacterCount current={title.length} max={limits.title} />
+        </div>
+        <input
+          {...register("title", {
+            required: true,
+            maxLength: limits.title,
+          })}
+          maxLength={limits.title}
+        />
       </label>
 
       <input type="hidden" {...register("image")} />
       <ImageUploadField
-        label="Featured image (optional)"
+        label="Featured image"
         value={image}
         onChange={(value) => setValue("image", value, { shouldDirty: true })}
         folder={`sections/${section.type}`}
         placeholder="Leave empty for default illustration"
+        minWidth={600}
+        minHeight={600}
+        aspectRatio={1}
       />
 
       <h4>Features</h4>
@@ -622,12 +930,37 @@ export function HomeWhyChooseSectionForm({
             />
           </label>
           <label>
-            Title
-            <input {...register(`items.${index}.title` as const, { required: true })} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Title
+              <CharacterCount
+                current={(items?.[index]?.title ?? "").length}
+                max={limits.cardTitle}
+              />
+            </div>
+            <input
+              {...register(`items.${index}.title` as const, {
+                required: true,
+                maxLength: limits.cardTitle,
+              })}
+              maxLength={limits.cardTitle}
+            />
           </label>
           <label>
-            Description
-            <textarea rows={2} {...register(`items.${index}.description` as const, { required: true })} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Description
+              <CharacterCount
+                current={(items?.[index]?.description ?? "").length}
+                max={limits.cardDescription}
+              />
+            </div>
+            <textarea
+              rows={2}
+              {...register(`items.${index}.description` as const, {
+                required: true,
+                maxLength: limits.cardDescription,
+              })}
+              maxLength={limits.cardDescription}
+            />
           </label>
           <button type="button" onClick={() => remove(index)}>
             Remove

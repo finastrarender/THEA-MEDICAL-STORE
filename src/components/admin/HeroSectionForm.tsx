@@ -3,7 +3,9 @@
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import ImageUploadField from "@/components/admin/ImageUploadField";
+import CharacterCount from "@/components/admin/CharacterCount";
 import SectionSaveFooter from "@/components/admin/SectionSaveFooter";
+import { homeHeroLimits } from "@/lib/seeded-lengths";
 
 type HeroFormValues = {
   badge: string;
@@ -66,7 +68,30 @@ export default function HeroSectionForm({
   } = useForm<HeroFormValues>({
     defaultValues,
   });
+
+  // Calculate dynamic limits based on initial seeded content or existing content length
+  const limits = useMemo(() => {
+    return {
+      badge: Math.max(homeHeroLimits.badge, defaultValues.badge.length),
+      titleLines: Math.max(homeHeroLimits.titleLines, defaultValues.titleLines.length),
+      description: Math.max(homeHeroLimits.description, defaultValues.description.length),
+      primaryLabel: Math.max(homeHeroLimits.primaryLabel, defaultValues.primaryLabel.length),
+      secondaryLabel: Math.max(homeHeroLimits.secondaryLabel, defaultValues.secondaryLabel.length),
+      overlayLabel: Math.max(homeHeroLimits.overlayLabel, defaultValues.overlayLabel.length),
+      overlayText: Math.max(homeHeroLimits.overlayText, defaultValues.overlayText.length),
+    };
+  }, [defaultValues]);
+
   const backgroundImage = watch("backgroundImage");
+  const badge = watch("badge");
+  const titleLines = watch("titleLines");
+  const description = watch("description");
+  const primaryLabel = watch("primaryLabel");
+  const secondaryLabel = watch("secondaryLabel");
+  const overlayLabel = watch("overlayLabel");
+  const overlayText = watch("overlayText");
+
+  const lineCount = titleLines.split("\n").filter(l => l.trim().length > 0).length;
 
   function handleValid(values: HeroFormValues) {
     const titleArray = values.titleLines
@@ -112,18 +137,46 @@ export default function HeroSectionForm({
       </h3>
 
       <label>
-        Certification badge
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Certification badge
+          <CharacterCount current={badge.length} max={limits.badge} warningAt={limits.badge - 10} />
+        </div>
         <input
-          {...register("badge")}
+          {...register("badge", {
+            maxLength: {
+              value: limits.badge,
+              message: "Maximum character limit reached.",
+            },
+          })}
+          maxLength={limits.badge}
           placeholder="MOHAP CERTIFIED MEDICAL SUPPLIER"
         />
       </label>
 
       <label>
-        Headline (one line per row)
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Headline (one line per row)
+          <div style={{ display: "flex", gap: 12 }}>
+            <span style={{ fontSize: 11, color: lineCount > 5 ? "#ef4444" : "#64748b" }}>
+              {lineCount} / 5 lines
+            </span>
+            <CharacterCount current={titleLines.length} max={limits.titleLines} warningAt={limits.titleLines - 20} />
+          </div>
+        </div>
         <textarea
-          rows={4}
-          {...register("titleLines", { required: "Headline is required" })}
+          rows={5}
+          {...register("titleLines", {
+            required: "Headline is required",
+            maxLength: {
+              value: limits.titleLines,
+              message: "Maximum character limit reached.",
+            },
+            validate: (val) => {
+              const lines = val.split("\n").filter(l => l.trim().length > 0).length;
+              return lines <= 5 || "Maximum 5 lines allowed for alignment";
+            }
+          })}
+          maxLength={limits.titleLines}
           placeholder={"Reliable Medical\nSupplies &\nEquipment\nSolutions"}
         />
         {errors.titleLines ? (
@@ -132,38 +185,80 @@ export default function HeroSectionForm({
       </label>
 
       <label>
-        Supporting description
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Supporting description
+          <CharacterCount current={description.length} max={limits.description} warningAt={limits.description - 50} />
+        </div>
         <textarea
           rows={4}
-          {...register("description", { required: "Description is required" })}
+          {...register("description", {
+            required: "Description is required",
+            maxLength: {
+              value: limits.description,
+              message: "Maximum character limit reached.",
+            },
+          })}
+          maxLength={limits.description}
           placeholder="Delivering clinical excellence through premium pharmaceutical products and cutting-edge medical equipment solutions tailored for modern healthcare providers."
         />
         {errors.description ? (
           <p className="admin-field-error">{errors.description.message}</p>
         ) : null}
       </label>
-
+<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
       <label>
-        Stat value
-        <input {...register("overlayLabel")} placeholder="99.9%" />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Stat value
+          <CharacterCount current={overlayLabel.length} max={limits.overlayLabel} />
+        </div>
+        <input
+          {...register("overlayLabel", {
+            maxLength: {
+              value: limits.overlayLabel,
+              message: "Maximum character limit reached.",
+            },
+          })}
+          maxLength={limits.overlayLabel}
+          placeholder="99.9%"
+        />
       </label>
 
       <label>
-        Stat description
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Stat description
+          <CharacterCount current={overlayText.length} max={limits.overlayText} warningAt={limits.overlayText - 20} />
+        </div>
         <textarea
           rows={2}
-          {...register("overlayText")}
+          {...register("overlayText", {
+            maxLength: {
+              value: limits.overlayText,
+              message: "Maximum character limit reached.",
+            },
+          })}
+          maxLength={limits.overlayText}
           placeholder="Accuracy in medical supply distribution across UAE."
         />
       </label>
+</div>
 
       <div className="hero-section-form__actions">
         <div>
           <h4>Primary action</h4>
           <label>
-            Label
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Label
+              <CharacterCount current={primaryLabel.length} max={limits.primaryLabel} warningAt={limits.primaryLabel - 5} />
+            </div>
             <input
-              {...register("primaryLabel", { required: "Primary label is required" })}
+              {...register("primaryLabel", {
+                required: "Primary label is required",
+                maxLength: {
+                  value: limits.primaryLabel,
+                  message: "Maximum character limit reached.",
+                },
+              })}
+              maxLength={limits.primaryLabel}
               placeholder="Contact Us"
             />
             {errors.primaryLabel ? (
@@ -185,11 +280,19 @@ export default function HeroSectionForm({
         <div>
           <h4>Secondary action</h4>
           <label>
-            Label
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Label
+              <CharacterCount current={secondaryLabel.length} max={limits.secondaryLabel} warningAt={limits.secondaryLabel - 5} />
+            </div>
             <input
               {...register("secondaryLabel", {
                 required: "Secondary label is required",
+                maxLength: {
+                  value: limits.secondaryLabel,
+                  message: "Maximum character limit reached.",
+                },
               })}
+              maxLength={limits.secondaryLabel}
               placeholder="View Catalog"
             />
             {errors.secondaryLabel ? (

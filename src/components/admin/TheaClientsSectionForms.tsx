@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
+import CharacterCount from "@/components/admin/CharacterCount";
 import ImageUploadField from "@/components/admin/ImageUploadField";
 import SectionSaveFooter from "@/components/admin/SectionSaveFooter";
 import TheaHomeIconPicker from "@/components/admin/TheaHomeIconPicker";
@@ -18,6 +19,13 @@ import {
   theaClientsSectorsDefaults,
   theaClientsTrustedByDefaults,
 } from "@/data/thea-clients-sections";
+import {
+  clientsHeroLimits,
+  clientsSectorsLimits,
+  clientsComplianceLimits,
+  trustedByLimits,
+  clientsPartnerCtaLimits,
+} from "@/lib/seeded-lengths";
 
 type SectionFormProps = {
   section: { id: string; type: string; order: number; data: Record<string, unknown> };
@@ -69,6 +77,16 @@ export function ClientsPageHeroSectionForm({
     useForm({
       defaultValues,
     });
+
+  const description = watch("description");
+  const limits = useMemo(() => ({
+    badge: Math.max(clientsHeroLimits.badge, defaultValues.badge.length),
+    titleLead: Math.max(clientsHeroLimits.titleLead, defaultValues.titleLead.length),
+    titleHighlight: Math.max(clientsHeroLimits.titleHighlight, defaultValues.titleHighlight.length),
+    titleAfter: Math.max(clientsHeroLimits.titleAfter, defaultValues.titleAfter.length),
+    description: Math.max(clientsHeroLimits.description, defaultValues.description.length),
+    certLabel: Math.max(35, defaultValues.certifications.reduce((max, c) => Math.max(max, c.label.length), 0)),
+  }), [defaultValues]);
   const { fields, append, remove } = useFieldArray({ control, name: "certifications" });
   const backgroundImage = watch("backgroundImage");
 
@@ -80,24 +98,70 @@ export function ClientsPageHeroSectionForm({
     >
       <SectionHeading section={section} />
       <label>
-        Badge / eyebrow
-        <input {...register("badge", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Badge / eyebrow
+          <CharacterCount current={(watch("badge") ?? "").length} max={limits.badge} warningAt={limits.badge - 5} />
+        </div>
+        <input
+          {...register("badge", {
+            required: true,
+            maxLength: limits.badge,
+          })}
+          maxLength={limits.badge}
+        />
       </label>
       <label>
-        Title line 1
-        <input {...register("titleLead", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Title line 1
+          <CharacterCount current={(watch("titleLead") ?? "").length} max={limits.titleLead} warningAt={limits.titleLead - 10} />
+        </div>
+        <input
+          {...register("titleLead", {
+            required: true,
+            maxLength: limits.titleLead,
+          })}
+          maxLength={limits.titleLead}
+        />
       </label>
       <label>
-        Title line 2 (accent color)
-        <input {...register("titleHighlight", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Title line 2 (accent color)
+          <CharacterCount current={(watch("titleHighlight") ?? "").length} max={limits.titleHighlight} warningAt={limits.titleHighlight - 10} />
+        </div>
+        <input
+          {...register("titleHighlight", {
+            required: true,
+            maxLength: limits.titleHighlight,
+          })}
+          maxLength={limits.titleHighlight}
+        />
       </label>
       <label>
-        Title line 3
-        <input {...register("titleAfter", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Title line 3
+          <CharacterCount current={(watch("titleAfter") ?? "").length} max={limits.titleAfter} warningAt={limits.titleAfter - 10} />
+        </div>
+        <input
+          {...register("titleAfter", {
+            required: true,
+            maxLength: limits.titleAfter,
+          })}
+          maxLength={limits.titleAfter}
+        />
       </label>
       <label>
-        Description
-        <textarea rows={3} {...register("description", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Description
+          <CharacterCount current={(watch("description") ?? "").length} max={limits.description} warningAt={limits.description - 50} />
+        </div>
+        <textarea
+          rows={3}
+          {...register("description", {
+            required: true,
+            maxLength: limits.description,
+          })}
+          maxLength={limits.description}
+        />
       </label>
       <ImageUploadField
         label="Background image"
@@ -105,17 +169,26 @@ export function ClientsPageHeroSectionForm({
         onChange={(value) => setValue("backgroundImage", value, { shouldDirty: true })}
         folder={`sections/${section.type}`}
         placeholder="Upload hero background"
+        minWidth={1600}
+        minHeight={800}
+        aspectRatio={2}
       />
       <input type="hidden" {...register("backgroundImage")} />
       <h4>Certification pills</h4>
       {fields.map((field, index) => (
-        <div key={field.id} style={{ display: "flex", gap: 8, marginBottom: 8 }}>
-          <input
-            {...register(`certifications.${index}.label`, { required: true })}
-            placeholder="MOHAP Licensed"
-            style={{ flex: 1 }}
-          />
-          <button type="button" onClick={() => remove(index)}>
+        <div key={field.id} style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 8 }}>
+          <div style={{ flex: 1, minWidth: 200 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Label
+              <CharacterCount current={(watch(`certifications.${index}.label`) ?? "").length} max={limits.certLabel} />
+            </div>
+            <input
+              {...register(`certifications.${index}.label`, { required: true, maxLength: limits.certLabel })}
+              maxLength={limits.certLabel}
+              placeholder="MOHAP Licensed"
+            />
+          </div>
+          <button type="button" onClick={() => remove(index)} style={{ alignSelf: "flex-end", height: 38 }}>
             Remove
           </button>
         </div>
@@ -160,6 +233,15 @@ export function ClientsSectorsSectionForm({
     useForm({
       defaultValues,
     });
+
+  const title = watch("title");
+  const titleAccent = watch("titleAccent");
+  const limits = useMemo(() => ({
+    title: Math.max(clientsSectorsLimits.title, defaultValues.title.length),
+    titleAccent: Math.max(clientsSectorsLimits.titleAccent, defaultValues.titleAccent.length),
+    cardTitle: Math.max(clientsSectorsLimits.cardTitle, defaultValues.cards.reduce((max, c) => Math.max(max, c.title.length), 0)),
+    cardDescription: Math.max(clientsSectorsLimits.cardDescription, defaultValues.cards.reduce((max, c) => Math.max(max, c.description.length), 0)),
+  }), [defaultValues]);
   const { fields, append, remove } = useFieldArray({ control, name: "cards" });
   const watchedCards = watch("cards");
 
@@ -171,12 +253,30 @@ export function ClientsSectorsSectionForm({
     >
       <SectionHeading section={section} />
       <label>
-        Section title
-        <input {...register("title", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Section title
+          <CharacterCount current={title.length} max={limits.title} />
+        </div>
+        <input
+          {...register("title", {
+            required: true,
+            maxLength: limits.title,
+          })}
+          maxLength={limits.title}
+        />
       </label>
       <label>
-        Underlined accent word
-        <input {...register("titleAccent", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Underlined accent word
+          <CharacterCount current={titleAccent.length} max={limits.titleAccent} />
+        </div>
+        <input
+          {...register("titleAccent", {
+            required: true,
+            maxLength: limits.titleAccent,
+          })}
+          maxLength={limits.titleAccent}
+        />
       </label>
 
       <h4>Sector cards</h4>
@@ -219,12 +319,31 @@ export function ClientsSectorsSectionForm({
               />
             </label>
             <label>
-              Title
-              <input {...register(`cards.${index}.title` as const, { required: true })} />
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                Title
+                <CharacterCount current={(watch(`cards.${index}.title`) ?? "").length} max={limits.cardTitle} warningAt={limits.cardTitle - 10} />
+              </div>
+              <input
+                {...register(`cards.${index}.title` as const, {
+                  required: true,
+                  maxLength: limits.cardTitle,
+                })}
+                maxLength={limits.cardTitle}
+              />
             </label>
             <label>
-              Description
-              <textarea rows={3} {...register(`cards.${index}.description` as const, { required: true })} />
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                Description
+                <CharacterCount current={(watch(`cards.${index}.description`) ?? "").length} max={limits.cardDescription} warningAt={limits.cardDescription - 20} />
+              </div>
+              <textarea
+                rows={3}
+                {...register(`cards.${index}.description` as const, {
+                  required: true,
+                  maxLength: limits.cardDescription,
+                })}
+                maxLength={limits.cardDescription}
+              />
             </label>
             {isFeatured ? (
               <>
@@ -318,6 +437,13 @@ export function ClientsComplianceSectionForm({
   const { register, control, handleSubmit, setValue, watch, formState: { isSubmitting } } = useForm({
     defaultValues,
   });
+
+  const limits = useMemo(() => ({
+    title: Math.max(clientsComplianceLimits.title, defaultValues.title.length),
+    description: Math.max(clientsComplianceLimits.description, defaultValues.description.length),
+    badgeLabel: Math.max(25, defaultValues.approvalBadges.reduce((max, b) => Math.max(max, b.label.length), 0)),
+    certificationLabel: Math.max(30, defaultValues.certifications.reduce((max, c) => Math.max(max, c.label.length), 0)),
+  }), [defaultValues]);
   const { fields: badgeFields, append: appendBadge, remove: removeBadge } = useFieldArray({
     control,
     name: "approvalBadges",
@@ -327,6 +453,7 @@ export function ClientsComplianceSectionForm({
     name: "certifications",
   });
   const watchedCertifications = watch("certifications");
+  const watchedBadges = watch("approvalBadges");
 
   return (
     <form
@@ -336,22 +463,48 @@ export function ClientsComplianceSectionForm({
     >
       <SectionHeading section={section} />
       <label>
-        Title
-        <input {...register("title", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Title
+          <CharacterCount current={(watch("title") ?? "").length} max={limits.title} warningAt={limits.title - 10} />
+        </div>
+        <input
+          {...register("title", {
+            required: true,
+            maxLength: limits.title,
+          })}
+          maxLength={limits.title}
+        />
       </label>
       <label>
-        Description
-        <textarea rows={4} {...register("description", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Description
+          <CharacterCount current={(watch("description") ?? "").length} max={limits.description} warningAt={limits.description - 50} />
+        </div>
+        <textarea
+          rows={4}
+          {...register("description", {
+            required: true,
+            maxLength: limits.description,
+          })}
+          maxLength={limits.description}
+        />
       </label>
 
       <h4>Approval badges</h4>
       {badgeFields.map((field, index) => (
-        <div key={field.id} style={{ display: "flex", gap: 8, marginBottom: 8 }}>
-          <input
-            {...register(`approvalBadges.${index}.label`, { required: true })}
-            style={{ flex: 1 }}
-          />
-          <button type="button" onClick={() => removeBadge(index)}>
+        <div key={field.id} style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 8 }}>
+          <div style={{ flex: 1, minWidth: 200 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Label
+              <CharacterCount current={(watchedBadges?.[index]?.label ?? "").length} max={limits.badgeLabel} />
+            </div>
+            <input
+              {...register(`approvalBadges.${index}.label`, { required: true, maxLength: limits.badgeLabel })}
+              maxLength={limits.badgeLabel}
+              style={{ width: "100%" }}
+            />
+          </div>
+          <button type="button" onClick={() => removeBadge(index)} style={{ alignSelf: "flex-end", height: 38 }}>
             Remove
           </button>
         </div>
@@ -383,8 +536,14 @@ export function ClientsComplianceSectionForm({
             />
           </label>
           <label>
-            Label
-            <input {...register(`certifications.${index}.label` as const, { required: true })} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Label
+              <CharacterCount current={(watchedCertifications?.[index]?.label ?? "").length} max={limits.certificationLabel} />
+            </div>
+            <input
+              {...register(`certifications.${index}.label` as const, { required: true, maxLength: limits.certificationLabel })}
+              maxLength={limits.certificationLabel}
+            />
           </label>
           <button type="button" onClick={() => removeCert(index)}>
             Remove
@@ -429,6 +588,11 @@ export function ClientsTrustedBySectionForm({
 
   const { register, control, handleSubmit, setValue, watch, formState: { isSubmitting } } =
     useForm({ defaultValues });
+
+  const title = watch("title");
+  const limits = useMemo(() => ({
+    title: Math.max(trustedByLimits.title, defaultValues.title.length),
+  }), [defaultValues]);
   const { fields, append, remove } = useFieldArray({ control, name: "logos" });
   const watchedLogos = watch("logos");
 
@@ -440,8 +604,17 @@ export function ClientsTrustedBySectionForm({
     >
       <SectionHeading section={section} />
       <label>
-        Section title
-        <input {...register("title", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Section title
+          <CharacterCount current={title.length} max={limits.title} />
+        </div>
+        <input
+          {...register("title", {
+            required: true,
+            maxLength: limits.title,
+          })}
+          maxLength={limits.title}
+        />
       </label>
 
       <h4>Partner logos (circular)</h4>
@@ -518,7 +691,19 @@ export function ClientsPartnerCtaSectionForm({
     [section.data],
   );
 
-  const { register, handleSubmit, formState: { isSubmitting } } = useForm({ defaultValues });
+  const { register, watch, handleSubmit, formState: { isSubmitting } } = useForm({ defaultValues });
+
+  const title = watch("title");
+  const description = watch("description");
+  const primaryLabel = watch("primaryAction.label");
+  const secondaryLabel = watch("secondaryAction.label");
+
+  const limits = useMemo(() => ({
+    title: Math.max(clientsPartnerCtaLimits.title, defaultValues.title.length),
+    description: Math.max(clientsPartnerCtaLimits.description, defaultValues.description.length),
+    primaryLabel: Math.max(clientsPartnerCtaLimits.primaryLabel, defaultValues.primaryAction.label.length),
+    secondaryLabel: Math.max(clientsPartnerCtaLimits.secondaryLabel, defaultValues.secondaryAction.label.length),
+  }), [defaultValues]);
 
   return (
     <form
@@ -528,17 +713,45 @@ export function ClientsPartnerCtaSectionForm({
     >
       <SectionHeading section={section} />
       <label>
-        Title
-        <input {...register("title", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Title
+          <CharacterCount current={title.length} max={limits.title} />
+        </div>
+        <input
+          {...register("title", {
+            required: true,
+            maxLength: limits.title,
+          })}
+          maxLength={limits.title}
+        />
       </label>
       <label>
-        Description
-        <textarea rows={4} {...register("description", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Description
+          <CharacterCount current={description.length} max={limits.description} />
+        </div>
+        <textarea
+          rows={4}
+          {...register("description", {
+            required: true,
+            maxLength: limits.description,
+          })}
+          maxLength={limits.description}
+        />
       </label>
       <h4>Primary button</h4>
       <label>
-        Label
-        <input {...register("primaryAction.label", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Label
+          <CharacterCount current={(primaryLabel ?? "").length} max={limits.primaryLabel} />
+        </div>
+        <input
+          {...register("primaryAction.label", {
+            required: true,
+            maxLength: limits.primaryLabel,
+          })}
+          maxLength={limits.primaryLabel}
+        />
       </label>
       <label>
         Link
@@ -546,8 +759,16 @@ export function ClientsPartnerCtaSectionForm({
       </label>
       <h4>Secondary button</h4>
       <label>
-        Label
-        <input {...register("secondaryAction.label", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Label
+          <CharacterCount current={(secondaryLabel ?? "").length} max={limits.secondaryLabel} />
+        </div>
+        <input
+          {...register("secondaryAction.label", {
+            maxLength: limits.secondaryLabel,
+          })}
+          maxLength={limits.secondaryLabel}
+        />
       </label>
       <label>
         Link

@@ -41,11 +41,11 @@ export const defaultHeaderActions = {
 };
 
 export const defaultFooterMeta = {
-  brand: "THEA Medical Store",
+  brand: "THEA Medical Store L.L.C",
   description:
     "Excellence in medical distribution and equipment solutions for the UAE's thriving healthcare sector.",
   social: [],
-  copyright: "© 2024 THEA Medical Store L.L.C. All rights reserved.",
+  copyright: "© 2026 THEA Medical Store L.L.C. All rights reserved.",
   ctaLabel: "",
   ctaHref: "/contact",
   legal: [

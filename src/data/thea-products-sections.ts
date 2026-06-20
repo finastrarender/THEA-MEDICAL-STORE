@@ -8,21 +8,19 @@ export const theaProductsCatalogShowcaseDefaults = {
     title: "Pharmaceutical Medicines",
     description:
       "Comprehensive range of life-saving medications and specialized clinical treatments under stringent quality controls.",
-    linkLabel: "Explore",
-    linkHref: "/product-detail",
-    image: "",
+    image: "/products/Pharmaceutical collection.png",
   },
   equipment: {
     title: "Medical Equipment",
     description:
       "Advanced diagnostic and therapeutic hardware for hospital-grade modernization.",
     buttonLabel: "VIEW HARDWARE",
-    image: "",
+    image: "/products/Medical equipment (1).png",
   },
   surgical: {
     title: "Surgical Supplies",
     description: "Precision-engineered instruments and disposable surgical assets.",
-    image: "",
+    image: "/products/Surgical supplies (2).png",
   },
   consumables: {
     title: "Medical Consumables",
@@ -30,13 +28,13 @@ export const theaProductsCatalogShowcaseDefaults = {
       "High-volume essential supplies supporting day-to-day patient care and clinical hygiene.",
     linkLabel: "Stock Availability",
     linkHref: "/product-detail",
-    image: "",
+    image: "/products/Medical consumables.png",
   },
   secondaryBanner: {
     title: "Para-Pharmaceutical Products",
     description:
       "Bringing health and wellness with a premium selection of dermo-cosmetics, food supplements, and specialized solutions curated for pharmacy retail and clinical aesthetics.",
-    image: "",
+    image: "/products/Para-pharmaceutical products.png",
     tags: ["DERMO-COSMETICS", "SUPPLEMENTS", "DAILY CARE"],
   },
   quality: {

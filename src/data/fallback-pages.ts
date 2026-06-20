@@ -64,7 +64,7 @@ const homeHeroData = {
     "Delivering clinical excellence through premium pharmaceutical products and cutting-edge medical equipment solutions tailored for modern healthcare providers.",
   primaryAction: { label: "Contact Us", href: "/contact" },
   secondaryAction: { label: "View Catalog", href: "/products" },
-  backgroundImage: "",
+  backgroundImage: "/home/thea medical.png",
   overlayLabel: "99.9%",
   overlayText: "Accuracy in medical supply distribution across UAE.",
 };
@@ -75,7 +75,7 @@ const homeFoundationData = {
   description:
     "Cryptonexis Limited stands at the forefront of the UAE’s evolving digital economy. As a regulated issuer of non-fungible tokens, we provide institutional clients with the legal and technical scaffolding required for sophisticated asset management.",
   highlights: [],
-  image: "",
+  image: "/home/thea-intro.png",
   href: "",
   expcount: 0,
   more:
@@ -221,7 +221,7 @@ const contactInquiryData = {
     label: "Dubai Headquarters",
     title: "Business Bay, Prism Tower",
     subtitle: "Level 24, Suite 2405, Dubai, UAE.",
-    mapImage: "",
+    mapImage: "/contact/uae-map.jpg",
     mapEmbedUrl:
       "https://maps.google.com/maps?q=Prism+Tower,+Business+Bay,+Dubai,+United+Arab+Emirates&hl=en&z=15&output=embed",
     linkLabel: "GET DIRECTIONS →",

@@ -7,7 +7,7 @@ export const theaClientsPageHeroDefaults = {
   titleAfter: "Partners",
   description:
     "Thea Medical Store L.L.C. serves as the vital link between cutting-edge medical technology and the Middle East's premier healthcare institutions.",
-  backgroundImage: "",
+  backgroundImage: "/home/hero-building.jpg",
   certifications: [
     { label: "MOHAP Licensed" },
     { label: "ISO 9001:2015" },
@@ -30,7 +30,7 @@ export const theaClientsSectorsDefaults = {
         "Specialized Surgical Units",
         "Emergency & Trauma Care",
       ],
-      image: "",
+      image: "/Clients/Modern hospital hallway with clean lines.png",
     },
     {
       layout: "standard" as const,
@@ -40,7 +40,7 @@ export const theaClientsSectorsDefaults = {
       description:
         "Customized inventory solutions for multi-specialty clinics and private practices, ensuring seamless day-to-day operations.",
       bullets: [] as string[],
-      image: "",
+      image: "/Clients/Consultation room.png",
     },
     {
       layout: "standard" as const,
@@ -94,13 +94,13 @@ export const theaClientsComplianceDefaults = {
 export const theaClientsTrustedByDefaults = {
   title: "TRUSTED BY ELITE INSTITUTIONS",
   logos: [
-    { src: "", alt: "Partner institution 1" },
-    { src: "", alt: "Partner institution 2" },
-    { src: "", alt: "Partner institution 3" },
-    { src: "", alt: "Partner institution 4" },
-    { src: "", alt: "Partner institution 5" },
-    { src: "", alt: "Partner institution 6" },
-    { src: "", alt: "Partner institution 7" },
+    { src: "/Clients/Ellipse 1.png", alt: "Partner institution 1" },
+    { src: "/Clients/Ellipse 2.png", alt: "Partner institution 2" },
+    { src: "/Clients/Ellipse 3.png", alt: "Partner institution 3" },
+    { src: "/Clients/Ellipse 4.png", alt: "Partner institution 4" },
+    { src: "/Clients/Ellipse 5.png", alt: "Partner institution 5" },
+    { src: "/Clients/Ellipse 6.png", alt: "Partner institution 6" },
+    { src: "/Clients/Ellipse 7.png", alt: "Partner institution 7" },
   ],
 };
 

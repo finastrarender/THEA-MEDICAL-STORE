@@ -9,6 +9,13 @@ type ImageUploadFieldProps = {
   folder: string;
   name?: string;
   placeholder?: string;
+  minWidth?: number;
+  minHeight?: number;
+  maxWidth?: number;
+  maxHeight?: number;
+  aspectRatio?: number;
+  maxSizeKB?: number;
+  allowedTypes?: string[];
 };
 
 const PREFERRED_IMAGE_EXTENSIONS = new Set(["webp", "avif"]);
@@ -39,6 +46,13 @@ export default function ImageUploadField({
   folder,
   name,
   placeholder,
+  minWidth = 100,
+  minHeight = 100,
+  maxWidth,
+  maxHeight,
+  aspectRatio,
+  maxSizeKB = 2000,
+  allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/avif"],
 }: ImageUploadFieldProps) {
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -46,6 +60,7 @@ export default function ImageUploadField({
   const showModernFormatWarning = shouldShowModernFormatWarning(value);
 
   async function requestPresign(file: File) {
+// ... (rest of the function is unchanged, but I'll provide the whole block for safety if needed, or just use chunks)
     const payload = {
       fileName: file.name,
       contentType: file.type || "application/octet-stream",
@@ -93,6 +108,18 @@ export default function ImageUploadField({
 
   async function handleFileChange(file: File | null) {
     if (!file) return;
+
+    // File type validation
+    if (allowedTypes && !allowedTypes.includes(file.type)) {
+      setMessage(`Invalid file type. Allowed: ${allowedTypes.join(", ")}`);
+      return;
+    }
+
+    // File size validation
+    if (file.size > maxSizeKB * 1024) {
+      setMessage(`Image too large. Max: ${maxSizeKB}KB.`);
+      return;
+    }
 
     setUploading(true);
     setMessage(null);

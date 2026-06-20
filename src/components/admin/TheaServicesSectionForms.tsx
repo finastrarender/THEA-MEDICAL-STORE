@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
+import CharacterCount from "@/components/admin/CharacterCount";
 import ImageUploadField from "@/components/admin/ImageUploadField";
 import SectionSaveFooter from "@/components/admin/SectionSaveFooter";
 import TheaHomeIconPicker from "@/components/admin/TheaHomeIconPicker";
@@ -18,7 +19,21 @@ import {
   theaServicesSpecializedDefaults,
   theaServicesFooterDefaults,
 } from "@/data/thea-services-sections";
-import { theaPharmaceuticalMedicinesCatalogDefaults } from "@/data/thea-products-sections";
+import {
+  theaProductsCatalogShowcaseDefaults,
+  theaProductsFooterDefaults,
+  theaPharmaceuticalMedicinesCatalogDefaults,
+} from "@/data/thea-products-sections";
+import {
+  servicesHeroLimits,
+  servicesCapabilityLimits,
+  servicesSpecializedLimits,
+  servicesProductCatalogLimits,
+  servicesRegulatoryLimits,
+  servicesFooterLimits,
+  productsCatalogShowcaseLimits,
+  productsFooterLimits,
+} from "@/lib/seeded-lengths";
 
 type SectionFormProps = {
   section: { id: string; type: string; order: number; data: Record<string, unknown> };
@@ -57,7 +72,16 @@ export function ServicesPageHeroSectionForm({
     [section.data],
   );
 
-  const { register, handleSubmit, formState: { isSubmitting } } = useForm({ defaultValues });
+  const { register, watch, handleSubmit, formState: { isSubmitting } } = useForm({ defaultValues });
+
+  const badge = watch("badge");
+  const title = watch("title");
+  const description = watch("description");
+  const limits = useMemo(() => ({
+    badge: Math.max(servicesHeroLimits.badge, defaultValues.badge.length),
+    title: Math.max(servicesHeroLimits.title, defaultValues.title.length),
+    description: Math.max(servicesHeroLimits.description, defaultValues.description.length),
+  }), [defaultValues]);
 
   return (
     <form
@@ -67,16 +91,44 @@ export function ServicesPageHeroSectionForm({
     >
       <SectionHeading section={section} />
       <label>
-        Badge
-        <input {...register("badge", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Badge
+          <CharacterCount current={badge.length} max={limits.badge} />
+        </div>
+        <input
+          {...register("badge", {
+            required: true,
+            maxLength: limits.badge,
+          })}
+          maxLength={limits.badge}
+        />
       </label>
       <label>
-        Title
-        <input {...register("title", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Title
+          <CharacterCount current={title.length} max={limits.title} />
+        </div>
+        <input
+          {...register("title", {
+            required: true,
+            maxLength: limits.title,
+          })}
+          maxLength={limits.title}
+        />
       </label>
       <label>
-        Description
-        <textarea rows={3} {...register("description", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Description
+          <CharacterCount current={description.length} max={limits.description} />
+        </div>
+        <textarea
+          rows={3}
+          {...register("description", {
+            required: true,
+            maxLength: limits.description,
+          })}
+          maxLength={limits.description}
+        />
       </label>
       <SectionSaveFooter
         isSubmitting={isSubmitting}
@@ -108,6 +160,12 @@ export function ServicesCapabilityCardsSectionForm({
 
   const { register, control, setValue, watch, handleSubmit, formState: { isSubmitting } } =
     useForm({ defaultValues });
+
+  const limits = useMemo(() => ({
+    cardTitle: Math.max(servicesCapabilityLimits.cardTitle, defaultValues.cards.reduce((max, c) => Math.max(max, c.title.length), 0)),
+    cardDescription: Math.max(servicesCapabilityLimits.cardDescription, defaultValues.cards.reduce((max, c) => Math.max(max, c.description.length), 0)),
+  }), [defaultValues]);
+
   const { fields, append, remove } = useFieldArray({ control, name: "cards" });
   const cards = watch("cards");
 
@@ -137,12 +195,37 @@ export function ServicesCapabilityCardsSectionForm({
             />
           </label>
           <label>
-            Title
-            <input {...register(`cards.${cardIndex}.title` as const, { required: true })} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Title
+              <CharacterCount
+                current={(watch(`cards.${cardIndex}.title`) ?? "").length}
+                max={limits.cardTitle}
+              />
+            </div>
+            <input
+              {...register(`cards.${cardIndex}.title` as const, {
+                required: true,
+                maxLength: limits.cardTitle,
+              })}
+              maxLength={limits.cardTitle}
+            />
           </label>
           <label>
-            Description
-            <textarea rows={3} {...register(`cards.${cardIndex}.description` as const, { required: true })} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Description
+              <CharacterCount
+                current={(watch(`cards.${cardIndex}.description`) ?? "").length}
+                max={limits.cardDescription}
+              />
+            </div>
+            <textarea
+              rows={3}
+              {...register(`cards.${cardIndex}.description` as const, {
+                required: true,
+                maxLength: limits.cardDescription,
+              })}
+              maxLength={limits.cardDescription}
+            />
           </label>
           <input type="hidden" {...register(`cards.${cardIndex}.image` as const)} />
           <ImageUploadField
@@ -153,6 +236,9 @@ export function ServicesCapabilityCardsSectionForm({
             }
             folder={`sections/${section.type}`}
             placeholder="Upload card photo"
+            minWidth={600}
+            minHeight={400}
+            aspectRatio={1.5}
           />
           <p className="admin-muted">Features (one per line in list below)</p>
           {(cards?.[cardIndex]?.features ?? []).map((_, featureIndex) => (
@@ -230,6 +316,19 @@ export function ServicesSpecializedSectionForm({
 
   const { register, control, setValue, watch, handleSubmit, formState: { isSubmitting } } =
     useForm({ defaultValues });
+
+  const title = watch("title") ?? "";
+  const limits = useMemo(() => ({
+    title: Math.max(servicesSpecializedLimits.title, defaultValues.title.length),
+    itemTitle: Math.max(servicesSpecializedLimits.itemTitle, defaultValues.items.reduce((max, i) => Math.max(max, i.title.length), 0)),
+    itemDescription: Math.max(servicesSpecializedLimits.itemDescription, defaultValues.items.reduce((max, i) => Math.max(max, i.description.length), 0)),
+    tileValue: Math.max(servicesSpecializedLimits.tileValue, defaultValues.tiles.reduce((max, t) => Math.max(max, (t.value ?? "").length), 0)),
+    tileLabel: Math.max(servicesSpecializedLimits.tileLabel, defaultValues.tiles.reduce((max, t) => Math.max(max, (t.label ?? "").length), 0)),
+    tileTitle: Math.max(servicesSpecializedLimits.tileTitle, defaultValues.tiles.reduce((max, t) => Math.max(max, (t.title ?? "").length), 0)),
+    tileBrandLine: Math.max(servicesSpecializedLimits.tileBrandLine, defaultValues.tiles.reduce((max, t) => Math.max(max, (t.brandLine ?? "").length), 0)),
+    tileBrandSub: Math.max(servicesSpecializedLimits.tileBrandSub, defaultValues.tiles.reduce((max, t) => Math.max(max, (t.brandSub ?? "").length), 0)),
+  }), [defaultValues]);
+
   const { fields: itemFields } = useFieldArray({ control, name: "items" });
   const tiles = watch("tiles");
 
@@ -241,8 +340,17 @@ export function ServicesSpecializedSectionForm({
     >
       <SectionHeading section={section} />
       <label>
-        Section title
-        <input {...register("title", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Section title
+          <CharacterCount current={title.length} max={limits.title} />
+        </div>
+        <input
+          {...register("title", {
+            required: true,
+            maxLength: limits.title,
+          })}
+          maxLength={limits.title}
+        />
       </label>
 
       <h4>Text blocks</h4>
@@ -259,12 +367,37 @@ export function ServicesSpecializedSectionForm({
             </select>
           </label>
           <label>
-            Title
-            <input {...register(`items.${index}.title` as const, { required: true })} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Title
+              <CharacterCount
+                current={(watch(`items.${index}.title`) ?? "").length}
+                max={limits.itemTitle}
+              />
+            </div>
+            <input
+              {...register(`items.${index}.title` as const, {
+                required: true,
+                maxLength: limits.itemTitle,
+              })}
+              maxLength={limits.itemTitle}
+            />
           </label>
           <label>
-            Description
-            <textarea rows={2} {...register(`items.${index}.description` as const, { required: true })} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              Description
+              <CharacterCount
+                current={(watch(`items.${index}.description`) ?? "").length}
+                max={limits.itemDescription}
+              />
+            </div>
+            <textarea
+              rows={2}
+              {...register(`items.${index}.description` as const, {
+                required: true,
+                maxLength: limits.itemDescription,
+              })}
+              maxLength={limits.itemDescription}
+            />
           </label>
         </div>
       ))}
@@ -299,24 +432,48 @@ export function ServicesSpecializedSectionForm({
           {tile.variant === "stat" ? (
             <>
               <label>
-                Value
-                <input {...register(`tiles.${index}.value` as const)} />
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                  Value
+                  <CharacterCount current={(watch(`tiles.${index}.value`) ?? "").length} max={limits.tileValue} />
+                </div>
+                <input
+                  {...register(`tiles.${index}.value` as const, { maxLength: limits.tileValue })}
+                  maxLength={limits.tileValue}
+                />
               </label>
               <label>
-                Label
-                <input {...register(`tiles.${index}.label` as const)} />
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                  Label
+                  <CharacterCount current={(watch(`tiles.${index}.label`) ?? "").length} max={limits.tileLabel} />
+                </div>
+                <input
+                  {...register(`tiles.${index}.label` as const, { maxLength: limits.tileLabel })}
+                  maxLength={limits.tileLabel}
+                />
               </label>
             </>
           ) : null}
           {tile.variant === "product" ? (
             <>
               <label>
-                Title
-                <input {...register(`tiles.${index}.title` as const)} />
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                  Title
+                  <CharacterCount current={(watch(`tiles.${index}.title`) ?? "").length} max={limits.tileTitle} />
+                </div>
+                <input
+                  {...register(`tiles.${index}.title` as const, { maxLength: limits.tileTitle })}
+                  maxLength={limits.tileTitle}
+                />
               </label>
               <label>
-                Label
-                <input {...register(`tiles.${index}.label` as const)} />
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                  Label
+                  <CharacterCount current={(watch(`tiles.${index}.label`) ?? "").length} max={limits.tileLabel} />
+                </div>
+                <input
+                  {...register(`tiles.${index}.label` as const, { maxLength: limits.tileLabel })}
+                  maxLength={limits.tileLabel}
+                />
               </label>
             </>
           ) : null}
@@ -336,12 +493,24 @@ export function ServicesSpecializedSectionForm({
           {tile.variant === "brand" ? (
             <>
               <label>
-                Brand line
-                <input {...register(`tiles.${index}.brandLine` as const)} />
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                  Brand line
+                  <CharacterCount current={(watch(`tiles.${index}.brandLine`) ?? "").length} max={limits.tileBrandLine} />
+                </div>
+                <input
+                  {...register(`tiles.${index}.brandLine` as const, { maxLength: limits.tileBrandLine })}
+                  maxLength={limits.tileBrandLine}
+                />
               </label>
               <label>
-                Brand subtext
-                <input {...register(`tiles.${index}.brandSub` as const)} />
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                  Brand subtext
+                  <CharacterCount current={(watch(`tiles.${index}.brandSub`) ?? "").length} max={limits.tileBrandSub} />
+                </div>
+                <input
+                  {...register(`tiles.${index}.brandSub` as const, { maxLength: limits.tileBrandSub })}
+                  maxLength={limits.tileBrandSub}
+                />
               </label>
             </>
           ) : null}
@@ -404,6 +573,14 @@ export function ServicesProductCatalogSectionForm({
 
   const { register, control, setValue, watch, handleSubmit, formState: { isSubmitting } } =
     useForm({ defaultValues });
+
+  const title = watch("title") ?? "";
+  const description = watch("description") ?? "";
+  const limits = useMemo(() => ({
+    title: Math.max(servicesProductCatalogLimits.title, (defaultValues.title as string).length),
+    description: Math.max(servicesProductCatalogLimits.description, (defaultValues.description as string).length),
+  }), [defaultValues]);
+
   const { fields: filterFields, append: appendFilter, remove: removeFilter } = useFieldArray({
     control,
     name: "filters",
@@ -423,12 +600,31 @@ export function ServicesProductCatalogSectionForm({
     >
       <SectionHeading section={section} />
       <label>
-        Title
-        <input {...register("title", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Title
+          <CharacterCount current={title.length} max={limits.title} />
+        </div>
+        <input
+          {...register("title", {
+            required: true,
+            maxLength: limits.title,
+          })}
+          maxLength={limits.title}
+        />
       </label>
       <label>
-        Description
-        <textarea rows={2} {...register("description", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Description
+          <CharacterCount current={description.length} max={limits.description} />
+        </div>
+        <textarea
+          rows={2}
+          {...register("description", {
+            required: true,
+            maxLength: limits.description,
+          })}
+          maxLength={limits.description}
+        />
       </label>
 
       <h4>Category filters</h4>
@@ -550,9 +746,19 @@ export function ServicesRegulatorySectionForm({
     [section.data],
   );
 
-  const { register, control, handleSubmit, formState: { isSubmitting } } = useForm({
+  const { register, control, watch, handleSubmit, formState: { isSubmitting } } = useForm({
     defaultValues,
   });
+
+  const title = watch("title") ?? "";
+  const description = watch("description") ?? "";
+  const tableTitle = watch("tableTitle") ?? "";
+  const limits = useMemo(() => ({
+    title: Math.max(servicesRegulatoryLimits.title, (defaultValues.title as string).length),
+    description: Math.max(servicesRegulatoryLimits.description, (defaultValues.description as string).length),
+    tableTitle: Math.max(servicesRegulatoryLimits.tableTitle, (defaultValues.tableTitle as string).length),
+  }), [defaultValues]);
+
   const { fields: certFields, append: appendCert, remove: removeCert } = useFieldArray({
     control,
     name: "certifications",
@@ -570,16 +776,44 @@ export function ServicesRegulatorySectionForm({
     >
       <SectionHeading section={section} />
       <label>
-        Title
-        <input {...register("title", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Title
+          <CharacterCount current={title.length} max={limits.title} />
+        </div>
+        <input
+          {...register("title", {
+            required: true,
+            maxLength: limits.title,
+          })}
+          maxLength={limits.title}
+        />
       </label>
       <label>
-        Description
-        <textarea rows={3} {...register("description", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Description
+          <CharacterCount current={description.length} max={limits.description} />
+        </div>
+        <textarea
+          rows={3}
+          {...register("description", {
+            required: true,
+            maxLength: limits.description,
+          })}
+          maxLength={limits.description}
+        />
       </label>
       <label>
-        Table title
-        <input {...register("tableTitle", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Table title
+          <CharacterCount current={tableTitle.length} max={limits.tableTitle} />
+        </div>
+        <input
+          {...register("tableTitle", {
+            required: true,
+            maxLength: limits.tableTitle,
+          })}
+          maxLength={limits.tableTitle}
+        />
       </label>
 
       <h4>Certifications</h4>
@@ -601,7 +835,6 @@ export function ServicesRegulatorySectionForm({
       <button
         type="button"
         onClick={() => appendCert({ title: "", subtitle: "" })}
-        style={{ marginBottom: 16 }}
       >
         Add certification
       </button>
@@ -624,18 +857,16 @@ export function ServicesRegulatorySectionForm({
             <input {...register(`standards.${index}.status` as const, { required: true })} />
           </label>
           <button type="button" onClick={() => removeStandard(index)}>
-            Remove row
+            Remove
           </button>
         </div>
       ))}
       <button
         type="button"
-        onClick={() =>
-          appendStandard({ deviceCategory: "", standard: "", status: "VERIFIED" })
-        }
+        onClick={() => appendStandard({ deviceCategory: "", standard: "", status: "VERIFIED" })}
         style={{ marginBottom: 16 }}
       >
-        Add standard row
+        Add standard
       </button>
 
       <SectionSaveFooter
@@ -647,8 +878,6 @@ export function ServicesRegulatorySectionForm({
     </form>
   );
 }
-
-type FooterLink = { label: string; href: string };
 
 export function ServicesFooterSectionForm({
   section,
@@ -665,8 +894,8 @@ export function ServicesFooterSectionForm({
       solutionsTitle:
         (section.data.solutionsTitle as string) ?? theaServicesFooterDefaults.solutionsTitle,
       solutionLinks:
-        ((section.data.solutionLinks as FooterLink[]) ?? []).length > 0
-          ? (section.data.solutionLinks as FooterLink[])
+        ((section.data.solutionLinks as any[]) ?? []).length > 0
+          ? (section.data.solutionLinks as any[])
           : theaServicesFooterDefaults.solutionLinks,
       contactTitle:
         (section.data.contactTitle as string) ?? theaServicesFooterDefaults.contactTitle,
@@ -685,9 +914,19 @@ export function ServicesFooterSectionForm({
     [section.data],
   );
 
-  const { register, control, handleSubmit, formState: { isSubmitting } } = useForm({
+  const { register, control, watch, handleSubmit, formState: { isSubmitting } } = useForm({
     defaultValues,
   });
+
+  const limits = useMemo(() => ({
+    brand: Math.max(servicesFooterLimits.brand, defaultValues.brand.length),
+    description: Math.max(servicesFooterLimits.description, defaultValues.description.length),
+    solutionsTitle: Math.max(servicesFooterLimits.solutionsTitle, defaultValues.solutionsTitle.length),
+    contactTitle: Math.max(servicesFooterLimits.contactTitle, defaultValues.contactTitle.length),
+    newsletterTitle: Math.max(servicesFooterLimits.newsletterTitle, defaultValues.newsletterTitle.length),
+    copyright: Math.max(servicesFooterLimits.copyright, defaultValues.copyright.length),
+  }), [defaultValues]);
+
   const { fields, append, remove } = useFieldArray({ control, name: "solutionLinks" });
 
   return (
@@ -699,17 +938,45 @@ export function ServicesFooterSectionForm({
       <SectionHeading section={section} />
 
       <label>
-        Brand name
-        <input {...register("brand", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Brand name
+          <CharacterCount current={(watch("brand") ?? "").length} max={limits.brand} warningAt={limits.brand - 10} />
+        </div>
+        <input
+          {...register("brand", {
+            required: true,
+            maxLength: limits.brand,
+          })}
+          maxLength={limits.brand}
+        />
       </label>
       <label>
-        Brand description
-        <textarea rows={3} {...register("description", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Brand description
+          <CharacterCount current={(watch("description") ?? "").length} max={limits.description} warningAt={limits.description - 50} />
+        </div>
+        <textarea
+          rows={3}
+          {...register("description", {
+            required: true,
+            maxLength: limits.description,
+          })}
+          maxLength={limits.description}
+        />
       </label>
 
       <label>
-        Solutions column title
-        <input {...register("solutionsTitle", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Solutions column title
+          <CharacterCount current={(watch("solutionsTitle") ?? "").length} max={limits.solutionsTitle} warningAt={limits.solutionsTitle - 10} />
+        </div>
+        <input
+          {...register("solutionsTitle", {
+            required: true,
+            maxLength: limits.solutionsTitle,
+          })}
+          maxLength={limits.solutionsTitle}
+        />
       </label>
       <h4>Solution links</h4>
       {fields.map((field, index) => (
@@ -737,8 +1004,17 @@ export function ServicesFooterSectionForm({
       </button>
 
       <label>
-        Contact column title
-        <input {...register("contactTitle", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Contact column title
+          <CharacterCount current={(watch("contactTitle") ?? "").length} max={limits.contactTitle} warningAt={limits.contactTitle - 10} />
+        </div>
+        <input
+          {...register("contactTitle", {
+            required: true,
+            maxLength: limits.contactTitle,
+          })}
+          maxLength={limits.contactTitle}
+        />
       </label>
       <label>
         Phone
@@ -754,8 +1030,17 @@ export function ServicesFooterSectionForm({
       </label>
 
       <label>
-        Newsletter column title
-        <input {...register("newsletterTitle", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Newsletter column title
+          <CharacterCount current={(watch("newsletterTitle") ?? "").length} max={limits.newsletterTitle} warningAt={limits.newsletterTitle - 10} />
+        </div>
+        <input
+          {...register("newsletterTitle", {
+            required: true,
+            maxLength: limits.newsletterTitle,
+          })}
+          maxLength={limits.newsletterTitle}
+        />
       </label>
       <label>
         Email placeholder
@@ -767,8 +1052,18 @@ export function ServicesFooterSectionForm({
       </label>
 
       <label>
-        Copyright line
-        <textarea rows={2} {...register("copyright", { required: true })} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          Copyright line
+          <CharacterCount current={(watch("copyright") ?? "").length} max={limits.copyright} warningAt={limits.copyright - 20} />
+        </div>
+        <textarea
+          rows={2}
+          {...register("copyright", {
+            required: true,
+            maxLength: limits.copyright,
+          })}
+          maxLength={limits.copyright}
+        />
       </label>
 
       <SectionSaveFooter
