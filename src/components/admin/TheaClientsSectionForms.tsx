@@ -172,6 +172,7 @@ export function ClientsPageHeroSectionForm({
         minWidth={1600}
         minHeight={800}
         aspectRatio={2}
+        maxSizeKB={10000}
       />
       <input type="hidden" {...register("backgroundImage")} />
       <h4>Certification pills</h4>
