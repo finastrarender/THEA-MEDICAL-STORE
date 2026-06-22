@@ -521,9 +521,6 @@ export function ProductsFooterSectionForm({
   const limits = useMemo(() => ({
     brand: Math.max(productsFooterLimits.brand, (section.data.brand as string)?.length ?? 0),
     description: Math.max(productsFooterLimits.description, (section.data.description as string)?.length ?? 0),
-    productsTitle: Math.max(productsFooterLimits.productsTitle, (section.data.productsTitle as string)?.length ?? 0),
-    inquiriesTitle: Math.max(productsFooterLimits.inquiriesTitle, (section.data.inquiriesTitle as string)?.length ?? 0),
-    headquartersTitle: Math.max(productsFooterLimits.headquartersTitle, (section.data.headquartersTitle as string)?.length ?? 0),
     copyright: Math.max(productsFooterLimits.copyright, (section.data.copyright as string)?.length ?? 0),
   }), [section.data]);
 

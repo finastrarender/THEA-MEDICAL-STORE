@@ -1,4 +1,9 @@
-export const theaProductsCatalogShowcaseDefaults = {
+import type { z } from "zod";
+import { productsCatalogShowcaseDataSchema } from "@/schemas/sections";
+
+type ProductsCatalogShowcaseDefaults = z.infer<typeof productsCatalogShowcaseDataSchema>;
+
+export const theaProductsCatalogShowcaseDefaults: ProductsCatalogShowcaseDefaults = {
   badge: "OFFICIAL DISTRIBUTION CATALOG",
   titleLead: "Clinical Precision in",
   titleHighlight: "Medical Supply.",
@@ -8,6 +13,8 @@ export const theaProductsCatalogShowcaseDefaults = {
     title: "Pharmaceutical Medicines",
     description:
       "Comprehensive range of life-saving medications and specialized clinical treatments under stringent quality controls.",
+    linkLabel: "View Medicines",
+    linkHref: "/product-detail",
     image: "/products/Pharmaceutical collection.png",
   },
   equipment: {
