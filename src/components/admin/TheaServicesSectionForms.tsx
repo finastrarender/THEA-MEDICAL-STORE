@@ -487,6 +487,11 @@ export function ServicesSpecializedSectionForm({
                   setValue(`tiles.${index}.image`, value, { shouldDirty: true })
                 }
                 folder={`sections/${section.type}`}
+                allowedTypes={
+                  tile.variant === "brand"
+                    ? ["image/jpeg", "image/png", "image/webp", "image/avif", "image/svg+xml"]
+                    : undefined
+                }
               />
             </>
           ) : null}
